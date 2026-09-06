@@ -138,10 +138,10 @@ func scanIncident(row scannable) (incident.Incident, error) {
 	var (
 		id, displayID, serverID, serverName, metric, problem string
 		severity, ruleID, ruleName, status                   string
-		currentValue, threshold                             float64
-		startedAt, lastUpdatedAt                            string
-		acknowledgedAt, recoveredAt, resolvedAt             sql.NullString
-		acknowledgedBy, notes                               string
+		currentValue, threshold                              float64
+		startedAt, lastUpdatedAt                             string
+		acknowledgedAt, recoveredAt, resolvedAt              sql.NullString
+		acknowledgedBy, notes                                string
 	)
 	err := row.Scan(
 		&id, &displayID, &serverID, &serverName, &metric, &problem,

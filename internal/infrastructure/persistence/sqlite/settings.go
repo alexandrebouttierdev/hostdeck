@@ -135,17 +135,17 @@ ON CONFLICT(id) DO UPDATE SET
 
 func scanSettings(row scannable) (shared.Settings, error) {
 	var (
-		s                                        shared.Settings
-		autoStart, parallelCollection            int
-		autoDiscovery, availabilityCheck         int
-		pingBeforeCollect, autoRefresh           int
-		animationsEnabled, authRequired          int
-		autoSession, accessLogging               int
-		dataEncryption, autoCleanup              int
-		compressMetrics                          int
-		notifyEmail, notifySlack, notifyTeams    int
-		notifyWebhook, notifyDesktop             int
-		updatedAt                                string
+		s                                     shared.Settings
+		autoStart, parallelCollection         int
+		autoDiscovery, availabilityCheck      int
+		pingBeforeCollect, autoRefresh        int
+		animationsEnabled, authRequired       int
+		autoSession, accessLogging            int
+		dataEncryption, autoCleanup           int
+		compressMetrics                       int
+		notifyEmail, notifySlack, notifyTeams int
+		notifyWebhook, notifyDesktop          int
+		updatedAt                             string
 	)
 	err := row.Scan(
 		&s.InstanceName, &s.Description, &s.Timezone, &s.Language, &autoStart,

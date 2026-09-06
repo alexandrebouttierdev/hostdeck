@@ -36,13 +36,13 @@ func loadUbuntuFixtures(t *testing.T) map[string]string {
 	root := filepath.Clean(filepath.Join(filepath.Dir(file), "..", "..", ".."))
 	dir := filepath.Join(root, "tests", "fixtures", "ubuntu2204")
 	files := map[string]string{
-		"cat /proc/stat":       "proc_stat",
-		"cat /proc/meminfo":    "proc_meminfo",
-		"cat /proc/loadavg":    "proc_loadavg",
-		"cat /proc/net/dev":    "proc_net_dev",
-		"df -B1":               "df_B1",
-		"cat /proc/uptime":     "proc_uptime",
-		"cat /etc/os-release":  "os_release",
+		"cat /proc/stat":      "proc_stat",
+		"cat /proc/meminfo":   "proc_meminfo",
+		"cat /proc/loadavg":   "proc_loadavg",
+		"cat /proc/net/dev":   "proc_net_dev",
+		"df -B1":              "df_B1",
+		"cat /proc/uptime":    "proc_uptime",
+		"cat /etc/os-release": "os_release",
 	}
 	out := make(map[string]string, len(files))
 	for cmd, name := range files {

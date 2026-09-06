@@ -15,10 +15,10 @@ import (
 type SystemCollector struct {
 	conn ports.SSHConnection
 
-	prevCPU     parsers.CPUStat
-	hasPrevCPU  bool
-	prevNet     map[string]parsers.NetDevCounters
-	prevNetAt   time.Time
+	prevCPU    parsers.CPUStat
+	hasPrevCPU bool
+	prevNet    map[string]parsers.NetDevCounters
+	prevNetAt  time.Time
 }
 
 // NewSystemCollector creates a collector bound to the given SSH connection.

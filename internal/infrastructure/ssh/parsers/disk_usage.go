@@ -15,9 +15,9 @@ type DiskUsage struct {
 }
 
 var skipFSTypes = map[string]bool{
-	"tmpfs":     true,
-	"devtmpfs":  true,
-	"squashfs":  true,
+	"tmpfs":    true,
+	"devtmpfs": true,
+	"squashfs": true,
 }
 
 // ParseDiskUsage parses POSIX-style `df -B1` output.

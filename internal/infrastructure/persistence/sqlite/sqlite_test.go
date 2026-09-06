@@ -189,16 +189,16 @@ func TestMetricsRepository_HistoryAndPrune(t *testing.T) {
 	base := time.Date(2026, 9, 6, 10, 0, 0, 0, time.UTC)
 	for i := 0; i < 5; i++ {
 		sample := monitoring.MetricSample{
-			ID:              shared.NewID(),
-			ServerID:        srv.ID,
-			CollectedAt:     base.Add(time.Duration(i) * time.Minute),
-			CPUTotalPercent: float64(10 + i),
-			MemoryUsedBytes: uint64(1000 * (i + 1)),
+			ID:               shared.NewID(),
+			ServerID:         srv.ID,
+			CollectedAt:      base.Add(time.Duration(i) * time.Minute),
+			CPUTotalPercent:  float64(10 + i),
+			MemoryUsedBytes:  uint64(1000 * (i + 1)),
 			MemoryTotalBytes: 8000,
-			Load1:           float64(i),
-			DiskUsedBytes:   500,
-			DiskTotalBytes:  1000,
-			UptimeSeconds:   uint64(3600 + i),
+			Load1:            float64(i),
+			DiskUsedBytes:    500,
+			DiskTotalBytes:   1000,
+			UptimeSeconds:    uint64(3600 + i),
 		}
 		if err := metrics.SaveSample(ctx, sample); err != nil {
 			t.Fatalf("save sample %d: %v", i, err)
