@@ -1,0 +1,60 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+  <!--
+    Dimensions et typographie HostDeck.
+
+    Comme la palette, ces valeurs sont mesurées dans les maquettes 1672x941 de `mockups/`
+    plutôt que choisies. Aucune vue ne doit répéter une taille en dur (§34).
+  -->
+
+  <!-- Chrome de la fenêtre, mesuré sur 02_infrastructure_hosts.png -->
+  <sys:Double x:Key="RailWidth">66</sys:Double>
+  <sys:Double x:Key="TopbarHeight">49</sys:Double>
+  <sys:Double x:Key="StatusBarHeight">40</sys:Double>
+
+  <!-- Taille de conception, celle des maquettes -->
+  <sys:Double x:Key="DesignWindowWidth">1672</sys:Double>
+  <sys:Double x:Key="DesignWindowHeight">941</sys:Double>
+
+  <!-- Tables denses -->
+  <sys:Double x:Key="TableRowHeight">34</sys:Double>
+  <sys:Double x:Key="TableHeaderHeight">30</sys:Double>
+
+  <!-- Panneau de détail redimensionnable -->
+  <sys:Double x:Key="DetailPanelMinWidth">320</sys:Double>
+  <sys:Double x:Key="DetailPanelDefaultWidth">400</sys:Double>
+
+  <!-- Icônes -->
+  <sys:Double x:Key="RailIconSize">22</sys:Double>
+  <sys:Double x:Key="IconSizeSmall">14</sys:Double>
+  <sys:Double x:Key="IconSizeMedium">16</sys:Double>
+
+  <!-- Échelle d'espacement. Un pas de 4, dense comme un outil desktop. -->
+  <sys:Double x:Key="Spacing1">4</sys:Double>
+  <sys:Double x:Key="Spacing2">8</sys:Double>
+  <sys:Double x:Key="Spacing3">12</sys:Double>
+  <sys:Double x:Key="Spacing4">16</sys:Double>
+  <sys:Double x:Key="Spacing5">24</sys:Double>
+  <sys:Double x:Key="Spacing6">32</sys:Double>
+
+  <Thickness x:Key="ContentPadding">24,20,24,20</Thickness>
+  <Thickness x:Key="PanelPadding">16</Thickness>
+  <Thickness x:Key="CellPadding">10,0,10,0</Thickness>
+
+  <!-- Bordures : fines, comme dans les maquettes -->
+  <Thickness x:Key="BorderThin">1</Thickness>
+  <CornerRadius x:Key="RadiusSmall">3</CornerRadius>
+  <CornerRadius x:Key="RadiusMedium">6</CornerRadius>
+  <CornerRadius x:Key="RadiusPill">999</CornerRadius>
+
+  <!-- Typographie : petite et dense, priorité à la donnée (§31) -->
+  <sys:Double x:Key="FontSizeMicro">10</sys:Double>
+  <sys:Double x:Key="FontSizeSmall">11</sys:Double>
+  <sys:Double x:Key="FontSizeBody">12</sys:Double>
+  <sys:Double x:Key="FontSizeMedium">13</sys:Double>
+  <sys:Double x:Key="FontSizeLarge">16</sys:Double>
+  <sys:Double x:Key="FontSizeTitle">22</sys:Double>
+
+</ResourceDictionary>

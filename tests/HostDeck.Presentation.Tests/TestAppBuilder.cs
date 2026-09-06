@@ -1,6 +1,6 @@
 using Avalonia;
 using Avalonia.Headless;
-using Avalonia.Themes.Fluent;
+using Avalonia.Markup.Xaml;
 using HostDeck.Presentation.Tests;
 // Le namespace HostDeck.Application masque le type Avalonia.Application depuis
 // l'intérieur de HostDeck.* : l'alias désigne sans ambiguïté la classe Avalonia.
@@ -17,7 +17,7 @@ namespace HostDeck.Presentation.Tests;
 /// </summary>
 public sealed class TestApplication : AvaloniaApplication
 {
-    public override void Initialize() => Styles.Add(new FluentTheme());
+    public override void Initialize() => AvaloniaXamlLoader.Load(this);
 }
 
 /// <summary>

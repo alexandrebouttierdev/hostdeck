@@ -1,0 +1,282 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="HostDeck.Presentation.Views.Shell.ShellView"
+             Background="{StaticResource SurfaceBackgroundBrush}">
+
+  <UserControl.Styles>
+    <Style Selector="Button.rail">
+      <Setter Property="Width" Value="48" />
+      <Setter Property="Height" Value="48" />
+      <Setter Property="Margin" Value="8,1" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="{StaticResource RadiusSmall}" />
+    </Style>
+    <Style Selector="Button.rail:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource HoverBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    </Style>
+    <Style Selector="Button.rail.active">
+      <Setter Property="Background" Value="{StaticResource SelectionBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource AccentHoverBrush}" />
+    </Style>
+    <!-- Les icônes sont tracées au trait, pas remplies : c'est le rendu des maquettes,
+         et cela garde un poids visuel constant quelle que soit la densité de l'écran. -->
+    <Style Selector="Path.icon">
+      <Setter Property="Stretch" Value="Uniform" />
+      <Setter Property="Width" Value="{StaticResource RailIconSize}" />
+      <Setter Property="Height" Value="{StaticResource RailIconSize}" />
+      <Setter Property="StrokeThickness" Value="1.6" />
+      <Setter Property="StrokeLineCap" Value="Round" />
+      <Setter Property="StrokeJoin" Value="Round" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Stroke" Value="{StaticResource TextMutedBrush}" />
+    </Style>
+    <Style Selector="Button.rail:pointerover Path.icon">
+      <Setter Property="Stroke" Value="{StaticResource TextPrimaryBrush}" />
+    </Style>
+    <Style Selector="Button.rail.active Path.icon">
+      <Setter Property="Stroke" Value="{StaticResource AccentHoverBrush}" />
+    </Style>
+    <Style Selector="Path.topbarIcon">
+      <Setter Property="Stretch" Value="Uniform" />
+      <Setter Property="Width" Value="{StaticResource IconSizeMedium}" />
+      <Setter Property="Height" Value="{StaticResource IconSizeMedium}" />
+      <Setter Property="StrokeThickness" Value="1.8" />
+      <Setter Property="StrokeLineCap" Value="Round" />
+      <Setter Property="StrokeJoin" Value="Round" />
+      <Setter Property="Stroke" Value="{StaticResource TextMutedBrush}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.secondary">
+      <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+      <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid ColumnDefinitions="Auto,*"
+        RowDefinitions="Auto,*,Auto">
+
+    <Border x:Name="NavigationRail"
+            Grid.RowSpan="3"
+            Width="{StaticResource RailWidth}"
+            Background="{StaticResource SurfaceRailBrush}"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="0,0,1,0">
+      <Grid RowDefinitions="64,*,Auto">
+        <Border BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="0,0,0,1">
+          <TextBlock Text="HD"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     FontSize="{StaticResource FontSizeTitle}"
+                     FontWeight="SemiBold"
+                     Foreground="{StaticResource AccentHoverBrush}" />
+        </Border>
+
+        <StackPanel Grid.Row="1" Margin="0,8,0,0">
+          <Button Classes="rail active" ToolTip.Tip="Vue d’ensemble">
+            <Path Classes="icon" Data="{StaticResource IconOverview}" />
+          </Button>
+          <Button Classes="rail" ToolTip.Tip="Infrastructure">
+            <Path Classes="icon" Data="{StaticResource IconInfrastructure}" />
+          </Button>
+          <Button Classes="rail" ToolTip.Tip="Incidents">
+            <Path Classes="icon" Data="{StaticResource IconIncidents}" />
+          </Button>
+          <Button Classes="rail" ToolTip.Tip="Données en direct">
+            <Path Classes="icon" Data="{StaticResource IconLiveData}" />
+          </Button>
+          <Button Classes="rail" ToolTip.Tip="Docker">
+            <Path Classes="icon" Data="{StaticResource IconDocker}" />
+          </Button>
+          <Button Classes="rail" ToolTip.Tip="Alertes">
+            <Path Classes="icon" Data="{StaticResource IconAlerts}" />
+          </Button>
+          <Button Classes="rail" ToolTip.Tip="Rapports">
+            <Path Classes="icon" Data="{StaticResource IconReports}" />
+          </Button>
+          <Button Classes="rail" ToolTip.Tip="Topologie">
+            <Path Classes="icon" Data="{StaticResource IconTopology}" />
+          </Button>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Margin="0,0,0,8">
+          <Button Classes="rail" ToolTip.Tip="Paramètres">
+            <Path Classes="icon" Data="{StaticResource IconSettings}" />
+          </Button>
+          <Button Classes="rail" ToolTip.Tip="Aide">
+            <Path Classes="icon" Data="{StaticResource IconHelp}" />
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border x:Name="Topbar"
+            Grid.Column="1"
+            Height="{StaticResource TopbarHeight}"
+            Background="{StaticResource SurfaceTopbarBrush}"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="0,0,0,1">
+      <Grid Margin="22,0"
+            ColumnDefinitions="Auto,*,Auto">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="12">
+          <TextBlock Text="Infrastructure"
+                     Classes="secondary"
+                     VerticalAlignment="Center" />
+          <TextBlock Text="›"
+                     Classes="secondary"
+                     VerticalAlignment="Center" />
+          <TextBlock Text="Tous les hôtes"
+                     Foreground="{StaticResource TextPrimaryBrush}"
+                     FontSize="{StaticResource FontSizeBody}"
+                     FontWeight="SemiBold"
+                     VerticalAlignment="Center" />
+        </StackPanel>
+
+        <Border Grid.Column="1"
+                Width="490"
+                Height="32"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{StaticResource SurfaceBackgroundBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <StackPanel Orientation="Horizontal" Margin="12,0" Spacing="8">
+            <Path Classes="topbarIcon" Data="{StaticResource IconSearch}" />
+            <TextBlock Text="Rechercher un hôte, une adresse IP ou un tag…"
+                       Classes="secondary"
+                       VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="18">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Ellipse Width="8" Height="8" Fill="{StaticResource StatusOnlineBrush}" />
+            <TextBlock Text="Collecte prête" Classes="secondary" VerticalAlignment="Center" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="7">
+            <Path Classes="topbarIcon" Data="{StaticResource IconRefresh}" />
+            <TextBlock Text="Actualiser" Classes="secondary" VerticalAlignment="Center" />
+          </StackPanel>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="1"
+            Grid.Column="1"
+            Background="{StaticResource SurfaceBackgroundBrush}">
+      <Grid Margin="{StaticResource ContentPadding}"
+            RowDefinitions="Auto,Auto,*">
+        <StackPanel Orientation="Horizontal" Spacing="14">
+          <Border Width="44"
+                  Height="44"
+                  Background="{StaticResource SurfaceRaisedBrush}"
+                  CornerRadius="{StaticResource RadiusMedium}">
+            <Path Data="{StaticResource IconInfrastructure}"
+                  Stretch="Uniform"
+                  Width="22"
+                  Height="22"
+                  StrokeThickness="1.6"
+                  StrokeLineCap="Round"
+                  StrokeJoin="Round"
+                  Stroke="{StaticResource AccentHoverBrush}"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center" />
+          </Border>
+          <StackPanel Spacing="2">
+            <TextBlock Text="Infrastructure"
+                       FontSize="{StaticResource FontSizeTitle}"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBlock Text="Tous les hôtes"
+                       FontSize="{StaticResource FontSizeLarge}"
+                       Foreground="{StaticResource TextSecondaryBrush}" />
+            <TextBlock Text="Surveillez et gérez l’ensemble de votre infrastructure en temps réel."
+                       Classes="secondary" />
+          </StackPanel>
+        </StackPanel>
+
+        <Border Grid.Row="1"
+                Margin="0,20,0,0"
+                Height="38"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0" Spacing="10">
+            <Path Data="{StaticResource IconInfrastructure}"
+                  Stretch="Uniform"
+                  Width="14"
+                  Height="14"
+                  StrokeThickness="1.6"
+                  StrokeLineCap="Round"
+                  StrokeJoin="Round"
+                  Stroke="{StaticResource AccentHoverBrush}"
+                  VerticalAlignment="Center" />
+            <TextBlock Text="Tous les hôtes" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="SemiBold" />
+            <Border Background="{StaticResource SelectionBrush}"
+                    CornerRadius="{StaticResource RadiusPill}"
+                    Padding="8,2">
+              <TextBlock Text="0" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+            </Border>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Row="2"
+                Margin="0,14,0,0"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <StackPanel HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      Spacing="10">
+            <Path Data="{StaticResource IconInfrastructure}"
+                  Stretch="Uniform"
+                  Width="34"
+                  Height="34"
+                  StrokeThickness="1.2"
+                  StrokeLineCap="Round"
+                  StrokeJoin="Round"
+                  Stroke="{StaticResource TextMutedBrush}"
+                  HorizontalAlignment="Center" />
+            <TextBlock x:Name="EmptyStateMessage"
+                       Text="Aucun hôte configuré"
+                       HorizontalAlignment="Center"
+                       FontSize="{StaticResource FontSizeLarge}"
+                       FontWeight="SemiBold"
+                       Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBlock Text="Ajoutez votre premier serveur Linux pour commencer la supervision."
+                       Classes="secondary"
+                       HorizontalAlignment="Center" />
+          </StackPanel>
+        </Border>
+      </Grid>
+    </Border>
+
+    <Border x:Name="StatusBar"
+            Grid.Row="2"
+            Grid.Column="1"
+            Height="{StaticResource StatusBarHeight}"
+            Background="{StaticResource SurfaceTopbarBrush}"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="0,1,0,0">
+      <Grid Margin="20,0" ColumnDefinitions="Auto,*,Auto">
+        <TextBlock Text="0 hôte"
+                   Classes="secondary"
+                   VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2"
+                   Text="Base locale prête"
+                   Classes="secondary"
+                   VerticalAlignment="Center" />
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

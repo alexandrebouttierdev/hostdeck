@@ -1,0 +1,94 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!--
+    Palette HostDeck.
+
+    Ces valeurs ne sont pas choisies : elles sont échantillonnées directement dans les
+    maquettes de `mockups/`, qui font foi (§23). Toute couleur de l'interface passe par un
+    de ces jetons ; aucune vue ne doit écrire une couleur en dur (§34).
+  -->
+
+  <!-- Surfaces -->
+  <Color x:Key="SurfaceBackgroundColor">#041724</Color>
+  <Color x:Key="SurfaceRailColor">#031420</Color>
+  <Color x:Key="SurfaceTopbarColor">#021521</Color>
+  <Color x:Key="SurfacePanelColor">#051A2B</Color>
+  <Color x:Key="SurfaceRaisedColor">#08243A</Color>
+  <Color x:Key="SurfaceRowAlternateColor">#041825</Color>
+
+  <!-- Bordures -->
+  <Color x:Key="BorderSubtleColor">#0C2B42</Color>
+  <Color x:Key="BorderStrongColor">#12405F</Color>
+
+  <!-- Texte -->
+  <Color x:Key="TextPrimaryColor">#EEF0F3</Color>
+  <Color x:Key="TextSecondaryColor">#A8B7D0</Color>
+  <Color x:Key="TextMutedColor">#5A6B84</Color>
+  <Color x:Key="TextLinkColor">#0898DE</Color>
+
+  <!-- Interaction -->
+  <Color x:Key="AccentColor">#016DFC</Color>
+  <Color x:Key="AccentHoverColor">#3B8DFF</Color>
+  <Color x:Key="SelectionColor">#012753</Color>
+  <Color x:Key="HoverColor">#08243A</Color>
+
+  <!-- Statut d'hôte -->
+  <Color x:Key="StatusOnlineColor">#09DE77</Color>
+  <Color x:Key="StatusOfflineColor">#FB4662</Color>
+  <Color x:Key="StatusWarningColor">#FBCC2A</Color>
+  <Color x:Key="StatusUnknownColor">#5A6B84</Color>
+
+  <!-- Sévérité d'incident : les cinq niveaux du §20 -->
+  <Color x:Key="SeverityInformationColor">#0898DE</Color>
+  <Color x:Key="SeverityWarningColor">#FBCC2A</Color>
+  <Color x:Key="SeverityAverageColor">#FF9A3C</Color>
+  <Color x:Key="SeverityHighColor">#FB7145</Color>
+  <Color x:Key="SeverityCriticalColor">#FB4662</Color>
+
+  <!-- Séries de graphiques, dans l'ordre où les maquettes les empilent -->
+  <Color x:Key="SeriesCpuUserColor">#2F8FEF</Color>
+  <Color x:Key="SeriesCpuSystemColor">#E5B84B</Color>
+  <Color x:Key="SeriesCpuIoWaitColor">#FB4662</Color>
+  <Color x:Key="SeriesCpuNiceColor">#A16BE0</Color>
+  <Color x:Key="SeriesCpuStealColor">#8FA3B8</Color>
+  <Color x:Key="SeriesMemoryUsedColor">#09DE77</Color>
+  <Color x:Key="SeriesMemoryCachedColor">#2F8FEF</Color>
+  <Color x:Key="SeriesMemoryBuffersColor">#E5B84B</Color>
+  <Color x:Key="SeriesMemoryFreeColor">#7B5BD6</Color>
+  <Color x:Key="SeriesNetworkInColor">#2F8FEF</Color>
+  <Color x:Key="SeriesNetworkOutColor">#09DE77</Color>
+
+  <!-- Brosses. Les vues consomment celles-ci, jamais les Color ci-dessus. -->
+  <SolidColorBrush x:Key="SurfaceBackgroundBrush" Color="{StaticResource SurfaceBackgroundColor}" />
+  <SolidColorBrush x:Key="SurfaceRailBrush" Color="{StaticResource SurfaceRailColor}" />
+  <SolidColorBrush x:Key="SurfaceTopbarBrush" Color="{StaticResource SurfaceTopbarColor}" />
+  <SolidColorBrush x:Key="SurfacePanelBrush" Color="{StaticResource SurfacePanelColor}" />
+  <SolidColorBrush x:Key="SurfaceRaisedBrush" Color="{StaticResource SurfaceRaisedColor}" />
+  <SolidColorBrush x:Key="SurfaceRowAlternateBrush" Color="{StaticResource SurfaceRowAlternateColor}" />
+
+  <SolidColorBrush x:Key="BorderSubtleBrush" Color="{StaticResource BorderSubtleColor}" />
+  <SolidColorBrush x:Key="BorderStrongBrush" Color="{StaticResource BorderStrongColor}" />
+
+  <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}" />
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
+  <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMutedColor}" />
+  <SolidColorBrush x:Key="TextLinkBrush" Color="{StaticResource TextLinkColor}" />
+
+  <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+  <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}" />
+  <SolidColorBrush x:Key="SelectionBrush" Color="{StaticResource SelectionColor}" />
+  <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" />
+
+  <SolidColorBrush x:Key="StatusOnlineBrush" Color="{StaticResource StatusOnlineColor}" />
+  <SolidColorBrush x:Key="StatusOfflineBrush" Color="{StaticResource StatusOfflineColor}" />
+  <SolidColorBrush x:Key="StatusWarningBrush" Color="{StaticResource StatusWarningColor}" />
+  <SolidColorBrush x:Key="StatusUnknownBrush" Color="{StaticResource StatusUnknownColor}" />
+
+  <SolidColorBrush x:Key="SeverityInformationBrush" Color="{StaticResource SeverityInformationColor}" />
+  <SolidColorBrush x:Key="SeverityWarningBrush" Color="{StaticResource SeverityWarningColor}" />
+  <SolidColorBrush x:Key="SeverityAverageBrush" Color="{StaticResource SeverityAverageColor}" />
+  <SolidColorBrush x:Key="SeverityHighBrush" Color="{StaticResource SeverityHighColor}" />
+  <SolidColorBrush x:Key="SeverityCriticalBrush" Color="{StaticResource SeverityCriticalColor}" />
+
+</ResourceDictionary>
