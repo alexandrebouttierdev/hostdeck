@@ -12,11 +12,13 @@ func TestOpenWiresAndSeeds(t *testing.T) {
 	ctx := context.Background()
 	dir := t.TempDir()
 	app, err := bootstrap.Open(ctx, bootstrap.Options{
-		DBPath:        filepath.Join(dir, "hostdeck.db"),
-		SeedDemo:      true,
-		UseKeyring:    false,
-		UseDemoDocker: true,
-		LogLevel:      "error",
+		DBPath:            filepath.Join(dir, "hostdeck.db"),
+		SeedDemo:          true,
+		UseKeyring:        false,
+		UseDemoDocker:     true,
+		LogLevel:          "error",
+		AutoStartFleet:    false,
+		AutoStartFleetSet: true,
 	})
 	if err != nil {
 		t.Fatal(err)

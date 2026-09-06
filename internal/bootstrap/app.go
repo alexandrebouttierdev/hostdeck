@@ -31,6 +31,9 @@ type Options struct {
 	UseKeyring    bool
 	UseDemoDocker bool
 	LogLevel      string
+	// AutoStartFleet starts the monitoring coordinator after Open (default true when unset via AutoStartFleetSet).
+	AutoStartFleet    bool
+	AutoStartFleetSet bool
 }
 
 // AppServices holds wired use cases and shared infrastructure.
@@ -155,10 +158,31 @@ func Open(ctx context.Context, opts Options) (*AppServices, error) {
 	clock := ports.SystemClock()
 	notify := notifications.NewDesktopService(log)
 
+	var hostCollector ports.HostMetricCollector
+	if opts.SeedDemo || opts.UseDemoDocker {
+		// Demo hosts are not SSH-reachable; use synthetic metric drift only.
+		hostCollector = demo.NewMetricCollector(metricsRepo, clock)
+	} else {
+		hostCollector = sshinfra.NewHostCollector(sshFactory)
+	}
+
+	monLog := log.WithCategory(logging.CategoryMetrics)
+	monSvc := monitoring.NewServiceWithDeps(
+		metricsRepo,
+		serverRepo,
+		clock,
+		hostCollector,
+		alertRepo,
+		incidentRepo,
+		notify,
+		settingsRepo,
+		monLog,
+	)
+
 	app := &AppServices{
 		DB:            db,
 		Servers:       servers.NewService(serverRepo, metricsRepo, creds, sshFactory, clock),
-		Monitoring:    monitoring.NewService(metricsRepo, serverRepo, clock),
+		Monitoring:    monSvc,
 		Incidents:     incidents.NewService(incidentRepo, clock),
 		Alerts:        alerts.NewService(alertRepo, clock),
 		Settings:      settings.NewService(settingsRepo, clock),
@@ -175,6 +199,19 @@ func Open(ctx context.Context, opts Options) (*AppServices, error) {
 		Notifications: notify,
 		Logger:        log,
 	}
+
+	autoStart := true
+	if opts.AutoStartFleetSet {
+		autoStart = opts.AutoStartFleet
+	} else if cfg, err := settingsRepo.Get(ctx); err == nil {
+		autoStart = cfg.AutoStart
+	}
+	if autoStart {
+		if err := app.Monitoring.StartFleet(ctx); err != nil {
+			log.Warn("fleet monitoring start failed", "err", err)
+		}
+	}
+
 	return app, nil
 }
 

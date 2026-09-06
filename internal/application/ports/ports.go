@@ -93,6 +93,11 @@ type DesktopNotificationService interface {
 	Notify(ctx context.Context, title, body string) error
 }
 
+// HostMetricCollector collects a MetricSample for one server (SSH, demo, etc.).
+type HostMetricCollector interface {
+	Collect(ctx context.Context, srv server.Server) (monitoring.MetricSample, error)
+}
+
 // Clock abstrait le temps pour les tests.
 type Clock interface {
 	Now() time.Time

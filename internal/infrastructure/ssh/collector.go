@@ -26,6 +26,12 @@ func NewSystemCollector(conn ports.SSHConnection) *SystemCollector {
 	return &SystemCollector{conn: conn}
 }
 
+// Bind replaces the underlying SSH connection while preserving delta state
+// (previous CPU / network counters) across collection rounds.
+func (c *SystemCollector) Bind(conn ports.SSHConnection) {
+	c.conn = conn
+}
+
 // Collect runs remote commands, parses their output, and returns a MetricSample.
 // On the first call, CPU percentages are 0 (no previous sample for delta).
 // Network rates are 0 until a previous sample exists.
