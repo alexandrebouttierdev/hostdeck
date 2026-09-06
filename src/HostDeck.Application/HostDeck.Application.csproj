@@ -11,6 +11,8 @@
   <ItemGroup>
     <!-- Validation des DTO à l'entrée des use cases. Les invariants métier restent dans le Domain. -->
     <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>
 
