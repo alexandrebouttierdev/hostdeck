@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+    branches: [main, dev, "cursor/**"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22.x"
+      - name: Install Fyne deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev xorg-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxxf86vm-dev
+      - name: Format check
+        run: test -z "$(gofmt -l .)"
+      - name: Vet
+        run: go vet ./...
+      - name: Test
+        run: go test ./...
+      - name: Race (selected)
+        run: go test -race ./internal/application/... ./internal/infrastructure/ssh/... ./internal/infrastructure/persistence/...
+      - name: Build
+        run: go build -o /tmp/hostdeck ./cmd/hostdeck
