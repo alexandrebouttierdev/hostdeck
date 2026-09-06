@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>HostDeck.IntegrationTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\HostDeck.Desktop\HostDeck.Desktop.csproj" />
+    <ProjectReference Include="..\..\src\HostDeck.Infrastructure\HostDeck.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

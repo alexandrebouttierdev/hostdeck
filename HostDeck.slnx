@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HostDeck.Application/HostDeck.Application.csproj" />
+    <Project Path="src/HostDeck.Desktop/HostDeck.Desktop.csproj" />
+    <Project Path="src/HostDeck.Domain/HostDeck.Domain.csproj" />
+    <Project Path="src/HostDeck.Infrastructure/HostDeck.Infrastructure.csproj" />
+    <Project Path="src/HostDeck.Presentation/HostDeck.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HostDeck.Application.Tests/HostDeck.Application.Tests.csproj" />
+    <Project Path="tests/HostDeck.Domain.Tests/HostDeck.Domain.Tests.csproj" />
+    <Project Path="tests/HostDeck.Infrastructure.Tests/HostDeck.Infrastructure.Tests.csproj" />
+    <Project Path="tests/HostDeck.IntegrationTests/HostDeck.IntegrationTests.csproj" />
+    <Project Path="tests/HostDeck.Presentation.Tests/HostDeck.Presentation.Tests.csproj" />
+  </Folder>
+</Solution>

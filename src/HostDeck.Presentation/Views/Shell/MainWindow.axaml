@@ -1,0 +1,22 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="HostDeck.Presentation.Views.Shell.MainWindow"
+        Title="HostDeck"
+        Width="1672"
+        Height="941"
+        MinWidth="1100"
+        MinHeight="700"
+        Background="#0B0F17">
+
+  <!-- Coquille minimale de la phase 0. Le rail vertical, la topbar et la barre de statut
+       sont construits à la phase 8, une fois le design system en place. -->
+  <TextBlock Text="HostDeck"
+             Foreground="#E6EDF7"
+             FontSize="24"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center" />
+
+</Window>
