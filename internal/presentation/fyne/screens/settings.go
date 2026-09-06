@@ -30,8 +30,14 @@ func Settings(services *bootstrap.AppServices) fyne.CanvasObject {
 	lang.SetText(cfg.Language)
 	interval := widget.NewEntry()
 	interval.SetText(strconv.Itoa(cfg.DefaultIntervalSeconds))
+	retention := widget.NewEntry()
+	retention.SetText(strconv.Itoa(cfg.MetricsRetentionDays))
 	theme := widget.NewEntry()
 	theme.SetText(cfg.Theme)
+	notifyDesktop := widget.NewCheck("Notifications bureau", nil)
+	notifyDesktop.SetChecked(cfg.NotifyDesktop)
+	autoStart := widget.NewCheck("Démarrer la collecte automatiquement", nil)
+	autoStart.SetChecked(cfg.AutoStart)
 	status := widget.NewLabel("")
 	save := components.PrimaryButton("Enregistrer", func() {
 		cfg.InstanceName = name.Text
@@ -41,7 +47,12 @@ func Settings(services *bootstrap.AppServices) fyne.CanvasObject {
 		if v, err := strconv.Atoi(interval.Text); err == nil {
 			cfg.DefaultIntervalSeconds = v
 		}
+		if v, err := strconv.Atoi(retention.Text); err == nil {
+			cfg.MetricsRetentionDays = v
+		}
 		cfg.Theme = theme.Text
+		cfg.NotifyDesktop = notifyDesktop.Checked
+		cfg.AutoStart = autoStart.Checked
 		if _, err := services.Settings.Update(context.Background(), cfg); err != nil {
 			status.SetText("Erreur : " + err.Error())
 			return
@@ -50,13 +61,17 @@ func Settings(services *bootstrap.AppServices) fyne.CanvasObject {
 	})
 	form := container.NewVBox(
 		components.Title("Paramètres"),
+		components.Muted("Instance · collecte · rétention · notifications"),
 		widget.NewForm(
 			widget.NewFormItem("Nom de l'instance", name),
 			widget.NewFormItem("Description", desc),
 			widget.NewFormItem("Fuseau horaire", tz),
 			widget.NewFormItem("Langue", lang),
 			widget.NewFormItem("Intervalle (s)", interval),
+			widget.NewFormItem("Rétention métriques (jours)", retention),
 			widget.NewFormItem("Thème", theme),
+			widget.NewFormItem("", notifyDesktop),
+			widget.NewFormItem("", autoStart),
 		),
 		save, status,
 	)

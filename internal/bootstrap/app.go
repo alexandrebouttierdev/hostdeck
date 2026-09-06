@@ -105,7 +105,16 @@ func Open(ctx context.Context, opts Options) (*AppServices, error) {
 
 	var creds ports.CredentialStore
 	if opts.UseKeyring {
-		creds = credentials.NewKeyringStore()
+		kr := credentials.NewKeyringStore()
+		// Probe keyring availability; fall back to in-memory if the OS store is unavailable.
+		probeRef := "__hostdeck_probe__"
+		if err := kr.Set(ctx, probeRef, []byte("ok")); err != nil {
+			log.Warn("OS keyring unavailable, using memory credential store", "err", err)
+			creds = credentials.NewMemoryStore()
+		} else {
+			_ = kr.Delete(ctx, probeRef)
+			creds = kr
+		}
 	} else {
 		creds = credentials.NewMemoryStore()
 	}

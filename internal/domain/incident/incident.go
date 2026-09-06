@@ -71,25 +71,25 @@ func (id IncidentID) String() string { return string(id) }
 
 // Incident représente un incident actif ou historique.
 type Incident struct {
-	ID              IncidentID
-	DisplayID       string
-	ServerID        server.ServerID
-	ServerName      string
-	Metric          string
-	Problem         string
-	Severity        Severity
-	RuleID          string
-	RuleName        string
-	Status          IncidentStatus
-	CurrentValue    float64
-	Threshold       float64
-	StartedAt       time.Time
-	LastUpdatedAt   time.Time
-	AcknowledgedAt  *time.Time
-	AcknowledgedBy  string
-	RecoveredAt     *time.Time
-	ResolvedAt      *time.Time
-	Notes           string
+	ID             IncidentID
+	DisplayID      string
+	ServerID       server.ServerID
+	ServerName     string
+	Metric         string
+	Problem        string
+	Severity       Severity
+	RuleID         string
+	RuleName       string
+	Status         IncidentStatus
+	CurrentValue   float64
+	Threshold      float64
+	StartedAt      time.Time
+	LastUpdatedAt  time.Time
+	AcknowledgedAt *time.Time
+	AcknowledgedBy string
+	RecoveredAt    *time.Time
+	ResolvedAt     *time.Time
+	Notes          string
 }
 
 func (i Incident) Duration() time.Duration {
@@ -104,22 +104,22 @@ func (i Incident) Duration() time.Duration {
 
 // AlertRule définit une règle d'évaluation d'alerte.
 type AlertRule struct {
-	ID               string
-	Name             string
-	Enabled          bool
-	Metric           string
-	Operator         string
-	Threshold        float64
-	DurationSeconds  int
-	Severity         Severity
-	CooldownSeconds  int
-	Scope            string
-	Category         string
-	Expression       string
-	LastTriggeredAt  *time.Time
-	Status           string
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
+	ID              string
+	Name            string
+	Enabled         bool
+	Metric          string
+	Operator        string
+	Threshold       float64
+	DurationSeconds int
+	Severity        Severity
+	CooldownSeconds int
+	Scope           string
+	Category        string
+	Expression      string
+	LastTriggeredAt *time.Time
+	Status          string
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }
 
 func (r *AlertRule) Validate() error {

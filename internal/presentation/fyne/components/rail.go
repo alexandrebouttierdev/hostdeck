@@ -22,6 +22,7 @@ const (
 	ScreenReports        ScreenID = "reports"
 	ScreenTopology       ScreenID = "topology"
 	ScreenLiveData       ScreenID = "live_data"
+	ScreenDocker         ScreenID = "docker"
 	ScreenSettings       ScreenID = "settings"
 )
 
@@ -74,6 +75,8 @@ func buttonSymbol(id ScreenID) string {
 		return "⚠"
 	case ScreenLiveData:
 		return "⌁"
+	case ScreenDocker:
+		return "⬡"
 	case ScreenAlerts:
 		return "⚑"
 	case ScreenReports:
@@ -96,7 +99,7 @@ func (r *Rail) CreateRenderer() fyne.WidgetRenderer {
 	logoTxt.Alignment = fyne.TextAlignCenter
 	logo := container.NewStack(logoBg, container.NewPadded(logoTxt))
 
-	order := []ScreenID{ScreenOverview, ScreenInfrastructure, ScreenIncidents, ScreenLiveData, ScreenAlerts, ScreenReports, ScreenTopology, ScreenSettings}
+	order := []ScreenID{ScreenOverview, ScreenInfrastructure, ScreenIncidents, ScreenLiveData, ScreenDocker, ScreenAlerts, ScreenReports, ScreenTopology, ScreenSettings}
 	box := container.NewVBox()
 	for _, id := range order {
 		sid := id

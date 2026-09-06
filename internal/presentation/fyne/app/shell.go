@@ -63,22 +63,24 @@ func (s *Shell) navigate(id components.ScreenID) {
 		title, body = "Vue d'ensemble", screens.Overview(s.services)
 	case components.ScreenInfrastructure:
 		title = "Infrastructure"
-		body = screens.Infrastructure(s.services, func(id string) {
+		body = screens.Infrastructure(s.window, s.services, func(id string) {
 			s.selected = id
 			s.navigate(components.ScreenHostDetails)
 		})
 	case components.ScreenHostDetails:
 		title, body = "Détails de l'hôte", screens.HostDetails(s.services, s.selected)
 	case components.ScreenIncidents:
-		title, body = "Incidents actifs", screens.Incidents(s.services)
+		title, body = "Incidents actifs", screens.Incidents(s.window, s.services)
+	case components.ScreenLiveData:
+		title, body = "Données en direct", screens.LiveData(s.services, s.selected)
+	case components.ScreenDocker:
+		title, body = "Docker", screens.Docker(s.window, s.services, s.selected)
 	case components.ScreenAlerts:
-		title, body = "Règles d'alerte", screens.Alerts(s.services)
+		title, body = "Règles d'alerte", screens.Alerts(s.window, s.services)
 	case components.ScreenReports:
 		title, body = "Rapports", screens.Reports(s.services)
 	case components.ScreenTopology:
 		title, body = "Topologie", screens.Topology(s.services)
-	case components.ScreenLiveData:
-		title, body = "Données en direct", screens.LiveData(s.services, s.selected)
 	case components.ScreenSettings:
 		title, body = "Paramètres", screens.Settings(s.services)
 	default:

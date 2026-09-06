@@ -8,8 +8,8 @@ import (
 
 // MetricSample contient un échantillon de métriques système.
 type MetricSample struct {
-	ID        string
-	ServerID  server.ServerID
+	ID          string
+	ServerID    server.ServerID
 	CollectedAt time.Time
 
 	CPUUserPercent   float64
@@ -19,13 +19,13 @@ type MetricSample struct {
 	CPUStealPercent  float64
 	CPUTotalPercent  float64
 
-	MemoryUsedBytes  uint64
-	MemoryCacheBytes uint64
+	MemoryUsedBytes   uint64
+	MemoryCacheBytes  uint64
 	MemoryBufferBytes uint64
-	MemoryFreeBytes  uint64
-	MemoryTotalBytes uint64
-	SwapUsedBytes    uint64
-	SwapTotalBytes   uint64
+	MemoryFreeBytes   uint64
+	MemoryTotalBytes  uint64
+	SwapUsedBytes     uint64
+	SwapTotalBytes    uint64
 
 	Load1  float64
 	Load5  float64
@@ -34,8 +34,8 @@ type MetricSample struct {
 	NetworkRXBytesPerSec float64
 	NetworkTXBytesPerSec float64
 
-	DiskUsedBytes  uint64
-	DiskTotalBytes uint64
+	DiskUsedBytes        uint64
+	DiskTotalBytes       uint64
 	DiskReadBytesPerSec  float64
 	DiskWriteBytesPerSec float64
 
@@ -77,10 +77,10 @@ type DiskMetricSample struct {
 
 // NetworkMetricSample décrit le trafic d'une interface.
 type NetworkMetricSample struct {
-	ID           string
-	ServerID     server.ServerID
-	CollectedAt  time.Time
-	Interface    string
+	ID            string
+	ServerID      server.ServerID
+	CollectedAt   time.Time
+	Interface     string
 	RXBytesPerSec float64
 	TXBytesPerSec float64
 }

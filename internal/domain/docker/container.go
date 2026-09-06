@@ -56,14 +56,14 @@ func (c Container) MemoryPercent() float64 {
 
 // HostInfo contient les infos Docker d'un hôte.
 type HostInfo struct {
-	ServerID         server.ServerID
-	DockerVersion    string
-	APIVersion       string
-	OS               string
-	Architecture     string
-	Containers       int
+	ServerID          server.ServerID
+	DockerVersion     string
+	APIVersion        string
+	OS                string
+	Architecture      string
+	Containers        int
 	ContainersRunning int
-	Images           int
-	NCPU             int
-	MemTotal         uint64
+	Images            int
+	NCPU              int
+	MemTotal          uint64
 }

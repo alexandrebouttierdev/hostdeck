@@ -11,10 +11,23 @@ import (
 	"github.com/alexandrebouttierdev/hostdeck/internal/bootstrap"
 	"github.com/alexandrebouttierdev/hostdeck/internal/presentation/fyne/charts"
 	"github.com/alexandrebouttierdev/hostdeck/internal/presentation/fyne/components"
+	"github.com/alexandrebouttierdev/hostdeck/internal/presentation/fyne/dialogs"
 	hdtheme "github.com/alexandrebouttierdev/hostdeck/internal/presentation/fyne/theme"
 )
 
-func Infrastructure(services *bootstrap.AppServices, onOpen func(string)) fyne.CanvasObject {
+// Infrastructure renders the dense hosts table with CRUD actions.
+func Infrastructure(win fyne.Window, services *bootstrap.AppServices, onOpen func(string)) fyne.CanvasObject {
+	var root *fyne.Container
+	var reload func()
+	reload = func() {
+		root.Objects = []fyne.CanvasObject{buildInfrastructure(win, services, onOpen, reload)}
+		root.Refresh()
+	}
+	root = container.NewStack(buildInfrastructure(win, services, onOpen, reload))
+	return root
+}
+
+func buildInfrastructure(win fyne.Window, services *bootstrap.AppServices, onOpen func(string), reload func()) fyne.CanvasObject {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	hosts, err := services.Servers.GetServers(ctx)
@@ -31,9 +44,43 @@ func Infrastructure(services *bootstrap.AppServices, onOpen func(string)) fyne.C
 			problem++
 		}
 	}
-	header := container.NewVBox(
-		components.Title("Infrastructure"),
-		components.Muted(fmt.Sprintf("%d hôtes · %d opérationnels · %d problèmes", len(hosts), online, problem)),
+
+	selectedID := ""
+	selectedName := ""
+	status := widget.NewLabel("")
+
+	addBtn := components.PrimaryButton("Ajouter", func() {
+		dialogs.ShowAddServerDialog(win, services, reload)
+	})
+	editBtn := components.GhostButton("Modifier", func() {
+		if selectedID == "" {
+			status.SetText("Sélectionnez un hôte")
+			return
+		}
+		dialogs.ShowEditServerDialog(win, services, selectedID, reload)
+	})
+	delBtn := components.GhostButton("Supprimer", func() {
+		if selectedID == "" {
+			status.SetText("Sélectionnez un hôte")
+			return
+		}
+		dialogs.ConfirmDeleteServer(win, services, selectedID, selectedName, reload)
+	})
+	testBtn := components.GhostButton("Tester SSH", func() {
+		if selectedID == "" {
+			status.SetText("Sélectionnez un hôte")
+			return
+		}
+		dialogs.TestServerConnection(win, services, selectedID)
+	})
+
+	header := container.NewBorder(nil, nil, nil,
+		container.NewHBox(addBtn, editBtn, delBtn, testBtn),
+		container.NewVBox(
+			components.Title("Infrastructure"),
+			components.Muted(fmt.Sprintf("%d hôtes · %d opérationnels · %d problèmes", len(hosts), online, problem)),
+			status,
+		),
 	)
 
 	table := widget.NewTable(
@@ -57,6 +104,9 @@ func Infrastructure(services *bootstrap.AppServices, onOpen func(string)) fyne.C
 				name := h.Name
 				hid := h.ID
 				box.Objects = []fyne.CanvasObject{widget.NewButton(name, func() {
+					selectedID = hid
+					selectedName = name
+					status.SetText("Sélection : " + name)
 					if onOpen != nil {
 						onOpen(hid)
 					}

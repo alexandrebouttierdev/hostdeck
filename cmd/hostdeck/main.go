@@ -5,11 +5,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"github.com/alexandrebouttierdev/hostdeck/internal/bootstrap"
+	"github.com/alexandrebouttierdev/hostdeck/internal/infrastructure/notifications"
 	uiapp "github.com/alexandrebouttierdev/hostdeck/internal/presentation/fyne/app"
 	hdtheme "github.com/alexandrebouttierdev/hostdeck/internal/presentation/fyne/theme"
 )
@@ -17,13 +17,14 @@ import (
 func main() {
 	dbPath := flag.String("db", "", "chemin SQLite (défaut: ~/.local/share/hostdeck/hostdeck.db)")
 	seed := flag.Bool("seed", true, "injecter les données de démonstration si besoin")
+	keyring := flag.Bool("keyring", true, "utiliser le trousseau OS pour les secrets (fallback mémoire si indisponible)")
 	flag.Parse()
 
 	ctx := context.Background()
 	opts := bootstrap.Options{
 		DBPath:        *dbPath,
 		SeedDemo:      *seed,
-		UseKeyring:    false,
+		UseKeyring:    *keyring,
 		UseDemoDocker: true,
 		LogLevel:      "info",
 	}
@@ -36,12 +37,13 @@ func main() {
 
 	a := app.NewWithID("dev.hostdeck.app")
 	a.Settings().SetTheme(&hdtheme.HostDeckTheme{})
+	if n, ok := services.Notifications.(*notifications.DesktopService); ok {
+		n.SetApp(a)
+	}
+
 	w := a.NewWindow("HostDeck")
 	w.Resize(fyne.NewSize(1440, 900))
 	shell := uiapp.NewShell(w, services)
 	w.SetContent(shell.CanvasObject())
-	if wd, err := os.Getwd(); err == nil {
-		_ = filepath.Walk(wd, func(path string, info os.FileInfo, err error) error { return nil })
-	}
 	w.ShowAndRun()
 }

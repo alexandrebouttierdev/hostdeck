@@ -1,16 +1,20 @@
-// Package notifications delivers desktop notifications.
 package notifications
 
 import (
 	"context"
+	"sync"
+
+	"fyne.io/fyne/v2"
 
 	"github.com/alexandrebouttierdev/hostdeck/internal/infrastructure/logging"
 )
 
-// DesktopService is a log-based stub for DesktopNotificationService.
-// Fyne notification integration can replace the sink later.
+// DesktopService sends desktop notifications via Fyne when an app is running,
+// and always logs them for observability.
 type DesktopService struct {
 	log *logging.Logger
+	mu  sync.Mutex
+	app fyne.App
 }
 
 // NewDesktopService constructs a DesktopService.
@@ -21,9 +25,25 @@ func NewDesktopService(log *logging.Logger) *DesktopService {
 	return &DesktopService{log: log.WithCategory(logging.CategoryNotify)}
 }
 
-// Notify records a desktop notification (stub: logs only).
+// SetApp binds a Fyne application for native notifications.
+func (s *DesktopService) SetApp(a fyne.App) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.app = a
+}
+
+// Notify records and optionally displays a desktop notification.
 func (s *DesktopService) Notify(ctx context.Context, title, body string) error {
 	s.log.InfoContext(ctx, "desktop notification", "title", title, "body", body)
+	s.mu.Lock()
+	a := s.app
+	s.mu.Unlock()
+	if a == nil {
+		a = fyne.CurrentApp()
+	}
+	if a != nil {
+		a.SendNotification(&fyne.Notification{Title: title, Content: body})
+	}
 	return nil
 }
 

@@ -59,28 +59,28 @@ const (
 
 // Server représente un hôte surveillé.
 type Server struct {
-	ID               ServerID
-	Name             string
-	Host             string
-	Port             int
-	Username         string
-	ConnectionMode   ConnectionMode
-	JumpHostID       *ServerID
-	AuthMethod       AuthMethod
-	CredentialRef    string
-	Group            string
-	Environment      string
-	Role             string
-	OSFamily         string
-	OSName           string
-	Tags             []string
-	Status           ServerStatus
+	ID                ServerID
+	Name              string
+	Host              string
+	Port              int
+	Username          string
+	ConnectionMode    ConnectionMode
+	JumpHostID        *ServerID
+	AuthMethod        AuthMethod
+	CredentialRef     string
+	Group             string
+	Environment       string
+	Role              string
+	OSFamily          string
+	OSName            string
+	Tags              []string
+	Status            ServerStatus
 	MonitoringEnabled bool
-	DockerEnabled    bool
-	IntervalSeconds  int
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	LastCollectedAt  *time.Time
+	DockerEnabled     bool
+	IntervalSeconds   int
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+	LastCollectedAt   *time.Time
 }
 
 func (s *Server) Validate() error {
