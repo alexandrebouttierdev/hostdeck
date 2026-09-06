@@ -5,7 +5,13 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <InvariantGlobalization>true</InvariantGlobalization>
+    <!--
+      La globalisation reste active : l'interface est en français et doit rendre les dates et
+      les nombres selon les conventions locales (« 30/06/2025 », « 1 284 »), ce que le mode
+      invariant empêcherait. L'indépendance vis-à-vis de la culture exigée par le §42 porte sur
+      les parsers de formats techniques, qui utilisent explicitement InvariantCulture.
+    -->
+    <InvariantGlobalization>false</InvariantGlobalization>
   </PropertyGroup>
 
   <PropertyGroup>

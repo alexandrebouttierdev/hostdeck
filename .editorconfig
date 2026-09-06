@@ -106,6 +106,11 @@ dotnet_diagnostic.CA2007.severity = none
 dotnet_diagnostic.CA1014.severity = none
 # Les messages destinés à l'utilisateur sont en français et assumés non localisés.
 dotnet_diagnostic.CA1303.severity = none
+# CA1716 protège la consommation depuis Visual Basic, où « Shared » est un mot réservé.
+# HostDeck est une application C# autonome, jamais publiée ni référencée comme bibliothèque
+# depuis un autre langage .NET : la contrainte ne s'applique pas, et le découpage en modules
+# `Shared` est imposé par la spécification (§5).
+dotnet_diagnostic.CA1716.severity = none
 # Ne jamais avaler une exception.
 dotnet_diagnostic.CA1031.severity = warning
 # Disposer les ressources.
