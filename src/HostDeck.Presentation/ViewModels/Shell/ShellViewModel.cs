@@ -90,6 +90,16 @@ public partial class ShellViewModel : ObservableObject, IDisposable
         _subscriptions.Add(events.Subscribe<HostKeyChangedEvent>(OnHostKeyChanged));
         _subscriptions.Add(events.Subscribe<CollectionCycleCompletedEvent>(OnCycleCompleted));
         _subscriptions.Add(events.Subscribe<ServerStatusChangedEvent>(OnStatusChanged));
+
+        _overview.PropertyChanged += OnOverviewPropertyChanged;
+    }
+
+    private void OnOverviewPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(OverviewViewModel.HostCount) or null)
+        {
+            SyncFleetBadgesFromOverview();
+        }
     }
 
     public string Breadcrumb => CurrentPage.Breadcrumb;
@@ -110,7 +120,8 @@ public partial class ShellViewModel : ObservableObject, IDisposable
 
     public string EnvironmentLabel { get; } = "Environnement : —";
 
-    public string HostsBadgeText { get; } = "Hôtes : 0";
+    [ObservableProperty]
+    private string _hostsBadgeText = "Hôtes : 0";
 
     public string IncidentsBadgeText { get; } = "Incidents : 0";
 
@@ -176,6 +187,7 @@ public partial class ShellViewModel : ObservableObject, IDisposable
         {
             case ShellSection.Overview:
                 await _overview.RefreshAsync(cancellationToken).ConfigureAwait(true);
+                SyncFleetBadgesFromOverview();
                 break;
             case ShellSection.Infrastructure:
                 await _infrastructure.RefreshAsync(cancellationToken).ConfigureAwait(true);
@@ -245,6 +257,19 @@ public partial class ShellViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(StatusSummary));
     }
 
+    /// <summary>
+    /// Aligne le badge statut avec le HostCount réel de l'Overview (jamais « 0 » fantôme).
+    /// </summary>
+    private void SyncFleetBadgesFromOverview()
+    {
+        HostsBadgeText = $"Hôtes : {_overview.HostCount}";
+        if (_overview.HostCount > 0
+            && CollectionStatusText is "Collecte prête" or "En attente du premier hôte")
+        {
+            CollectionStatusText = $"Collecte prête · {_overview.HostCount} hôte(s)";
+        }
+    }
+
     public void Dispose()
     {
         if (_disposed)
@@ -253,6 +278,7 @@ public partial class ShellViewModel : ObservableObject, IDisposable
         }
 
         _disposed = true;
+        _overview.PropertyChanged -= OnOverviewPropertyChanged;
         foreach (var subscription in _subscriptions)
         {
             subscription.Dispose();

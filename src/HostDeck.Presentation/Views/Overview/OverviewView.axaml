@@ -47,7 +47,7 @@
                          FontWeight="SemiBold"
                          Foreground="{StaticResource TextPrimaryBrush}"
                          FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Text="En attente du premier hôte."
+              <TextBlock Text="{Binding CollectionDetailText}"
                          Foreground="{StaticResource TextSecondaryBrush}"
                          FontSize="{StaticResource FontSizeSmall}" />
             </StackPanel>
@@ -66,7 +66,7 @@
           <StackPanel Spacing="6">
             <TextBlock Text="Hôtes surveillés" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
             <TextBlock Text="{Binding HostCount}" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <TextBlock Text="0 opérationnel · 0 avertissement · 0 problème" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+            <TextBlock Text="{Binding HostsStatusSubtitle}" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
           </StackPanel>
         </Border>
         <Border Margin="4,0" Padding="{StaticResource PanelPadding}"
@@ -78,7 +78,7 @@
           <StackPanel Spacing="6">
             <TextBlock Text="Incidents actifs" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
             <TextBlock Text="{Binding ActiveIncidentCount}" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <TextBlock Text="Aucun incident ouvert" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+            <TextBlock Text="{Binding IncidentsSubtitle}" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
           </StackPanel>
         </Border>
         <Border Margin="4,0" Padding="{StaticResource PanelPadding}"
@@ -102,14 +102,15 @@
           <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
             <StackPanel Spacing="6" VerticalAlignment="Center">
               <TextBlock Text="Disponibilité globale" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Text="—" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-              <TextBlock Text="Indisponible sans flotte" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+              <TextBlock Text="{Binding AvailabilityText}" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+              <TextBlock Text="{Binding AvailabilitySubtitle}" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
             </StackPanel>
             <charts:ArcGaugeControl Grid.Column="1"
                                     Width="{StaticResource AvailabilityGaugeSize}"
                                     Height="{StaticResource AvailabilityGaugeSize}"
                                     Thickness="5"
                                     VerticalAlignment="Center"
+                                    Value="{Binding AvailabilityPercent}"
                                     TrackBrush="{StaticResource BorderSubtleBrush}"
                                     Stroke="{StaticResource StatusOnlineBrush}"
                                     LabelBrush="{StaticResource TextMutedBrush}"
@@ -131,6 +132,7 @@
             <charts:ArcGaugeControl Width="{StaticResource ArcGaugeSize}"
                                     Height="{StaticResource ArcGaugeSize}"
                                     Thickness="{StaticResource ArcGaugeThickness}"
+                                    Value="{Binding CpuGaugeValue}"
                                     TrackBrush="{StaticResource BorderSubtleBrush}"
                                     Stroke="{StaticResource SeriesCpuUserBrush}"
                                     LabelBrush="{StaticResource TextMutedBrush}"
@@ -138,9 +140,9 @@
                                     Unit="%" />
             <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
               <TextBlock Text="CPU global" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Text="Cœurs : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Text="Moyenne : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Text="Pic : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding CpuCoresText}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding CpuAverageText}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding CpuPeakText}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
             </StackPanel>
           </Grid>
         </Border>
@@ -154,6 +156,7 @@
             <charts:ArcGaugeControl Width="{StaticResource ArcGaugeSize}"
                                     Height="{StaticResource ArcGaugeSize}"
                                     Thickness="{StaticResource ArcGaugeThickness}"
+                                    Value="{Binding MemoryGaugeValue}"
                                     TrackBrush="{StaticResource BorderSubtleBrush}"
                                     Stroke="{StaticResource SeriesMemoryUsedBrush}"
                                     LabelBrush="{StaticResource TextMutedBrush}"
@@ -161,9 +164,9 @@
                                     Unit="%" />
             <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
               <TextBlock Text="Mémoire globale" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Text="Utilisée : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Text="Totale : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Text="Pic : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding MemoryUsedText}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding MemoryTotalText}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding MemoryPeakText}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
             </StackPanel>
           </Grid>
         </Border>
@@ -177,6 +180,7 @@
             <charts:ArcGaugeControl Width="{StaticResource ArcGaugeSize}"
                                     Height="{StaticResource ArcGaugeSize}"
                                     Thickness="{StaticResource ArcGaugeThickness}"
+                                    Value="{Binding DiskGaugeValue}"
                                     TrackBrush="{StaticResource BorderSubtleBrush}"
                                     Stroke="{StaticResource SeriesDiskBrush}"
                                     LabelBrush="{StaticResource TextMutedBrush}"
@@ -184,9 +188,9 @@
                                     Unit="%" />
             <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
               <TextBlock Text="Stockage global" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Text="Utilisé : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Text="Total : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Text="Pic : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding DiskUsedText}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding DiskTotalText}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding DiskPeakText}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
             </StackPanel>
           </Grid>
         </Border>
@@ -200,6 +204,7 @@
             <charts:ArcGaugeControl Width="{StaticResource ArcGaugeSize}"
                                     Height="{StaticResource ArcGaugeSize}"
                                     Thickness="{StaticResource ArcGaugeThickness}"
+                                    Value="{Binding NetworkGaugeValue}"
                                     TrackBrush="{StaticResource BorderSubtleBrush}"
                                     Stroke="{StaticResource SeriesNetworkInBrush}"
                                     LabelBrush="{StaticResource TextMutedBrush}"
@@ -207,9 +212,9 @@
                                     Unit="%" />
             <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
               <TextBlock Text="Réseau global" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Text="Entrant : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Text="Sortant : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Text="Pic : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding NetworkInText}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding NetworkOutText}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding NetworkPeakText}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
             </StackPanel>
           </Grid>
         </Border>
