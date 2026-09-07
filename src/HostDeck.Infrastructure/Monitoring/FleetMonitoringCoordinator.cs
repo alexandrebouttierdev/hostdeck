@@ -227,6 +227,7 @@ internal sealed class FleetMonitoringCoordinator : BackgroundService
 
         await _metrics.AddBatchAsync([success.Sample], cancellationToken).ConfigureAwait(false);
 
+        server.UpdateIdentity(success.Identity);
         server.RecordCollection(ServerStatus.Online, success.Sample.ObservedAt);
         await _servers.UpdateAsync(server, cancellationToken).ConfigureAwait(false);
 

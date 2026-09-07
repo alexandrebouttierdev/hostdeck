@@ -41,6 +41,15 @@ internal sealed class ServerRecord
 
     public DateTimeOffset? LastCollectedAt { get; set; }
 
+    /// <summary>Hostname observé sur l'hôte. Null tant qu'aucune collecte n'a abouti.</summary>
+    public string? Hostname { get; set; }
+
+    /// <summary>Distribution détectée (os-release). Null tant qu'aucune collecte n'a abouti.</summary>
+    public string? OperatingSystem { get; set; }
+
+    /// <summary>Version du noyau observée. Null tant qu'aucune collecte n'a abouti.</summary>
+    public string? KernelVersion { get; set; }
+
     // Bastion : colonnes en ligne plutôt qu'une table dédiée. Un serveur a au plus un
     // bastion, et une jointure sur chaque lecture d'inventaire ne se justifierait pas.
     public string? JumpHostAddress { get; set; }

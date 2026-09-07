@@ -133,6 +133,9 @@ internal sealed class HostDeckDbContext : DbContext
             entity.Property(record => record.Username).HasMaxLength(32).IsRequired();
             entity.Property(record => record.CredentialKey).HasMaxLength(128).IsRequired();
             entity.Property(record => record.GroupName).HasMaxLength(64);
+            entity.Property(record => record.Hostname).HasMaxLength(256);
+            entity.Property(record => record.OperatingSystem).HasMaxLength(256);
+            entity.Property(record => record.KernelVersion).HasMaxLength(256);
             entity.Property(record => record.JumpHostAddress).HasMaxLength(253);
             entity.Property(record => record.JumpHostUsername).HasMaxLength(32);
             entity.Property(record => record.JumpHostCredentialKey).HasMaxLength(128);

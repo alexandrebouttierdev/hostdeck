@@ -82,6 +82,8 @@ public sealed class GetServerDetailsUseCase
         {
             Summary = ServerMapper.ToSummary(server, latest),
             Configuration = ServerMapper.ToConfiguration(server),
+            Hostname = server.Identity?.Hostname,
+            KernelVersion = server.Identity?.KernelVersion,
             Uptime = latest?.Uptime,
             ActiveIncidents = active.Count(incident => incident.ServerId == id),
         };

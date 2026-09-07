@@ -56,6 +56,10 @@ public sealed class FleetMonitoringCoordinatorTests
 
         Assert.Single(metrics.Samples);
         Assert.Equal(ServerStatus.Online, servers.All[0].Status);
+        Assert.NotNull(servers.All[0].Identity);
+        Assert.Equal("Ubuntu 22.04.4 LTS", servers.All[0].Identity!.OperatingSystem);
+        Assert.Equal("web-front-01", servers.All[0].Identity!.Hostname);
+        Assert.Equal("5.15.0-105-generic", servers.All[0].Identity!.KernelVersion);
         Assert.Contains(events.Published, e => e is MetricUpdatedEvent);
         Assert.Contains(events.Published, e => e is ServerStatusChangedEvent);
         Assert.Contains(events.Published, e => e is CollectionCycleCompletedEvent);
@@ -219,6 +223,15 @@ public sealed class FleetMonitoringCoordinatorTests
                     Filesystem     1024-blocks      Used Available Capacity Mounted on
                     /dev/sda1         10000000   4000000   6000000      40% /
                     """),
+                SshCommands.ReadOsRelease => Ok(
+                    """
+                    NAME="Ubuntu"
+                    VERSION="22.04.4 LTS"
+                    ID=ubuntu
+                    PRETTY_NAME="Ubuntu 22.04.4 LTS"
+                    """),
+                SshCommands.ReadHostname => Ok("web-front-01"),
+                SshCommands.ReadKernel => Ok("5.15.0-105-generic"),
                 _ => Ok(string.Empty),
             });
 

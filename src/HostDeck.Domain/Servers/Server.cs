@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using HostDeck.Domain.Monitoring;
 using HostDeck.Domain.Shared;
 
 namespace HostDeck.Domain.Servers;
@@ -78,6 +79,12 @@ public sealed class Server
     public DateTimeOffset? LastCollectedAt { get; private set; }
 
     /// <summary>
+    /// Identité système détectée lors d'une collecte réussie. Absente tant qu'aucune
+    /// collecte n'a abouti.
+    /// </summary>
+    public SystemIdentity? Identity { get; private set; }
+
+    /// <summary>
     /// Mode de connexion déduit de la configuration. La collecte n'a pas à connaître ce mode :
     /// il n'existe que pour l'affichage et le diagnostic (§12).
     /// </summary>
@@ -149,6 +156,17 @@ public sealed class Server
     }
 
     public bool HasTag(ServerTag tag) => _tags.Contains(tag);
+
+    /// <summary>
+    /// Met à jour l'identité système observée sur l'hôte. Appelée à chaque collecte réussie :
+    /// l'identité change rarement, mais une mise à jour d'OS ou un rename d'hôte doit se
+    /// refléter sans attendre une recréation du serveur.
+    /// </summary>
+    public void UpdateIdentity(SystemIdentity identity)
+    {
+        ArgumentNullException.ThrowIfNull(identity);
+        Identity = identity;
+    }
 
     /// <summary>
     /// Enregistre l'issue d'un cycle de collecte.

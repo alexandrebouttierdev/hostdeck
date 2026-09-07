@@ -30,6 +30,7 @@ public static class ServerMapper
             Group = server.Group?.Name,
             Tags = [.. server.Tags.Select(tag => tag.Value)],
             DockerEnabled = server.DockerEnabled,
+            OperatingSystem = server.Identity?.OperatingSystem,
             Latest = latest,
             LastCollectedAt = server.LastCollectedAt,
         };

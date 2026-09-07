@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using HostDeck.Domain.Monitoring;
 using HostDeck.Domain.Servers;
 using HostDeck.Infrastructure.Persistence.Records;
 
@@ -49,6 +50,9 @@ internal static class ServerRecordMapper
         record.GroupName = server.Group?.Name;
         record.Status = (int)server.Status;
         record.LastCollectedAt = server.LastCollectedAt;
+        record.Hostname = server.Identity?.Hostname;
+        record.OperatingSystem = server.Identity?.OperatingSystem;
+        record.KernelVersion = server.Identity?.KernelVersion;
         record.UpdatedAt = now;
 
         record.JumpHostAddress = server.JumpHost?.Address.Value;
@@ -84,12 +88,18 @@ internal static class ServerRecordMapper
             record.Tags.Select(tag => new ServerTag(tag.Tag)),
             record.DockerEnabled);
 
-        // Le statut et la date de collecte ne passent pas par le constructeur : ce sont des
-        // observations, pas de la configuration. Ils sont rejoués par la transition dédiée,
-        // qui refuse d'ailleurs un statut « inconnu » comme conclusion.
+        // Le statut, la date de collecte et l'identité ne passent pas par le constructeur :
+        // ce sont des observations, pas de la configuration. Ils sont rejoués ici.
         if (record.LastCollectedAt is { } collectedAt && (ServerStatus)record.Status != ServerStatus.Unknown)
         {
             server.RecordCollection((ServerStatus)record.Status, collectedAt);
+        }
+
+        if (record.Hostname is { } hostname
+            && record.OperatingSystem is { } operatingSystem
+            && record.KernelVersion is { } kernelVersion)
+        {
+            server.UpdateIdentity(new SystemIdentity(hostname, operatingSystem, kernelVersion));
         }
 
         return server;

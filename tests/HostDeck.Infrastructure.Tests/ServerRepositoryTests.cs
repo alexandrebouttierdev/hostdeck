@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using HostDeck.Application.Errors;
+using HostDeck.Domain.Monitoring;
 using HostDeck.Domain.Servers;
 using Xunit;
 
@@ -155,5 +156,24 @@ public sealed class ServerRepositoryTests : RepositoryTestBase
         Assert.NotNull(reloaded);
         Assert.Equal(ServerStatus.Online, reloaded!.Status);
         Assert.Equal(collectedAt, reloaded.LastCollectedAt);
+    }
+
+    [Fact]
+    public async Task AddThenGetAll_WithIdentity_RoundTripsSystemIdentity()
+    {
+        var server = TestData.Server();
+        server.UpdateIdentity(new SystemIdentity(
+            "web-front-01",
+            "Ubuntu 22.04.4 LTS",
+            "5.15.0-105-generic"));
+        server.RecordCollection(ServerStatus.Online, new DateTimeOffset(2026, 9, 7, 10, 0, 0, TimeSpan.Zero));
+
+        await Servers.AddAsync(server, Ct);
+
+        var reloaded = Assert.Single(await Servers.GetAllAsync(Ct));
+        Assert.NotNull(reloaded.Identity);
+        Assert.Equal("web-front-01", reloaded.Identity!.Hostname);
+        Assert.Equal("Ubuntu 22.04.4 LTS", reloaded.Identity.OperatingSystem);
+        Assert.Equal("5.15.0-105-generic", reloaded.Identity.KernelVersion);
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using HostDeck.Domain.Monitoring;
 using HostDeck.Domain.Servers;
 using HostDeck.Domain.Shared;
 using Xunit;
@@ -155,4 +156,22 @@ public sealed class ServerTests
         Assert.Single(snapshot);
         Assert.Equal(2, server.Tags.Length);
     }
+
+    [Fact]
+    public void UpdateIdentityStoresObservedSystemFields()
+    {
+        var server = TestData.Server();
+        var identity = new SystemIdentity("web-front-01", "Ubuntu 22.04.4 LTS", "5.15.0-105-generic");
+
+        server.UpdateIdentity(identity);
+
+        Assert.NotNull(server.Identity);
+        Assert.Equal("web-front-01", server.Identity!.Hostname);
+        Assert.Equal("Ubuntu 22.04.4 LTS", server.Identity.OperatingSystem);
+        Assert.Equal("5.15.0-105-generic", server.Identity.KernelVersion);
+    }
+
+    [Fact]
+    public void UpdateIdentityRejectsNull() =>
+        Assert.Throws<ArgumentNullException>(() => TestData.Server().UpdateIdentity(null!));
 }
