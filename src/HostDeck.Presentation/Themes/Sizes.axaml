@@ -33,7 +33,13 @@
   <sys:Double x:Key="ArcGaugeSize">78</sys:Double>
   <sys:Double x:Key="ArcGaugeThickness">8</sys:Double>
   <sys:Double x:Key="ArcGaugeCardHeight">118</sys:Double>
-  <sys:Double x:Key="AvailabilityGaugeSize">42</sys:Double>
+  <sys:Double x:Key="AvailabilityGaugeSize">52</sys:Double>
+  <sys:Double x:Key="KpiIconTileSize">40</sys:Double>
+  <sys:Double x:Key="KpiIconSize">20</sys:Double>
+  <sys:Double x:Key="KpiCardMinHeight">92</sys:Double>
+  <sys:Double x:Key="KpiStatusDotSize">6</sys:Double>
+  <sys:Double x:Key="FontSizeKpi">28</sys:Double>
+  <Thickness x:Key="KpiCardPadding">12,10</Thickness>
 
   <!-- Icônes -->
   <sys:Double x:Key="RailIconSize">22</sys:Double>

@@ -81,13 +81,37 @@ public partial class OverviewViewModel : PageViewModelBase, IDisposable
     private string _hostsStatusSubtitle = "0 opérationnel · 0 avertissement · 0 problème";
 
     [ObservableProperty]
+    private string _hostsOnlineDetailText = "0 opérationnels";
+
+    [ObservableProperty]
+    private string _hostsWarningDetailText = "0 avec avertissements";
+
+    [ObservableProperty]
+    private string _hostsProblemDetailText = "0 avec problèmes";
+
+    [ObservableProperty]
     private string _incidentsSubtitle = "Aucun incident ouvert";
+
+    [ObservableProperty]
+    private string _alertsDetailText = "Aucune alerte";
 
     [ObservableProperty]
     private string _availabilityText = "—";
 
     [ObservableProperty]
     private string _availabilitySubtitle = "Indisponible sans flotte";
+
+    [ObservableProperty]
+    private string _availabilityOnlineDetailText = "0 / 0 en ligne";
+
+    [ObservableProperty]
+    private string _availabilityUnknownDetailText = "0 inconnus";
+
+    [ObservableProperty]
+    private string _availabilityOfflineDetailText = "0 hors ligne";
+
+    [ObservableProperty]
+    private string _healthStatusTitle = "Collecte prête";
 
     [ObservableProperty]
     private string _collectionDetailText = "En attente du premier hôte.";
@@ -280,15 +304,28 @@ public partial class OverviewViewModel : PageViewModelBase, IDisposable
         HostsStatusSubtitle =
             $"{OnlineHostCount} opérationnel · {WarningHostCount} avertissement · {ProblemHostCount} problème";
 
+        HostsOnlineDetailText = FormatHostDetail(OnlineHostCount, "opérationnel", "opérationnels");
+        HostsWarningDetailText = FormatHostDetail(WarningHostCount, "avec avertissement", "avec avertissements");
+        HostsProblemDetailText = FormatHostDetail(ProblemHostCount, "avec problème", "avec problèmes");
+
         CollectionDetailText = HostCount == 0
             ? "En attente du premier hôte."
             : $"{HostCount} hôte{(HostCount > 1 ? "s" : string.Empty)} sous surveillance.";
+
+        HealthStatusTitle = HostCount == 0
+            ? "Collecte prête"
+            : ProblemHostCount > 0
+                ? "Attention requise"
+                : "Tout est opérationnel";
 
         if (HostCount == 0)
         {
             AvailabilityPercent = null;
             AvailabilityText = "—";
             AvailabilitySubtitle = "Indisponible sans flotte";
+            AvailabilityOnlineDetailText = "0 / 0 en ligne";
+            AvailabilityUnknownDetailText = FormatHostDetail(0, "inconnu", "inconnus");
+            AvailabilityOfflineDetailText = FormatHostDetail(0, "hors ligne", "hors ligne");
         }
         else
         {
@@ -299,6 +336,11 @@ public partial class OverviewViewModel : PageViewModelBase, IDisposable
             AvailabilitySubtitle = string.Create(
                 CultureInfo.CurrentCulture,
                 $"{OnlineHostCount}/{HostCount} en ligne");
+            AvailabilityOnlineDetailText = string.Create(
+                CultureInfo.CurrentCulture,
+                $"{OnlineHostCount} / {HostCount} en ligne");
+            AvailabilityUnknownDetailText = FormatHostDetail(WarningHostCount, "inconnu", "inconnus");
+            AvailabilityOfflineDetailText = FormatHostDetail(ProblemHostCount, "hors ligne", "hors ligne");
         }
 
         var withLatest = servers.Where(server => server.Latest is not null).Select(server => server.Latest!).ToList();
@@ -343,6 +385,11 @@ public partial class OverviewViewModel : PageViewModelBase, IDisposable
         var totalMbps = (rxSum + txSum) * 8d / 1_000_000d;
         NetworkGaugeValue = Math.Min(100d, totalMbps / NetworkGaugeReferenceMbps * 100d);
     }
+
+    private static string FormatHostDetail(int count, string singular, string plural)
+        => count <= 1
+            ? $"{count} {singular}"
+            : $"{count} {plural}";
 
     private void ClearMetricAggregates()
     {

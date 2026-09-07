@@ -80,6 +80,11 @@
     M10.5,4 A6.5,6.5 0 1,1 10.5,17 A6.5,6.5 0 1,1 10.5,4 Z M15.2,15.2 L20,20
   </StreamGeometry>
 
+  <!-- Validation / statut opérationnel -->
+  <StreamGeometry x:Key="IconCheck">
+    M5,12.5 L10,17.5 L19,7
+  </StreamGeometry>
+
   <!-- Actualiser -->
   <StreamGeometry x:Key="IconRefresh">
     M20,12 A8,8 0 1,1 17.3,6 M17.3,6 V10.4 M17.3,6 H12.9

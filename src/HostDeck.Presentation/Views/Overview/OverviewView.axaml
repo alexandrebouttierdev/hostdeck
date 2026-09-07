@@ -13,9 +13,9 @@
           RowDefinitions="Auto,Auto,Auto,*,*"
           RowSpacing="14">
 
-      <!-- En-tête : salutation + action + état collecte -->
-      <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
-        <StackPanel Spacing="4">
+      <!-- En-tête : salutation à gauche ; actions discrètes + statut à droite (maquette) -->
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+        <StackPanel Spacing="4" VerticalAlignment="Center">
           <TextBlock Text="Bonjour,"
                      FontSize="{StaticResource FontSizeTitle}"
                      FontWeight="SemiBold"
@@ -24,101 +24,297 @@
                      FontSize="{StaticResource FontSizeBody}"
                      Foreground="{StaticResource TextSecondaryBrush}" />
         </StackPanel>
-        <Button Grid.Column="1"
-                Content="+ Ajouter un hôte"
-                Command="{Binding AddHostCommand}"
-                Padding="14,8"
-                VerticalAlignment="Center"
-                Background="{StaticResource AccentBrush}"
-                Foreground="{StaticResource TextPrimaryBrush}"
-                CornerRadius="{StaticResource RadiusSmall}"
-                BorderThickness="0" />
-        <Border Grid.Column="2"
-                Padding="14,10"
-                BorderBrush="{StaticResource StatusOnlineBrush}"
-                BorderThickness="{StaticResource BorderThin}"
-                CornerRadius="{StaticResource RadiusSmall}"
-                Background="{StaticResource SurfacePanelBrush}"
-                VerticalAlignment="Center">
-          <StackPanel Orientation="Horizontal" Spacing="10">
-            <Ellipse Width="8" Height="8" Fill="{StaticResource StatusOnlineBrush}" VerticalAlignment="Center" />
-            <StackPanel>
-              <TextBlock Text="Collecte prête"
+
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    Spacing="12"
+                    VerticalAlignment="Center">
+          <!-- Action discrète : pas de bouton accent dominant -->
+          <Button Content="+ Ajouter un hôte"
+                  Command="{Binding AddHostCommand}"
+                  Padding="10,6"
+                  VerticalAlignment="Center"
+                  Background="Transparent"
+                  BorderBrush="{StaticResource BorderStrongBrush}"
+                  BorderThickness="{StaticResource BorderThin}"
+                  Foreground="{StaticResource TextSecondaryBrush}"
+                  FontSize="{StaticResource FontSizeBody}"
+                  CornerRadius="{StaticResource RadiusSmall}"
+                  ToolTip.Tip="Ajouter un serveur Linux à superviser." />
+
+          <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+            <Border Width="28"
+                    Height="28"
+                    CornerRadius="{StaticResource RadiusPill}"
+                    Background="{StaticResource SurfaceRaisedBrush}"
+                    BorderBrush="{StaticResource StatusOnlineBrush}"
+                    BorderThickness="{StaticResource BorderThin}"
+                    VerticalAlignment="Center">
+              <Path Data="{StaticResource IconCheck}"
+                    Stretch="Uniform"
+                    Width="{StaticResource IconSizeSmall}"
+                    Height="{StaticResource IconSizeSmall}"
+                    StrokeThickness="1.8"
+                    StrokeLineCap="Round"
+                    StrokeJoin="Round"
+                    Stroke="{StaticResource StatusOnlineBrush}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" />
+            </Border>
+            <StackPanel Spacing="2" VerticalAlignment="Center" MaxWidth="280">
+              <TextBlock Text="{Binding HealthStatusTitle}"
                          FontWeight="SemiBold"
-                         Foreground="{StaticResource TextPrimaryBrush}"
+                         Foreground="{StaticResource StatusOnlineBrush}"
                          FontSize="{StaticResource FontSizeBody}" />
               <TextBlock Text="{Binding CollectionDetailText}"
                          Foreground="{StaticResource TextSecondaryBrush}"
-                         FontSize="{StaticResource FontSizeSmall}" />
+                         FontSize="{StaticResource FontSizeSmall}"
+                         TextWrapping="Wrap" />
             </StackPanel>
           </StackPanel>
-        </Border>
+        </StackPanel>
       </Grid>
 
-      <!-- 4 KPI densifiés -->
-      <UniformGrid Grid.Row="1" Columns="4">
-        <Border Margin="0,0,8,0" Padding="{StaticResource PanelPadding}"
+      <!-- 4 KPI densifiés style maquette : icône | chiffre + libellé | détail à points -->
+      <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" ColumnSpacing="8">
+
+        <!-- Hôtes -->
+        <Border Padding="{StaticResource KpiCardPadding}"
                 Background="{StaticResource SurfacePanelBrush}"
                 BorderBrush="{StaticResource BorderSubtleBrush}"
                 BorderThickness="{StaticResource BorderThin}"
                 CornerRadius="{StaticResource RadiusSmall}"
-                MinHeight="88">
-          <StackPanel Spacing="6">
-            <TextBlock Text="Hôtes surveillés" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-            <TextBlock Text="{Binding HostCount}" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <TextBlock Text="{Binding HostsStatusSubtitle}" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
-          </StackPanel>
-        </Border>
-        <Border Margin="4,0" Padding="{StaticResource PanelPadding}"
-                Background="{StaticResource SurfacePanelBrush}"
-                BorderBrush="{StaticResource BorderSubtleBrush}"
-                BorderThickness="{StaticResource BorderThin}"
-                CornerRadius="{StaticResource RadiusSmall}"
-                MinHeight="88">
-          <StackPanel Spacing="6">
-            <TextBlock Text="Incidents actifs" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-            <TextBlock Text="{Binding ActiveIncidentCount}" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <TextBlock Text="{Binding IncidentsSubtitle}" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
-          </StackPanel>
-        </Border>
-        <Border Margin="4,0" Padding="{StaticResource PanelPadding}"
-                Background="{StaticResource SurfacePanelBrush}"
-                BorderBrush="{StaticResource BorderSubtleBrush}"
-                BorderThickness="{StaticResource BorderThin}"
-                CornerRadius="{StaticResource RadiusSmall}"
-                MinHeight="88">
-          <StackPanel Spacing="6">
-            <TextBlock Text="Alertes ouvertes" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-            <TextBlock Text="0" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <TextBlock Text="Aucune alerte" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
-          </StackPanel>
-        </Border>
-        <Border Margin="8,0,0,0" Padding="{StaticResource PanelPadding}"
-                Background="{StaticResource SurfacePanelBrush}"
-                BorderBrush="{StaticResource BorderSubtleBrush}"
-                BorderThickness="{StaticResource BorderThin}"
-                CornerRadius="{StaticResource RadiusSmall}"
-                MinHeight="88">
-          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-            <StackPanel Spacing="6" VerticalAlignment="Center">
-              <TextBlock Text="Disponibilité globale" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Text="{Binding AvailabilityText}" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-              <TextBlock Text="{Binding AvailabilitySubtitle}" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+                MinHeight="{StaticResource KpiCardMinHeight}">
+          <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10">
+            <Border Width="{StaticResource KpiIconTileSize}"
+                    Height="{StaticResource KpiIconTileSize}"
+                    Background="{StaticResource SurfaceRaisedBrush}"
+                    CornerRadius="{StaticResource RadiusMedium}"
+                    VerticalAlignment="Center">
+              <Path Data="{StaticResource IconInfrastructure}"
+                    Stretch="Uniform"
+                    Width="{StaticResource KpiIconSize}"
+                    Height="{StaticResource KpiIconSize}"
+                    StrokeThickness="1.6"
+                    StrokeLineCap="Round"
+                    StrokeJoin="Round"
+                    Stroke="{StaticResource AccentHoverBrush}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" />
+            </Border>
+            <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+              <TextBlock Text="{Binding HostCount}"
+                         FontSize="{StaticResource FontSizeKpi}"
+                         FontWeight="SemiBold"
+                         Foreground="{StaticResource TextPrimaryBrush}" />
+              <TextBlock Text="Hôtes surveillés"
+                         FontSize="{StaticResource FontSizeSmall}"
+                         Foreground="{StaticResource TextSecondaryBrush}" />
             </StackPanel>
-            <charts:ArcGaugeControl Grid.Column="1"
-                                    Width="{StaticResource AvailabilityGaugeSize}"
+            <Border Grid.Column="2"
+                    Width="1"
+                    Margin="0,6"
+                    Background="{StaticResource BorderSubtleBrush}" />
+            <StackPanel Grid.Column="3" Spacing="4" VerticalAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Width="{StaticResource KpiStatusDotSize}"
+                         Height="{StaticResource KpiStatusDotSize}"
+                         Fill="{StaticResource StatusOnlineBrush}"
+                         VerticalAlignment="Center" />
+                <TextBlock Text="{Binding HostsOnlineDetailText}"
+                           FontSize="{StaticResource FontSizeSmall}"
+                           Foreground="{StaticResource TextPrimaryBrush}" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Width="{StaticResource KpiStatusDotSize}"
+                         Height="{StaticResource KpiStatusDotSize}"
+                         Fill="{StaticResource StatusWarningBrush}"
+                         VerticalAlignment="Center" />
+                <TextBlock Text="{Binding HostsWarningDetailText}"
+                           FontSize="{StaticResource FontSizeSmall}"
+                           Foreground="{StaticResource TextPrimaryBrush}" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Width="{StaticResource KpiStatusDotSize}"
+                         Height="{StaticResource KpiStatusDotSize}"
+                         Fill="{StaticResource StatusOfflineBrush}"
+                         VerticalAlignment="Center" />
+                <TextBlock Text="{Binding HostsProblemDetailText}"
+                           FontSize="{StaticResource FontSizeSmall}"
+                           Foreground="{StaticResource TextPrimaryBrush}" />
+              </StackPanel>
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <!-- Incidents -->
+        <Border Grid.Column="1"
+                Padding="{StaticResource KpiCardPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}"
+                MinHeight="{StaticResource KpiCardMinHeight}">
+          <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10">
+            <Border Width="{StaticResource KpiIconTileSize}"
+                    Height="{StaticResource KpiIconTileSize}"
+                    Background="{StaticResource SurfaceRaisedBrush}"
+                    CornerRadius="{StaticResource RadiusMedium}"
+                    VerticalAlignment="Center">
+              <Path Data="{StaticResource IconIncidents}"
+                    Stretch="Uniform"
+                    Width="{StaticResource KpiIconSize}"
+                    Height="{StaticResource KpiIconSize}"
+                    StrokeThickness="1.6"
+                    StrokeLineCap="Round"
+                    StrokeJoin="Round"
+                    Stroke="{StaticResource SeverityCriticalBrush}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" />
+            </Border>
+            <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+              <TextBlock Text="{Binding ActiveIncidentCount}"
+                         FontSize="{StaticResource FontSizeKpi}"
+                         FontWeight="SemiBold"
+                         Foreground="{StaticResource TextPrimaryBrush}" />
+              <TextBlock Text="Incidents actifs"
+                         FontSize="{StaticResource FontSizeSmall}"
+                         Foreground="{StaticResource TextSecondaryBrush}" />
+            </StackPanel>
+            <Border Grid.Column="2"
+                    Width="1"
+                    Margin="0,6"
+                    Background="{StaticResource BorderSubtleBrush}" />
+            <StackPanel Grid.Column="3" Spacing="4" VerticalAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Width="{StaticResource KpiStatusDotSize}"
+                         Height="{StaticResource KpiStatusDotSize}"
+                         Fill="{StaticResource SeverityCriticalBrush}"
+                         VerticalAlignment="Center" />
+                <TextBlock Text="{Binding IncidentsSubtitle}"
+                           FontSize="{StaticResource FontSizeSmall}"
+                           Foreground="{StaticResource TextPrimaryBrush}"
+                           TextWrapping="Wrap" />
+              </StackPanel>
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <!-- Alertes (V1 : pas d’agrégat d’alertes ouvertes — 0 honnête) -->
+        <Border Grid.Column="2"
+                Padding="{StaticResource KpiCardPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}"
+                MinHeight="{StaticResource KpiCardMinHeight}">
+          <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10">
+            <Border Width="{StaticResource KpiIconTileSize}"
+                    Height="{StaticResource KpiIconTileSize}"
+                    Background="{StaticResource SurfaceRaisedBrush}"
+                    CornerRadius="{StaticResource RadiusMedium}"
+                    VerticalAlignment="Center">
+              <Path Data="{StaticResource IconAlerts}"
+                    Stretch="Uniform"
+                    Width="{StaticResource KpiIconSize}"
+                    Height="{StaticResource KpiIconSize}"
+                    StrokeThickness="1.6"
+                    StrokeLineCap="Round"
+                    StrokeJoin="Round"
+                    Stroke="{StaticResource SeverityInformationBrush}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" />
+            </Border>
+            <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+              <TextBlock Text="0"
+                         FontSize="{StaticResource FontSizeKpi}"
+                         FontWeight="SemiBold"
+                         Foreground="{StaticResource TextPrimaryBrush}" />
+              <TextBlock Text="Alertes ouvertes"
+                         FontSize="{StaticResource FontSizeSmall}"
+                         Foreground="{StaticResource TextSecondaryBrush}" />
+            </StackPanel>
+            <Border Grid.Column="2"
+                    Width="1"
+                    Margin="0,6"
+                    Background="{StaticResource BorderSubtleBrush}" />
+            <StackPanel Grid.Column="3" Spacing="4" VerticalAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Width="{StaticResource KpiStatusDotSize}"
+                         Height="{StaticResource KpiStatusDotSize}"
+                         Fill="{StaticResource StatusUnknownBrush}"
+                         VerticalAlignment="Center" />
+                <TextBlock Text="{Binding AlertsDetailText}"
+                           FontSize="{StaticResource FontSizeSmall}"
+                           Foreground="{StaticResource TextPrimaryBrush}" />
+              </StackPanel>
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <!-- Disponibilité : jauge + chiffre + détail -->
+        <Border Grid.Column="3"
+                Padding="{StaticResource KpiCardPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}"
+                MinHeight="{StaticResource KpiCardMinHeight}">
+          <Grid ColumnDefinitions="Auto,Auto,Auto,*" ColumnSpacing="10">
+            <charts:ArcGaugeControl Width="{StaticResource AvailabilityGaugeSize}"
                                     Height="{StaticResource AvailabilityGaugeSize}"
                                     Thickness="5"
                                     VerticalAlignment="Center"
                                     Value="{Binding AvailabilityPercent}"
                                     TrackBrush="{StaticResource BorderSubtleBrush}"
                                     Stroke="{StaticResource StatusOnlineBrush}"
-                                    LabelBrush="{StaticResource TextMutedBrush}"
                                     EmptyLabel="—"
                                     Unit="%" />
+            <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+              <TextBlock Text="{Binding AvailabilityText}"
+                         FontSize="{StaticResource FontSizeKpi}"
+                         FontWeight="SemiBold"
+                         Foreground="{StaticResource TextPrimaryBrush}" />
+              <TextBlock Text="Disponibilité globale"
+                         FontSize="{StaticResource FontSizeSmall}"
+                         Foreground="{StaticResource TextSecondaryBrush}" />
+            </StackPanel>
+            <Border Grid.Column="2"
+                    Width="1"
+                    Margin="0,6"
+                    Background="{StaticResource BorderSubtleBrush}" />
+            <StackPanel Grid.Column="3" Spacing="4" VerticalAlignment="Center">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Width="{StaticResource KpiStatusDotSize}"
+                         Height="{StaticResource KpiStatusDotSize}"
+                         Fill="{StaticResource StatusOnlineBrush}"
+                         VerticalAlignment="Center" />
+                <TextBlock Text="{Binding AvailabilityOnlineDetailText}"
+                           FontSize="{StaticResource FontSizeSmall}"
+                           Foreground="{StaticResource TextPrimaryBrush}" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Width="{StaticResource KpiStatusDotSize}"
+                         Height="{StaticResource KpiStatusDotSize}"
+                         Fill="{StaticResource StatusUnknownBrush}"
+                         VerticalAlignment="Center" />
+                <TextBlock Text="{Binding AvailabilityUnknownDetailText}"
+                           FontSize="{StaticResource FontSizeSmall}"
+                           Foreground="{StaticResource TextPrimaryBrush}" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <Ellipse Width="{StaticResource KpiStatusDotSize}"
+                         Height="{StaticResource KpiStatusDotSize}"
+                         Fill="{StaticResource StatusOfflineBrush}"
+                         VerticalAlignment="Center" />
+                <TextBlock Text="{Binding AvailabilityOfflineDetailText}"
+                           FontSize="{StaticResource FontSizeSmall}"
+                           Foreground="{StaticResource TextPrimaryBrush}" />
+              </StackPanel>
+            </StackPanel>
           </Grid>
         </Border>
-      </UniformGrid>
+      </Grid>
 
       <!-- 4 jauges arcs globales (layout mockup ; empty = piste seule, pas de valeurs inventées) -->
       <UniformGrid Grid.Row="2" Columns="4">
