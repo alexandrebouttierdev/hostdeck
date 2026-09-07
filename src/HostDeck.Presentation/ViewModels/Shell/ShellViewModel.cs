@@ -67,6 +67,8 @@ public partial class ShellViewModel : ObservableObject
         _topology = topology;
         _settings = settings;
         _currentPage = overview;
+
+        _infrastructure.OpenHostDetailsHandler = OpenHostDetailsAsync;
     }
 
     public string Breadcrumb => CurrentPage.Breadcrumb;
@@ -131,7 +133,7 @@ public partial class ShellViewModel : ObservableObject
                 await _infrastructure.RefreshAsync(cancellationToken).ConfigureAwait(true);
                 break;
             case ShellSection.HostDetails:
-                _hostDetails.ShowHost(selectedHost ?? _infrastructure.SelectedHost);
+                _hostDetails.ShowHost(selectedHost ?? _infrastructure.SelectedHost?.Server);
                 break;
             case ShellSection.Incidents:
                 await _incidents.RefreshAsync(cancellationToken).ConfigureAwait(true);
@@ -143,7 +145,7 @@ public partial class ShellViewModel : ObservableObject
                 await _settings.RefreshAsync(cancellationToken).ConfigureAwait(true);
                 break;
             case ShellSection.LiveData:
-                _liveData.IsEmpty = true;
+                await _liveData.RefreshAsync(cancellationToken).ConfigureAwait(true);
                 break;
         }
     }

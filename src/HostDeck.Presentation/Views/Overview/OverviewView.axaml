@@ -1,6 +1,8 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="using:HostDeck.Presentation.Controls"
+             xmlns:charts="using:HostDeck.Presentation.Controls.Charts"
+             xmlns:infra="using:HostDeck.Presentation.ViewModels.Infrastructure"
              xmlns:vm="using:HostDeck.Presentation.ViewModels.Overview"
              x:Class="HostDeck.Presentation.Views.Overview.OverviewView"
              x:DataType="vm:OverviewViewModel">
@@ -41,8 +43,7 @@
         </Border>
       </Grid>
 
-      <!-- KPIs -->
-      <UniformGrid Grid.Row="1" Columns="4" >
+      <UniformGrid Grid.Row="1" Columns="4">
         <Border Margin="0,0,8,0" Padding="{StaticResource PanelPadding}"
                 Background="{StaticResource SurfacePanelBrush}"
                 BorderBrush="{StaticResource BorderSubtleBrush}"
@@ -94,7 +95,6 @@
       </UniformGrid>
 
       <Grid Grid.Row="2" ColumnDefinitions="2*,*" RowDefinitions="Auto,Auto,*" RowSpacing="12" ColumnSpacing="12">
-        <!-- Resource gauges row -->
         <UniformGrid Grid.ColumnSpan="2" Columns="4">
           <Border Margin="0,0,6,0" Height="120" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
             <controls:EmptyState Title="CPU global" Description="Aucune métrique collectée." IconData="{StaticResource IconLiveData}" />
@@ -110,32 +110,20 @@
           </Border>
         </UniformGrid>
 
-        <Border Grid.Row="1" MinHeight="180"
-                Background="{StaticResource SurfacePanelBrush}"
-                BorderBrush="{StaticResource BorderSubtleBrush}"
-                BorderThickness="{StaticResource BorderThin}"
-                CornerRadius="{StaticResource RadiusSmall}">
-          <DockPanel>
-            <TextBlock DockPanel.Dock="Top" Margin="14,12,14,0" Text="Utilisation CPU globale"
-                       FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <controls:EmptyState Title="Aucune série disponible"
-                                 Description="Les graphiques s’afficheront dès que des métriques seront collectées."
-                                 IconData="{StaticResource IconLiveData}" />
-          </DockPanel>
-        </Border>
+        <charts:ChartFrame Grid.Row="1"
+                           MinHeight="180"
+                           Title="Utilisation CPU globale"
+                           Series="{Binding CpuSeries}"
+                           EmptyTitle="Aucune série disponible"
+                           EmptyDescription="Les graphiques s’afficheront dès que des métriques seront collectées."
+                           EmptyIconData="{StaticResource IconLiveData}" />
 
-        <Border Grid.Row="1" Grid.Column="1" MinHeight="180"
-                Background="{StaticResource SurfacePanelBrush}"
-                BorderBrush="{StaticResource BorderSubtleBrush}"
-                BorderThickness="{StaticResource BorderThin}"
-                CornerRadius="{StaticResource RadiusSmall}">
-          <DockPanel>
-            <TextBlock DockPanel.Dock="Top" Margin="14,12,14,0" Text="Utilisation mémoire globale"
-                       FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <controls:EmptyState Title="Aucune série disponible"
-                                 Description="Les graphiques s’afficheront dès que des métriques seront collectées." />
-          </DockPanel>
-        </Border>
+        <charts:ChartFrame Grid.Row="1" Grid.Column="1"
+                           MinHeight="180"
+                           Title="Utilisation mémoire globale"
+                           Series="{Binding MemorySeries}"
+                           EmptyTitle="Aucune série disponible"
+                           EmptyDescription="Les graphiques s’afficheront dès que des métriques seront collectées." />
 
         <Border Grid.Row="2" MinHeight="160"
                 Background="{StaticResource SurfacePanelBrush}"
@@ -159,10 +147,40 @@
           <DockPanel>
             <TextBlock DockPanel.Dock="Top" Margin="14,12,14,0" Text="Hôtes les plus sollicités"
                        FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <controls:EmptyState IsVisible="{Binding IsEmpty}"
-                                 Title="Aucune flotte configurée"
-                                 Description="Ajoutez votre premier serveur Linux pour alimenter la vue d’ensemble."
-                                 IconData="{StaticResource IconInfrastructure}" />
+            <Panel>
+              <controls:EmptyState IsVisible="{Binding IsEmpty}"
+                                   Title="Aucune flotte configurée"
+                                   Description="Ajoutez votre premier serveur Linux pour alimenter la vue d’ensemble."
+                                   IconData="{StaticResource IconInfrastructure}" />
+              <DataGrid IsVisible="{Binding !IsEmpty}"
+                        ItemsSource="{Binding TopHosts}"
+                        AutoGenerateColumns="False"
+                        CanUserResizeColumns="False"
+                        CanUserSortColumns="False"
+                        GridLinesVisibility="Horizontal"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        RowHeight="{StaticResource TableRowHeight}"
+                        HeadersVisibility="Column"
+                        Margin="8,4,8,8">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Hôte" Binding="{Binding Name}" Width="*" />
+                  <DataGridTextColumn Header="CPU" Binding="{Binding CpuText}" Width="56" />
+                  <DataGridTextColumn Header="Mémoire" Binding="{Binding MemoryText}" Width="70" />
+                  <DataGridTemplateColumn Header="Réseau" Width="70">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate x:DataType="infra:HostListItemViewModel">
+                        <charts:SparklineControl Width="56" Height="18"
+                                                 Values="{Binding NetworkSeries}"
+                                                 Stroke="{StaticResource SeriesNetworkInBrush}"
+                                                 EmptyStroke="{StaticResource BorderSubtleBrush}"
+                                                 VerticalAlignment="Center" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                </DataGrid.Columns>
+              </DataGrid>
+            </Panel>
           </DockPanel>
         </Border>
       </Grid>

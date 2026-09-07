@@ -1,7 +1,9 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="using:HostDeck.Presentation.Controls"
+             xmlns:charts="using:HostDeck.Presentation.Controls.Charts"
              xmlns:vm="using:HostDeck.Presentation.ViewModels.LiveData"
+             xmlns:infra="using:HostDeck.Presentation.ViewModels.Infrastructure"
              x:Class="HostDeck.Presentation.Views.LiveData.LiveDataView"
              x:DataType="vm:LiveDataViewModel">
   <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,*" RowSpacing="14">
@@ -9,16 +11,95 @@
       <TextBlock Text="Données en direct" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
       <TextBlock Text="Métriques temps réel, min / moy / max." Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
     </StackPanel>
-    <Grid Grid.Row="1" ColumnDefinitions="220,*" ColumnSpacing="12">
-      <Border Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
-        <controls:EmptyState Title="Aucun hôte"
-                             Description="La liste des sources apparaîtra avec la flotte."
-                             IconData="{StaticResource IconInfrastructure}" />
+
+    <Grid Grid.Row="1" ColumnDefinitions="220,*,Auto" ColumnSpacing="0">
+      <Border Background="{StaticResource SurfacePanelBrush}"
+              BorderBrush="{StaticResource BorderSubtleBrush}"
+              BorderThickness="{StaticResource BorderThin}"
+              CornerRadius="{StaticResource RadiusSmall}"
+              Margin="0,0,12,0">
+        <Panel>
+          <controls:EmptyState IsVisible="{Binding IsEmpty}"
+                               Title="Aucun hôte"
+                               Description="La liste des sources apparaîtra avec la flotte."
+                               IconData="{StaticResource IconInfrastructure}" />
+          <ListBox IsVisible="{Binding !IsEmpty}"
+                   ItemsSource="{Binding Hosts}"
+                   SelectedItem="{Binding SelectedHost}"
+                   Background="Transparent"
+                   BorderThickness="0">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="infra:HostListItemViewModel">
+                <StackPanel Spacing="2" Margin="8,6">
+                  <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                  <TextBlock Text="{Binding Address}" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextSecondaryBrush}" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </Panel>
       </Border>
-      <Border Grid.Column="1" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
-        <controls:EmptyState Title="Aucune donnée en direct"
-                             Description="Sélectionnez un hôte pour afficher les métriques en temps réel."
-                             IconData="{StaticResource IconLiveData}" />
+
+      <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Margin="0,0,12,0">
+        <StackPanel Spacing="12">
+          <charts:ChartFrame MinHeight="160"
+                             Title="Utilisation CPU"
+                             Series="{Binding CpuSeries}"
+                             EmptyTitle="Aucune donnée en direct"
+                             EmptyDescription="Sélectionnez un hôte pour afficher les métriques en temps réel."
+                             EmptyIconData="{StaticResource IconLiveData}" />
+          <charts:ChartFrame MinHeight="160"
+                             Title="Utilisation mémoire"
+                             Series="{Binding MemorySeries}"
+                             EmptyTitle="Aucune série disponible"
+                             EmptyDescription="En attente de collecte." />
+          <charts:ChartFrame MinHeight="160"
+                             Title="E/S disque"
+                             Series="{Binding DiskSeries}"
+                             EmptyTitle="Aucune série disponible"
+                             EmptyDescription="En attente de collecte." />
+          <charts:ChartFrame MinHeight="160"
+                             Title="Trafic réseau"
+                             Series="{Binding NetworkSeries}"
+                             EmptyTitle="Aucune série disponible"
+                             EmptyDescription="En attente de collecte." />
+          <charts:ChartFrame MinHeight="160"
+                             Title="Charge système"
+                             Series="{Binding LoadSeries}"
+                             EmptyTitle="Aucune série disponible"
+                             EmptyDescription="En attente de collecte." />
+        </StackPanel>
+      </ScrollViewer>
+
+      <!-- Panneau détail : rendu uniquement avec une sélection. -->
+      <Border Grid.Column="2"
+              IsVisible="{Binding HasSelection}"
+              Width="{StaticResource DetailPanelDefaultWidth}"
+              MinWidth="{StaticResource DetailPanelMinWidth}"
+              MaxWidth="{StaticResource DetailPanelMaxWidth}"
+              Background="{StaticResource SurfacePanelBrush}"
+              BorderBrush="{StaticResource BorderSubtleBrush}"
+              BorderThickness="{StaticResource BorderThin}"
+              CornerRadius="{StaticResource RadiusSmall}">
+        <ScrollViewer>
+          <StackPanel Margin="{StaticResource PanelPadding}" Spacing="14">
+            <TextBlock Text="Informations sur l’hôte" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="12">
+              <TextBlock Text="Nom" Classes="secondary" />
+              <TextBlock Grid.Column="1" Text="{Binding SelectedHost.Name}" Foreground="{StaticResource TextPrimaryBrush}" />
+              <TextBlock Grid.Row="1" Text="Adresse" Classes="secondary" />
+              <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedHost.Address}" Foreground="{StaticResource TextPrimaryBrush}" />
+              <TextBlock Grid.Row="2" Text="Système" Classes="secondary" />
+              <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedHost.OperatingSystem}" Foreground="{StaticResource TextPrimaryBrush}" />
+              <TextBlock Grid.Row="3" Text="État" Classes="secondary" />
+              <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedHost.Status}" Foreground="{StaticResource TextPrimaryBrush}" />
+            </Grid>
+            <TextBlock Text="Valeurs instantanées" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <controls:EmptyState Title="Aucune valeur"
+                                 Description="Les valeurs instantanées arriveront avec la collecte."
+                                 IconData="{StaticResource IconLiveData}" />
+          </StackPanel>
+        </ScrollViewer>
       </Border>
     </Grid>
   </Grid>

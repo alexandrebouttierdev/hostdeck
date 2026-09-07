@@ -25,6 +25,9 @@
   <!-- Panneau de détail redimensionnable -->
   <sys:Double x:Key="DetailPanelMinWidth">320</sys:Double>
   <sys:Double x:Key="DetailPanelDefaultWidth">400</sys:Double>
+  <sys:Double x:Key="DetailPanelMaxWidth">560</sys:Double>
+  <sys:Double x:Key="SparklineWidth">56</sys:Double>
+  <sys:Double x:Key="SparklineHeight">18</sys:Double>
 
   <!-- Icônes -->
   <sys:Double x:Key="RailIconSize">22</sys:Double>

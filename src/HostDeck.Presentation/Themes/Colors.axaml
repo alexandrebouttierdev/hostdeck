@@ -91,4 +91,17 @@
   <SolidColorBrush x:Key="SeverityHighBrush" Color="{StaticResource SeverityHighColor}" />
   <SolidColorBrush x:Key="SeverityCriticalBrush" Color="{StaticResource SeverityCriticalColor}" />
 
+  <Color x:Key="SeriesCpuUserFillColor">#402F8FEF</Color>
+  <Color x:Key="SeriesMemoryUsedFillColor">#4009DE77</Color>
+  <Color x:Key="SeriesDiskColor">#FF9A3C</Color>
+  <Color x:Key="SeriesDiskFillColor">#40FF9A3C</Color>
+  <SolidColorBrush x:Key="SeriesCpuUserBrush" Color="{StaticResource SeriesCpuUserColor}" />
+  <SolidColorBrush x:Key="SeriesCpuUserFillBrush" Color="{StaticResource SeriesCpuUserFillColor}" />
+  <SolidColorBrush x:Key="SeriesMemoryUsedBrush" Color="{StaticResource SeriesMemoryUsedColor}" />
+  <SolidColorBrush x:Key="SeriesMemoryUsedFillBrush" Color="{StaticResource SeriesMemoryUsedFillColor}" />
+  <SolidColorBrush x:Key="SeriesDiskBrush" Color="{StaticResource SeriesDiskColor}" />
+  <SolidColorBrush x:Key="SeriesDiskFillBrush" Color="{StaticResource SeriesDiskFillColor}" />
+  <SolidColorBrush x:Key="SeriesNetworkInBrush" Color="{StaticResource SeriesNetworkInColor}" />
+  <SolidColorBrush x:Key="SeriesNetworkOutBrush" Color="{StaticResource SeriesNetworkOutColor}" />
+
 </ResourceDictionary>

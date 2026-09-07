@@ -87,13 +87,5 @@
       </Grid>
     </Border>
 
-    <Border Grid.Row="2" MinHeight="72" IsVisible="{Binding !HasSelection}"
-            Background="{StaticResource SurfacePanelBrush}"
-            BorderBrush="{StaticResource BorderSubtleBrush}"
-            BorderThickness="{StaticResource BorderThin}"
-            CornerRadius="{StaticResource RadiusSmall}">
-      <controls:EmptyState Title="Aucune sélection"
-                           Description="Sélectionnez un incident pour ouvrir le panneau de diagnostic." />
-    </Border>
   </Grid>
 </UserControl>

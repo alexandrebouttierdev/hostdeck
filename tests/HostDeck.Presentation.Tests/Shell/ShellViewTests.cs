@@ -43,4 +43,12 @@ public sealed class ShellViewTests
             "Ajoutez votre premier serveur Linux pour commencer la supervision.",
             empty.Description);
     }
+
+    [AvaloniaFact]
+    public void InfrastructureDetailPanelExistsForSelection()
+    {
+        var view = new InfrastructureView();
+        var panel = Assert.IsType<Border>(view.FindControl<Border>("HostDetailPanel"));
+        Assert.NotNull(panel);
+    }
 }
