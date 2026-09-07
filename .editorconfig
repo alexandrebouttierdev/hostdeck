@@ -124,3 +124,11 @@ dotnet_diagnostic.CA2100.severity = error
 # Les tests instancient volontairement des types sans les stocker et exposent des membres statiques.
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CA1861.severity = none
+
+# --- Code généré par `dotnet ef migrations add` ---
+# Ces fichiers sont régénérés par l'outillage : une correction manuelle serait perdue à la
+# prochaine génération. EF émet des espaces de noms par blocs et des tableaux en ligne dans
+# les appels CreateIndex/CreateTable ; les règles de style et les analyseurs ne s'y
+# appliquent pas, et une migration n'est de toute façon jamais exécutée en boucle chaude.
+[src/HostDeck.Infrastructure/Persistence/Migrations/*.cs]
+generated_code = true

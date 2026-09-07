@@ -107,6 +107,69 @@ public sealed class Incident
     }
 
     /// <summary>
+    /// Reconstruit un incident depuis un état déjà persisté.
+    ///
+    /// <para>
+    /// Réservé à la couche de persistance. Rejouer les transitions publiques pour réhydrater
+    /// serait faux : <see cref="Resolve"/> est terminal, donc l'ordre de rejeu casserait dès
+    /// qu'un incident clos doit être relu, et chaque transition réécrirait
+    /// <see cref="LastUpdatedAt"/> avec l'instant du rejeu plutôt que celui d'origine.
+    /// </para>
+    ///
+    /// <para>
+    /// Les garde-fous conservés ici sont ceux qu'une ligne corrompue violerait : une
+    /// chronologie qui recule, ou un statut incohérent avec les dates enregistrées.
+    /// </para>
+    /// </summary>
+    public static Incident Restore(
+        IncidentId id,
+        ServerId serverId,
+        AlertRuleId ruleId,
+        MonitoredMetric metric,
+        Severity severity,
+        IncidentStatus status,
+        DateTimeOffset startedAt,
+        DateTimeOffset lastUpdatedAt,
+        DateTimeOffset? acknowledgedAt = null,
+        string? acknowledgedBy = null,
+        DateTimeOffset? recoveredAt = null,
+        DateTimeOffset? resolvedAt = null,
+        double? currentValue = null,
+        double? thresholdValue = null,
+        DateTimeOffset? lastNotifiedAt = null)
+    {
+        var started = Guard.RequiredInstant(startedAt).ToUniversalTime();
+        var updated = Guard.RequiredInstant(lastUpdatedAt).ToUniversalTime();
+
+        Guard.NotBefore(updated, started, nameof(lastUpdatedAt), nameof(startedAt));
+
+        if (status == IncidentStatus.Resolved && resolvedAt is null)
+        {
+            throw new DomainValidationException(
+                nameof(resolvedAt),
+                "un incident résolu doit porter sa date de résolution");
+        }
+
+        if (status == IncidentStatus.Acknowledged && acknowledgedAt is null)
+        {
+            throw new DomainValidationException(
+                nameof(acknowledgedAt),
+                "un incident acquitté doit porter sa date d'acquittement");
+        }
+
+        return new Incident(id, serverId, ruleId, metric, severity, started, currentValue, thresholdValue)
+        {
+            Status = status,
+            LastUpdatedAt = updated,
+            AcknowledgedAt = acknowledgedAt?.ToUniversalTime(),
+            AcknowledgedBy = acknowledgedBy,
+            RecoveredAt = recoveredAt?.ToUniversalTime(),
+            ResolvedAt = resolvedAt?.ToUniversalTime(),
+            LastNotifiedAt = lastNotifiedAt?.ToUniversalTime(),
+        };
+    }
+
+    /// <summary>
     /// Enregistre une nouvelle observation alors que la condition est toujours remplie.
     /// N'altère pas le statut : un incident acquitté reste acquitté tant qu'il dure.
     /// </summary>

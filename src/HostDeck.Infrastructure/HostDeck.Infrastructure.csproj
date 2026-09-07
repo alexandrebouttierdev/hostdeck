@@ -30,4 +30,13 @@
     <PackageReference Include="Microsoft.Extensions.Options" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!--
+      La suite Infrastructure.Tests pilote les migrations et les dépôts sur une vraie base
+      SQLite temporaire. Les types de persistance sont internes par conception (le domaine ne
+      les voit pas) ; ce pont ne concerne que l'assembly de test nommé ci-dessous.
+    -->
+    <InternalsVisibleTo Include="HostDeck.Infrastructure.Tests" />
+  </ItemGroup>
+
 </Project>
