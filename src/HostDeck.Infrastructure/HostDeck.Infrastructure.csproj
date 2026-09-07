@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>HostDeck.Infrastructure</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HostDeck.Application\HostDeck.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Persistance : EF Core pour le schéma, les migrations et le CRUD ; SQL brut paramétré
+         sur la même connexion pour le chemin chaud des séries temporelles (§18, §19). -->
+    <PackageReference Include="Microsoft.Data.Sqlite" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Docker.DotNet" />
+    <PackageReference Include="SSH.NET" />
+    <PackageReference Include="Latchkey" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      La suite Infrastructure.Tests pilote les migrations et les dépôts sur une vraie base
+      SQLite temporaire. Les types de persistance sont internes par conception (le domaine ne
+      les voit pas) ; ce pont ne concerne que l'assembly de test nommé ci-dessous.
+    -->
+    <InternalsVisibleTo Include="HostDeck.Infrastructure.Tests" />
+  </ItemGroup>
+
+</Project>

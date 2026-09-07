@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!--
+    Point d'entrée unique du thème HostDeck. L'application n'inclut que ce dictionnaire ;
+    le découpage interne peut évoluer sans toucher au composition root (§34).
+  -->
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceInclude Source="avares://HostDeck.Presentation/Themes/Colors.axaml" />
+    <ResourceInclude Source="avares://HostDeck.Presentation/Themes/Sizes.axaml" />
+    <ResourceInclude Source="avares://HostDeck.Presentation/Themes/Icons.axaml" />
+  </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

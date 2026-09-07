@@ -1,0 +1,287 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:nav="using:HostDeck.Presentation.Navigation"
+             xmlns:conv="using:HostDeck.Presentation.Converters"
+             xmlns:vm="using:HostDeck.Presentation.ViewModels.Shell"
+             x:Class="HostDeck.Presentation.Views.Shell.ShellView"
+             x:DataType="vm:ShellViewModel"
+             Background="{StaticResource SurfaceBackgroundBrush}">
+
+  <UserControl.Styles>
+    <Style Selector="Button.rail">
+      <Setter Property="Width" Value="44" />
+      <Setter Property="Height" Value="40" />
+      <Setter Property="Margin" Value="11,2" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="CornerRadius" Value="{StaticResource RadiusSmall}" />
+    </Style>
+    <Style Selector="Button.rail:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource HoverBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    </Style>
+    <Style Selector="Button.rail.active">
+      <Setter Property="Background" Value="{StaticResource SelectionBrush}" />
+      <Setter Property="Foreground" Value="{StaticResource AccentHoverBrush}" />
+    </Style>
+    <!-- Les icônes sont tracées au trait, pas remplies : c'est le rendu des maquettes. -->
+    <Style Selector="Path.icon">
+      <Setter Property="Stretch" Value="Uniform" />
+      <Setter Property="Width" Value="{StaticResource RailIconSize}" />
+      <Setter Property="Height" Value="{StaticResource RailIconSize}" />
+      <Setter Property="StrokeThickness" Value="1.6" />
+      <Setter Property="StrokeLineCap" Value="Round" />
+      <Setter Property="StrokeJoin" Value="Round" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Stroke" Value="{StaticResource TextMutedBrush}" />
+    </Style>
+    <Style Selector="Button.rail:pointerover Path.icon">
+      <Setter Property="Stroke" Value="{StaticResource TextPrimaryBrush}" />
+    </Style>
+    <Style Selector="Button.rail.active Path.icon">
+      <Setter Property="Stroke" Value="{StaticResource AccentHoverBrush}" />
+    </Style>
+    <Style Selector="Path.topbarIcon">
+      <Setter Property="Stretch" Value="Uniform" />
+      <Setter Property="Width" Value="{StaticResource IconSizeMedium}" />
+      <Setter Property="Height" Value="{StaticResource IconSizeMedium}" />
+      <Setter Property="StrokeThickness" Value="1.8" />
+      <Setter Property="StrokeLineCap" Value="Round" />
+      <Setter Property="StrokeJoin" Value="Round" />
+      <Setter Property="Stroke" Value="{StaticResource TextMutedBrush}" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.secondary">
+      <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+      <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid ColumnDefinitions="Auto,*"
+        RowDefinitions="Auto,Auto,*,Auto">
+
+    <Border x:Name="NavigationRail"
+            Grid.RowSpan="4"
+            Width="{StaticResource RailWidth}"
+            Background="{StaticResource SurfaceRailBrush}"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="0,0,1,0">
+      <Grid RowDefinitions="64,*,Auto">
+        <Border BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="0,0,0,1">
+          <TextBlock Text="HD"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     FontSize="{StaticResource FontSizeTitle}"
+                     FontWeight="SemiBold"
+                     Foreground="{StaticResource AccentHoverBrush}" />
+        </Border>
+
+        <StackPanel Grid.Row="1" Margin="0,8,0,0">
+          <Button Classes="rail"
+                  Classes.active="{Binding CurrentSection, Converter={x:Static conv:EnumEqualsConverter.Instance}, ConverterParameter={x:Static nav:ShellSection.Overview}}"
+                  Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static nav:ShellSection.Overview}"
+                  ToolTip.Tip="Vue d’ensemble">
+            <Path Classes="icon" Data="{StaticResource IconOverview}" />
+          </Button>
+          <Button Classes="rail"
+                  Classes.active="{Binding CurrentSection, Converter={x:Static conv:EnumEqualsConverter.Instance}, ConverterParameter={x:Static nav:ShellSection.Infrastructure}}"
+                  Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static nav:ShellSection.Infrastructure}"
+                  ToolTip.Tip="Infrastructure">
+            <Path Classes="icon" Data="{StaticResource IconInfrastructure}" />
+          </Button>
+          <Button Classes="rail"
+                  Classes.active="{Binding CurrentSection, Converter={x:Static conv:EnumEqualsConverter.Instance}, ConverterParameter={x:Static nav:ShellSection.Incidents}}"
+                  Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static nav:ShellSection.Incidents}"
+                  ToolTip.Tip="Incidents">
+            <Path Classes="icon" Data="{StaticResource IconIncidents}" />
+          </Button>
+          <Button Classes="rail"
+                  Classes.active="{Binding CurrentSection, Converter={x:Static conv:EnumEqualsConverter.Instance}, ConverterParameter={x:Static nav:ShellSection.LiveData}}"
+                  Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static nav:ShellSection.LiveData}"
+                  ToolTip.Tip="Données en direct">
+            <Path Classes="icon" Data="{StaticResource IconLiveData}" />
+          </Button>
+          <Button Classes="rail"
+                  Classes.active="{Binding CurrentSection, Converter={x:Static conv:EnumEqualsConverter.Instance}, ConverterParameter={x:Static nav:ShellSection.Docker}}"
+                  Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static nav:ShellSection.Docker}"
+                  ToolTip.Tip="Docker">
+            <Path Classes="icon" Data="{StaticResource IconDocker}" />
+          </Button>
+          <Button Classes="rail"
+                  Classes.active="{Binding CurrentSection, Converter={x:Static conv:EnumEqualsConverter.Instance}, ConverterParameter={x:Static nav:ShellSection.Alerts}}"
+                  Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static nav:ShellSection.Alerts}"
+                  ToolTip.Tip="Alertes">
+            <Path Classes="icon" Data="{StaticResource IconAlerts}" />
+          </Button>
+          <Button Classes="rail"
+                  Classes.active="{Binding CurrentSection, Converter={x:Static conv:EnumEqualsConverter.Instance}, ConverterParameter={x:Static nav:ShellSection.Reports}}"
+                  Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static nav:ShellSection.Reports}"
+                  ToolTip.Tip="Rapports">
+            <Path Classes="icon" Data="{StaticResource IconReports}" />
+          </Button>
+          <Button Classes="rail"
+                  Classes.active="{Binding CurrentSection, Converter={x:Static conv:EnumEqualsConverter.Instance}, ConverterParameter={x:Static nav:ShellSection.Topology}}"
+                  Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static nav:ShellSection.Topology}"
+                  ToolTip.Tip="Topologie">
+            <Path Classes="icon" Data="{StaticResource IconTopology}" />
+          </Button>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Margin="0,0,0,8">
+          <Button Classes="rail"
+                  Classes.active="{Binding CurrentSection, Converter={x:Static conv:EnumEqualsConverter.Instance}, ConverterParameter={x:Static nav:ShellSection.Settings}}"
+                  Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Static nav:ShellSection.Settings}"
+                  ToolTip.Tip="Paramètres">
+            <Path Classes="icon" Data="{StaticResource IconSettings}" />
+          </Button>
+          <Button Classes="rail" ToolTip.Tip="Aide" IsEnabled="False">
+            <Path Classes="icon" Data="{StaticResource IconHelp}" />
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border x:Name="Topbar"
+            Grid.Column="1"
+            Height="{StaticResource TopbarHeight}"
+            Background="{StaticResource SurfaceTopbarBrush}"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="0,0,0,1">
+      <Grid Margin="22,0"
+            ColumnDefinitions="Auto,*,Auto">
+        <TextBlock Text="{Binding Breadcrumb}"
+                   Classes="secondary"
+                   VerticalAlignment="Center"
+                   FontWeight="SemiBold"
+                   Foreground="{StaticResource TextPrimaryBrush}" />
+
+        <Border Grid.Column="1"
+                Width="490"
+                Height="32"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{StaticResource SurfaceBackgroundBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <Grid Margin="12,0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+            <Path Classes="topbarIcon" Data="{StaticResource IconSearch}" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1"
+                       Text="Rechercher un hôte, une adresse IP ou un tag…"
+                       Classes="secondary"
+                       VerticalAlignment="Center" />
+            <Border Grid.Column="2"
+                    Padding="6,2"
+                    Background="{StaticResource SurfaceRaisedBrush}"
+                    BorderBrush="{StaticResource BorderSubtleBrush}"
+                    BorderThickness="{StaticResource BorderThin}"
+                    CornerRadius="{StaticResource RadiusSmall}"
+                    VerticalAlignment="Center">
+              <TextBlock Text="Ctrl+K"
+                         FontSize="{StaticResource FontSizeMicro}"
+                         Foreground="{StaticResource TextMutedBrush}" />
+            </Border>
+          </Grid>
+        </Border>
+
+        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="14">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Ellipse Width="8" Height="8" Fill="{StaticResource StatusOnlineBrush}" />
+            <TextBlock Text="{Binding CollectionStatusText}" Classes="secondary" VerticalAlignment="Center" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="7">
+            <Path Classes="topbarIcon" Data="{StaticResource IconRefresh}" />
+            <TextBlock Text="Actualiser" Classes="secondary" VerticalAlignment="Center" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+            <TextBlock Text="Dernière mise à jour :" Classes="secondary" FontSize="{StaticResource FontSizeSmall}" />
+            <TextBlock Text="{Binding LastUpdateText}" Classes="secondary" FontSize="{StaticResource FontSizeSmall}" />
+          </StackPanel>
+          <Border Padding="8,3" Background="{StaticResource SurfaceRaisedBrush}"
+                  BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                  CornerRadius="{StaticResource RadiusSmall}" VerticalAlignment="Center"
+                  ToolTip.Tip="Rôle non configuré en V1.">
+            <TextBlock Text="{Binding RoleLabel}" FontSize="{StaticResource FontSizeMicro}" Foreground="{StaticResource TextMutedBrush}" />
+          </Border>
+          <Path Classes="topbarIcon" Data="{StaticResource IconSettings}" Opacity="0.55"
+                ToolTip.Tip="Raccourci paramètres (rail)." />
+          <Path Classes="topbarIcon" Data="{StaticResource IconHelp}" Opacity="0.55"
+                ToolTip.Tip="Aide — bientôt." />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="1"
+            Grid.Column="1"
+            IsVisible="{Binding HasSecurityAlert}"
+            Background="{StaticResource SeverityCriticalBrush}"
+            Padding="14,8">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Text="{Binding SecurityAlertText}"
+                   TextWrapping="Wrap"
+                   Foreground="{StaticResource TextPrimaryBrush}"
+                   FontWeight="SemiBold"
+                   VerticalAlignment="Center" />
+        <Button Grid.Column="1"
+                Content="Masquer"
+                Command="{Binding DismissSecurityAlertCommand}"
+                Margin="12,0,0,0"
+                Padding="10,4"
+                Background="{StaticResource SurfaceRaisedBrush}"
+                Foreground="{StaticResource TextPrimaryBrush}"
+                BorderThickness="0" />
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="2"
+            Grid.Column="1"
+            Background="{StaticResource SurfaceBackgroundBrush}">
+      <ContentControl Content="{Binding CurrentPage}"
+                      HorizontalContentAlignment="Stretch"
+                      VerticalContentAlignment="Stretch" />
+    </Border>
+
+    <Border x:Name="StatusBar"
+            Grid.Row="3"
+            Grid.Column="1"
+            Height="{StaticResource StatusBarHeight}"
+            Background="{StaticResource SurfaceTopbarBrush}"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="0,1,0,0">
+      <Grid Margin="20,0" ColumnDefinitions="Auto,*,Auto">
+        <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Ellipse Width="7" Height="7" Fill="{StaticResource StatusOnlineBrush}" VerticalAlignment="Center" />
+            <TextBlock Text="Connecté" Classes="secondary" VerticalAlignment="Center" />
+          </StackPanel>
+          <TextBlock Text="{Binding UserLabel}" Classes="secondary" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}" />
+          <TextBlock Text="{Binding RoleLabel}" Classes="secondary" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}" />
+          <TextBlock Text="{Binding EnvironmentLabel}" Classes="secondary" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}" />
+          <TextBlock Text="{Binding StatusSummary}" Classes="secondary" VerticalAlignment="Center" />
+        </StackPanel>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+          <TextBlock Text="{Binding HostsBadgeText}" Classes="secondary" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}" />
+          <TextBlock Text="{Binding IncidentsBadgeText}" Classes="secondary" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}" />
+          <TextBlock Text="{Binding AlertsBadgeText}" Classes="secondary" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}" />
+          <TextBlock Text="{Binding CollectionStatusText}" Classes="secondary" VerticalAlignment="Center" />
+          <TextBlock Text="{Binding DatabaseStatusText}" Classes="secondary" VerticalAlignment="Center" />
+        </StackPanel>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

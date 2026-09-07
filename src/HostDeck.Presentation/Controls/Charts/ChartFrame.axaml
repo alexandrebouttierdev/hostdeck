@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:HostDeck.Presentation.Controls"
+             xmlns:charts="using:HostDeck.Presentation.Controls.Charts"
+             x:Class="HostDeck.Presentation.Controls.Charts.ChartFrame"
+             x:Name="Root">
+
+  <Border Background="{StaticResource SurfacePanelBrush}"
+          BorderBrush="{StaticResource BorderSubtleBrush}"
+          BorderThickness="{StaticResource BorderThin}"
+          CornerRadius="{StaticResource RadiusSmall}">
+    <DockPanel>
+      <TextBlock DockPanel.Dock="Top"
+                 Margin="14,12,14,8"
+                 Text="{Binding Title, ElementName=Root}"
+                 FontWeight="SemiBold"
+                 Foreground="{StaticResource TextPrimaryBrush}" />
+
+      <Panel MinHeight="120">
+        <charts:TimeSeriesChartControl x:Name="Chart"
+                                       Margin="8,0,8,8"
+                                       Series="{Binding Series, ElementName=Root}"
+                                       YAxisMax="{Binding YAxisMax, ElementName=Root}"
+                                       Stacked="{Binding Stacked, ElementName=Root}"
+                                       GridBrush="{StaticResource BorderSubtleBrush}"
+                                       AxisLabelBrush="{StaticResource TextMutedBrush}"
+                                       PlotBackground="{StaticResource SurfaceRaisedBrush}"
+                                       IsVisible="{Binding HasSeries, ElementName=Root}" />
+
+        <controls:EmptyState IsVisible="{Binding !HasSeries, ElementName=Root}"
+                             Title="{Binding EmptyTitle, ElementName=Root}"
+                             Description="{Binding EmptyDescription, ElementName=Root}"
+                             IconData="{Binding EmptyIconData, ElementName=Root}" />
+      </Panel>
+    </DockPanel>
+  </Border>
+</UserControl>

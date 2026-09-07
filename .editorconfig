@@ -1,0 +1,134 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml,props,targets,csproj,axaml,xaml,md}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.cs]
+indent_size = 4
+
+# --- Organisation des using ---
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+csharp_using_directive_placement = outside_namespace:warning
+
+# --- Namespaces et syntaxe moderne ---
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_prefer_braces = true:warning
+csharp_style_prefer_primary_constructors = false:silent
+csharp_style_var_for_built_in_types = false:silent
+csharp_style_var_when_type_is_apparent = true:silent
+csharp_style_var_elsewhere = false:silent
+
+# --- Expression-bodied members ---
+csharp_style_expression_bodied_methods = when_on_single_line:silent
+csharp_style_expression_bodied_properties = true:silent
+csharp_style_expression_bodied_accessors = true:silent
+csharp_style_expression_bodied_constructors = false:silent
+
+# --- Préférences de code ---
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_property = false:warning
+dotnet_style_qualification_for_method = false:warning
+dotnet_style_qualification_for_event = false:warning
+dotnet_style_readonly_field = true:warning
+dotnet_style_object_initializer = true:suggestion
+dotnet_style_collection_initializer = true:suggestion
+dotnet_style_prefer_conditional_expression_over_assignment = true:silent
+dotnet_style_prefer_conditional_expression_over_return = true:silent
+csharp_style_prefer_pattern_matching = true:suggestion
+csharp_style_prefer_switch_expression = true:suggestion
+csharp_prefer_simple_using_statement = true:suggestion
+csharp_style_prefer_range_operator = true:suggestion
+csharp_style_prefer_index_operator = true:suggestion
+
+# --- Nommage : interfaces préfixées I ---
+dotnet_naming_rule.interfaces_start_with_i.severity = warning
+dotnet_naming_rule.interfaces_start_with_i.symbols = interface_symbol
+dotnet_naming_rule.interfaces_start_with_i.style = prefixed_with_i
+dotnet_naming_symbols.interface_symbol.applicable_kinds = interface
+dotnet_naming_style.prefixed_with_i.required_prefix = I
+dotnet_naming_style.prefixed_with_i.capitalization = pascal_case
+
+# --- Nommage : types et membres publics en PascalCase ---
+dotnet_naming_rule.types_are_pascal_case.severity = warning
+dotnet_naming_rule.types_are_pascal_case.symbols = type_symbol
+dotnet_naming_rule.types_are_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.type_symbol.applicable_kinds = class, struct, enum, delegate
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+dotnet_naming_rule.members_are_pascal_case.severity = warning
+dotnet_naming_rule.members_are_pascal_case.symbols = member_symbol
+dotnet_naming_rule.members_are_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.member_symbol.applicable_kinds = property, method, event
+dotnet_naming_symbols.member_symbol.applicable_accessibilities = public, internal, protected
+
+# --- Nommage : constantes en PascalCase ---
+# Ces deux règles doivent précéder celle des champs privés : la première règle qui
+# correspond l'emporte, et un `const` ou un `static readonly` privé reste en PascalCase.
+dotnet_naming_rule.constants_pascal_case.severity = warning
+dotnet_naming_rule.constants_pascal_case.symbols = constant_symbol
+dotnet_naming_rule.constants_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.constant_symbol.applicable_kinds = field
+dotnet_naming_symbols.constant_symbol.applicable_accessibilities = *
+dotnet_naming_symbols.constant_symbol.required_modifiers = const
+
+dotnet_naming_rule.static_readonly_pascal_case.severity = warning
+dotnet_naming_rule.static_readonly_pascal_case.symbols = static_readonly_symbol
+dotnet_naming_rule.static_readonly_pascal_case.style = pascal_case_style
+dotnet_naming_symbols.static_readonly_symbol.applicable_kinds = field
+dotnet_naming_symbols.static_readonly_symbol.applicable_accessibilities = *
+dotnet_naming_symbols.static_readonly_symbol.required_modifiers = static, readonly
+
+# --- Nommage : champs privés d'instance en _camelCase ---
+dotnet_naming_rule.private_fields_underscore.severity = warning
+dotnet_naming_rule.private_fields_underscore.symbols = private_field_symbol
+dotnet_naming_rule.private_fields_underscore.style = underscore_camel_case
+dotnet_naming_symbols.private_field_symbol.applicable_kinds = field
+dotnet_naming_symbols.private_field_symbol.applicable_accessibilities = private
+dotnet_naming_style.underscore_camel_case.required_prefix = _
+dotnet_naming_style.underscore_camel_case.capitalization = camel_case
+
+# --- Règles élevées en erreur (§47 : qualité stricte) ---
+# Utiliser ConfigureAwait de façon délibérée, jamais dispersée.
+dotnet_diagnostic.CA2007.severity = none
+# Les identifiants publics n'ont pas à être conformes CLS (projet applicatif, pas une bibliothèque).
+dotnet_diagnostic.CA1014.severity = none
+# Les messages destinés à l'utilisateur sont en français et assumés non localisés.
+dotnet_diagnostic.CA1303.severity = none
+# CA1716 protège la consommation depuis Visual Basic, où « Shared » est un mot réservé.
+# HostDeck est une application C# autonome, jamais publiée ni référencée comme bibliothèque
+# depuis un autre langage .NET : la contrainte ne s'applique pas, et le découpage en modules
+# `Shared` est imposé par la spécification (§5).
+dotnet_diagnostic.CA1716.severity = none
+# Ne jamais avaler une exception.
+dotnet_diagnostic.CA1031.severity = warning
+# Disposer les ressources.
+dotnet_diagnostic.CA2000.severity = warning
+# Propager le CancellationToken.
+dotnet_diagnostic.CA2016.severity = error
+# Requêtes SQL paramétrées uniquement.
+dotnet_diagnostic.CA2100.severity = error
+
+[tests/**/*.cs]
+# Les tests instancient volontairement des types sans les stocker et exposent des membres statiques.
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA1861.severity = none
+
+# --- Code généré par `dotnet ef migrations add` ---
+# Ces fichiers sont régénérés par l'outillage : une correction manuelle serait perdue à la
+# prochaine génération. EF émet des espaces de noms par blocs et des tableaux en ligne dans
+# les appels CreateIndex/CreateTable ; les règles de style et les analyseurs ne s'y
+# appliquent pas, et une migration n'est de toute façon jamais exécutée en boucle chaude.
+[src/HostDeck.Infrastructure/Persistence/Migrations/*.cs]
+generated_code = true

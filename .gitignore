@@ -1,0 +1,30 @@
+# Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+publish/
+*.user
+*.suo
+
+# Test output
+TestResults/
+coverage/
+*.coverage
+*.trx
+
+# Local data
+*.db
+*.db-wal
+*.db-shm
+hostdeck.db*
+
+# Visual validation output (regenerated, never committed)
+screenshots/
+
+# IDE
+.vs/
+.idea/
+*.swp
+.DS_Store

@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:HostDeck.Presentation.Controls"
+             xmlns:vm="using:HostDeck.Presentation.ViewModels.Docker"
+             x:Class="HostDeck.Presentation.Views.Docker.DockerView"
+             x:DataType="vm:DockerViewModel">
+  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,*" RowSpacing="14">
+    <StackPanel Spacing="4">
+      <TextBlock Text="Docker" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+      <TextBlock Text="Conteneurs, images et statistiques." Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+    </StackPanel>
+    <Border Grid.Row="1"
+            Background="{StaticResource SurfacePanelBrush}"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="{StaticResource BorderThin}"
+            CornerRadius="{StaticResource RadiusSmall}">
+      <controls:EmptyState Title="Aucun conteneur Docker"
+                           Description="La supervision Docker sera disponible une fois un hôte Docker joignable. Aucune donnée n’est inventée."
+                           IconData="{StaticResource IconDocker}" />
+    </Border>
+  </Grid>
+</UserControl>

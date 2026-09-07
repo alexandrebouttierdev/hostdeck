@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>HostDeck.Domain</RootNamespace>
+  </PropertyGroup>
+
+  <!--
+    Le Domain n'a aucune dépendance externe : ni Avalonia, ni EF Core, ni SSH.NET,
+    ni FluentValidation. Ses invariants sont tenus par ses propres constructeurs (§6, §7).
+  -->
+
+</Project>
