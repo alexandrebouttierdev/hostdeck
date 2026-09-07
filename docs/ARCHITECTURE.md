@@ -82,6 +82,16 @@ holds UTC timestamps only; conversion to local time happens in Presentation.
 does not assume that `ExecuteReaderAsync` moves work off the calling thread, and long database
 work is kept off the UI thread by the layer that calls it.
 
+### Linux parsers
+
+The metric parsers under `HostDeck.Infrastructure/Linux` convert the raw text read from a host
+(`/proc/stat`, `/proc/meminfo`, `/proc/loadavg`, `/proc/net/dev`, `/proc/uptime`,
+`df -P -k` and `/etc/os-release`) into Domain value objects. They are pure functions: no SSH,
+no Avalonia and no I/O. Host output is untrusted input, so unknown lines are skipped and only
+the absence of essential data is reported as an explicit format error
+(`MetricParseException`); the CPU usage is derived from the difference between two counter
+snapshots, never from a single read.
+
 ### Background collection
 
 Fleet collection runs as a hosted service (`FleetMonitoringCoordinator`) with explicit
