@@ -171,8 +171,20 @@ public sealed class TestConnectionRequestDtoValidator : AbstractValidator<TestCo
         RuleFor(x => x.Port).ValidPort();
         RuleFor(x => x.Username).ValidSshUsername();
 
+        RuleFor(x => x)
+            .Must(HaveCredentialOrSecret)
+            .WithName(nameof(TestConnectionRequestDto.CredentialKey))
+            .WithMessage("Un identifiant ou un secret est obligatoire pour tester la connexion.");
+
         RuleFor(x => x.CredentialKey)
-            .NotEmpty().WithMessage("Un identifiant est obligatoire pour tester la connexion.");
+            .NotEmpty()
+            .When(x => string.IsNullOrEmpty(x.Secret))
+            .WithMessage("Un identifiant est obligatoire pour tester la connexion.");
+
+        RuleFor(x => x.Secret)
+            .NotEmpty()
+            .When(x => string.IsNullOrEmpty(x.CredentialKey))
+            .WithMessage("Un secret est obligatoire pour tester la connexion.");
 
         RuleFor(x => x.Timeout)
             .InclusiveBetween(TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(2))
@@ -182,4 +194,7 @@ public sealed class TestConnectionRequestDtoValidator : AbstractValidator<TestCo
             .SetValidator(new JumpHostDtoValidator())
             .When(x => x.JumpHost is not null);
     }
+
+    private static bool HaveCredentialOrSecret(TestConnectionRequestDto dto) =>
+        !string.IsNullOrEmpty(dto.CredentialKey) || !string.IsNullOrEmpty(dto.Secret);
 }

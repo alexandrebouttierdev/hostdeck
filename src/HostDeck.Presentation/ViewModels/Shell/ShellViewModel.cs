@@ -1,10 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HostDeck.Application.Dtos.Servers;
+using HostDeck.Application.Monitoring.Events;
+using HostDeck.Domain.Servers;
 using HostDeck.Presentation.Navigation;
+using HostDeck.Presentation.Services;
 using HostDeck.Presentation.ViewModels.Alerts;
 using HostDeck.Presentation.ViewModels.Docker;
 using HostDeck.Presentation.ViewModels.HostDetails;
@@ -22,7 +26,7 @@ namespace HostDeck.Presentation.ViewModels.Shell;
 /// Coquille : rail, topbar, contenu courant. Aucune logique métier — seulement la navigation
 /// et le rafraîchissement des écrans via leurs ViewModels.
 /// </summary>
-public partial class ShellViewModel : ObservableObject
+public partial class ShellViewModel : ObservableObject, IDisposable
 {
     private readonly OverviewViewModel _overview;
     private readonly InfrastructureViewModel _infrastructure;
@@ -34,6 +38,9 @@ public partial class ShellViewModel : ObservableObject
     private readonly ReportsViewModel _reports;
     private readonly TopologyViewModel _topology;
     private readonly SettingsViewModel _settings;
+    private readonly IUiDispatcher _ui;
+    private readonly List<IDisposable> _subscriptions = [];
+    private bool _disposed;
 
     [ObservableProperty]
     private ShellSection _currentSection = ShellSection.Overview;
@@ -43,6 +50,12 @@ public partial class ShellViewModel : ObservableObject
 
     [ObservableProperty]
     private string _collectionStatusText = "Collecte prête";
+
+    [ObservableProperty]
+    private bool _hasSecurityAlert;
+
+    [ObservableProperty]
+    private string _securityAlertText = string.Empty;
 
     public ShellViewModel(
         OverviewViewModel overview,
@@ -54,7 +67,9 @@ public partial class ShellViewModel : ObservableObject
         AlertsViewModel alerts,
         ReportsViewModel reports,
         TopologyViewModel topology,
-        SettingsViewModel settings)
+        SettingsViewModel settings,
+        IMonitoringEventBus events,
+        IUiDispatcher ui)
     {
         _overview = overview;
         _infrastructure = infrastructure;
@@ -66,9 +81,14 @@ public partial class ShellViewModel : ObservableObject
         _reports = reports;
         _topology = topology;
         _settings = settings;
+        _ui = ui;
         _currentPage = overview;
 
         _infrastructure.OpenHostDetailsHandler = OpenHostDetailsAsync;
+
+        _subscriptions.Add(events.Subscribe<HostKeyChangedEvent>(OnHostKeyChanged));
+        _subscriptions.Add(events.Subscribe<CollectionCycleCompletedEvent>(OnCycleCompleted));
+        _subscriptions.Add(events.Subscribe<ServerStatusChangedEvent>(OnStatusChanged));
     }
 
     public string Breadcrumb => CurrentPage.Breadcrumb;
@@ -88,6 +108,13 @@ public partial class ShellViewModel : ObservableObject
     [RelayCommand]
     private Task NavigateAsync(ShellSection section, CancellationToken cancellationToken)
         => NavigateCoreAsync(section, selectedHost: null, cancellationToken);
+
+    [RelayCommand]
+    private void DismissSecurityAlert()
+    {
+        HasSecurityAlert = false;
+        SecurityAlertText = string.Empty;
+    }
 
     public Task OpenHostDetailsAsync(ServerSummaryDto host, CancellationToken cancellationToken = default)
         => NavigateCoreAsync(ShellSection.HostDetails, host, cancellationToken);
@@ -133,7 +160,9 @@ public partial class ShellViewModel : ObservableObject
                 await _infrastructure.RefreshAsync(cancellationToken).ConfigureAwait(true);
                 break;
             case ShellSection.HostDetails:
-                _hostDetails.ShowHost(selectedHost ?? _infrastructure.SelectedHost?.Server);
+                await _hostDetails
+                    .ShowHostAsync(selectedHost ?? _infrastructure.SelectedHost?.Server, cancellationToken)
+                    .ConfigureAwait(true);
                 break;
             case ShellSection.Incidents:
                 await _incidents.RefreshAsync(cancellationToken).ConfigureAwait(true);
@@ -150,10 +179,67 @@ public partial class ShellViewModel : ObservableObject
         }
     }
 
+    private void OnHostKeyChanged(HostKeyChangedEvent evt)
+    {
+        _ui.Post(() =>
+        {
+            HasSecurityAlert = true;
+            SecurityAlertText =
+                $"Sécurité : la clé d'hôte de {evt.Host} a changé (serveur {evt.ServerId.Value:D}). "
+                + "Vérifiez l'empreinte avant toute approbation.";
+        });
+    }
+
+    private void OnCycleCompleted(CollectionCycleCompletedEvent evt)
+    {
+        _ui.Post(() =>
+        {
+            CollectionStatusText = evt.Failed == 0
+                ? $"Collecte OK · {evt.Succeeded} hôte(s)"
+                : $"Collecte · {evt.Succeeded} OK · {evt.Failed} échec(s)";
+        });
+    }
+
+    private void OnStatusChanged(ServerStatusChangedEvent evt)
+    {
+        if (evt.Current != ServerStatus.HostKeyRejected)
+        {
+            return;
+        }
+
+        _ui.Post(() =>
+        {
+            HasSecurityAlert = true;
+            SecurityAlertText =
+                $"Sécurité : clé d'hôte refusée pour le serveur {evt.ServerId.Value:D}.";
+        });
+    }
+
     partial void OnCurrentPageChanged(PageViewModelBase value)
     {
         OnPropertyChanged(nameof(Breadcrumb));
         OnPropertyChanged(nameof(PageTitle));
         OnPropertyChanged(nameof(StatusSummary));
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        _disposed = true;
+        foreach (var subscription in _subscriptions)
+        {
+            subscription.Dispose();
+        }
+
+        _subscriptions.Clear();
+        (_overview as IDisposable)?.Dispose();
+        (_infrastructure as IDisposable)?.Dispose();
+        (_hostDetails as IDisposable)?.Dispose();
+        (_liveData as IDisposable)?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

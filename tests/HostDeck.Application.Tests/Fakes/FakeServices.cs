@@ -133,3 +133,36 @@ internal sealed class RecordingEventBus : IMonitoringEventBus
         }
     }
 }
+
+/// <summary>Magasin d'empreintes de clés d'hôte en mémoire.</summary>
+internal sealed class FakeHostKeyStore : IHostKeyStore
+{
+    private readonly Dictionary<(string Host, int Port), string> _fingerprints = [];
+
+    public Task<string?> FindApprovedFingerprintAsync(
+        string host,
+        int port,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult(_fingerprints.TryGetValue((host, port), out var fingerprint) ? fingerprint : null);
+    }
+
+    public Task ApproveAsync(
+        string host,
+        int port,
+        string fingerprint,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        _fingerprints[(host, port)] = fingerprint;
+        return Task.CompletedTask;
+    }
+
+    public Task RevokeAsync(string host, int port, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        _fingerprints.Remove((host, port));
+        return Task.CompletedTask;
+    }
+}

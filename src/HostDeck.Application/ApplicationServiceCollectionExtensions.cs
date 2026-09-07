@@ -35,6 +35,8 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<GetServersUseCase>();
         services.AddTransient<GetServerDetailsUseCase>();
         services.AddTransient<TestConnectionUseCase>();
+        services.AddTransient<ApproveHostKeyUseCase>();
+        services.AddTransient<GetMetricHistoryUseCase>();
 
         services.AddTransient<GetIncidentsUseCase>();
         services.AddTransient<GetIncidentDetailsUseCase>();

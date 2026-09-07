@@ -8,6 +8,9 @@ namespace HostDeck.Application.Dtos.Servers;
 ///
 /// Prend une configuration complète plutôt qu'un identifiant : l'opérateur doit pouvoir
 /// tester une configuration en cours de saisie, avant même de l'enregistrer.
+/// Soit <see cref="CredentialKey"/> (secret déjà en trousseau), soit <see cref="Secret"/>
+/// (saisie en cours) doit être fourni — jamais les deux en conflit de priorité : le secret
+/// inline l'emporte pour le parcours « ajouter un hôte ».
 /// </summary>
 public sealed record TestConnectionRequestDto
 {
@@ -17,10 +20,19 @@ public sealed record TestConnectionRequestDto
 
     public required string Username { get; init; }
 
-    /// <summary>Credential déjà présent dans le trousseau.</summary>
-    public required string CredentialKey { get; init; }
+    /// <summary>Credential déjà présent dans le trousseau. Optionnel si <see cref="Secret"/> est fourni.</summary>
+    public string? CredentialKey { get; init; }
 
     public CredentialKind CredentialKind { get; init; } = CredentialKind.PrivateKey;
+
+    /// <summary>
+    /// Secret saisi dans le formulaire, avant enregistrement. Remis temporairement au
+    /// trousseau le temps du test, puis retiré. Jamais journalisé ni persisté en base.
+    /// </summary>
+    public string? Secret { get; init; }
+
+    /// <summary>Passphrase de la clé privée, le cas échéant. Mêmes règles que le secret.</summary>
+    public string? Passphrase { get; init; }
 
     public JumpHostDto? JumpHost { get; init; }
 
@@ -91,41 +103,17 @@ public sealed record TestConnectionResultDto
 public enum TestConnectionOutcome
 {
     Success = 0,
-
-    /// <summary>Le nom n'a pas pu être résolu.</summary>
     DnsResolutionFailed = 1,
-
-    /// <summary>Aucune réponse dans le délai imparti.</summary>
     Timeout = 2,
-
-    /// <summary>La connexion TCP a été refusée.</summary>
     ConnectionRefused = 3,
-
-    /// <summary>Les identifiants ont été rejetés.</summary>
     AuthenticationFailed = 4,
-
-    /// <summary>La clé d'hôte est inconnue et doit être approuvée.</summary>
     HostKeyUnknown = 5,
-
-    /// <summary>La clé d'hôte a changé : événement de sécurité.</summary>
     HostKeyChanged = 6,
-
-    /// <summary>Le bastion n'a pas pu être joint ; la cible n'a donc pas été testée.</summary>
     GatewayUnavailable = 7,
-
-    /// <summary>Le bastion a répondu mais la cible reste injoignable à travers lui.</summary>
     TargetUnreachableThroughGateway = 8,
-
-    /// <summary>Le credential est absent ou illisible dans le trousseau.</summary>
     CredentialUnavailable = 9,
-
-    /// <summary>SSH fonctionne, mais le moteur Docker est inaccessible.</summary>
     DockerUnavailable = 10,
-
-    /// <summary>L'opérateur a annulé le test.</summary>
     Cancelled = 11,
-
-    /// <summary>Échec inattendu ; le détail technique est journalisé, pas affiché.</summary>
     Unknown = 12,
 }
 

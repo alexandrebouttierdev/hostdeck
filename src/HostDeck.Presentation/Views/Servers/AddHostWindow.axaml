@@ -1,0 +1,141 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:HostDeck.Presentation.ViewModels.Servers"
+        x:Class="HostDeck.Presentation.Views.Servers.AddHostWindow"
+        x:DataType="vm:AddHostViewModel"
+        Title="Ajouter un hôte"
+        Width="560"
+        Height="720"
+        MinWidth="480"
+        MinHeight="560"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource SurfaceBackgroundBrush}">
+
+  <DockPanel Margin="20">
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,16,0,0">
+      <Button Content="Annuler" Command="{Binding CancelCommand}" Padding="14,8"
+              IsEnabled="{Binding !IsBusy}" />
+      <Button Content="Tester la connexion" Command="{Binding TestConnectionCommand}" Padding="14,8"
+              IsEnabled="{Binding !IsBusy}" />
+      <Button Content="Approuver la clé" Command="{Binding ApproveHostKeyCommand}" Padding="14,8"
+              IsVisible="{Binding CanApproveHostKey}"
+              Background="{StaticResource StatusWarningBrush}"
+              Foreground="{StaticResource TextPrimaryBrush}"
+              BorderThickness="0" />
+      <Button Content="Enregistrer" Command="{Binding SaveCommand}" Padding="14,8"
+              Background="{StaticResource AccentBrush}"
+              Foreground="{StaticResource TextPrimaryBrush}"
+              BorderThickness="0"
+              CornerRadius="{StaticResource RadiusSmall}" />
+    </StackPanel>
+
+    <ScrollViewer>
+      <StackPanel Spacing="12">
+        <TextBlock Text="Nouveau serveur Linux" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold"
+                   Foreground="{StaticResource TextPrimaryBrush}" />
+        <TextBlock Text="Les secrets sont remis au trousseau du système ; ils ne sont jamais stockés en base."
+                   TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}"
+                   FontSize="{StaticResource FontSizeBody}" />
+
+        <TextBlock Text="Nom affiché" Classes="secondary" />
+        <TextBox Text="{Binding Name}" PlaceholderText="web-front-01" />
+
+        <Grid ColumnDefinitions="*,100" ColumnSpacing="10">
+          <StackPanel>
+            <TextBlock Text="Adresse (hôte ou IP)" Classes="secondary" />
+            <TextBox Text="{Binding Address}" PlaceholderText="10.0.1.10" />
+          </StackPanel>
+          <StackPanel Grid.Column="1">
+            <TextBlock Text="Port" Classes="secondary" />
+            <TextBox Text="{Binding Port}" />
+          </StackPanel>
+        </Grid>
+
+        <TextBlock Text="Utilisateur SSH" Classes="secondary" />
+        <TextBox Text="{Binding Username}" PlaceholderText="root" />
+
+        <TextBlock Text="Authentification" Classes="secondary" />
+        <ComboBox SelectedIndex="{Binding AuthModeIndex}" Width="240">
+          <ComboBoxItem Content="Clé privée" />
+          <ComboBoxItem Content="Mot de passe" />
+        </ComboBox>
+
+        <TextBlock Text="Mot de passe" Classes="secondary" IsVisible="{Binding IsPasswordAuth}" />
+        <TextBox Text="{Binding Secret}" PasswordChar="•" IsVisible="{Binding IsPasswordAuth}" />
+
+        <TextBlock Text="Clé privée (PEM / OpenSSH)" Classes="secondary" IsVisible="{Binding IsPrivateKeyAuth}" />
+        <TextBox Text="{Binding Secret}" AcceptsReturn="True" TextWrapping="Wrap"
+                 MinHeight="100" IsVisible="{Binding IsPrivateKeyAuth}"
+                 PlaceholderText="-----BEGIN OPENSSH PRIVATE KEY-----" />
+
+        <TextBlock Text="Passphrase (optionnelle)" Classes="secondary" IsVisible="{Binding IsPrivateKeyAuth}" />
+        <TextBox Text="{Binding Passphrase}" PasswordChar="•" IsVisible="{Binding IsPrivateKeyAuth}" />
+
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+          <StackPanel>
+            <TextBlock Text="Intervalle de collecte (s)" Classes="secondary" />
+            <TextBox Text="{Binding MonitoringIntervalSeconds}" />
+          </StackPanel>
+          <StackPanel>
+            <TextBlock Text="Groupe" Classes="secondary" />
+            <TextBox Text="{Binding Group}" PlaceholderText="production" />
+          </StackPanel>
+        </Grid>
+
+        <CheckBox Content="Activer la supervision Docker" IsChecked="{Binding DockerEnabled}" />
+
+        <CheckBox Content="Passer par un bastion (jump host)" IsChecked="{Binding UseJumpHost}" />
+        <Border IsVisible="{Binding UseJumpHost}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}"
+                Padding="12">
+          <StackPanel Spacing="8">
+            <TextBlock Text="Le credential du bastion doit déjà exister dans le trousseau (clé de référence)."
+                       TextWrapping="Wrap" Foreground="{StaticResource TextMutedBrush}"
+                       FontSize="{StaticResource FontSizeSmall}" />
+            <TextBox Text="{Binding JumpAddress}" PlaceholderText="Adresse du bastion" />
+            <TextBox Text="{Binding JumpPort}" PlaceholderText="22" Width="120" HorizontalAlignment="Left" />
+            <TextBox Text="{Binding JumpUsername}" PlaceholderText="Utilisateur bastion" />
+            <TextBox Text="{Binding JumpCredentialKey}" PlaceholderText="hostdeck:bastion:…" />
+          </StackPanel>
+        </Border>
+
+        <Border IsVisible="{Binding HasStatusMessage}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}"
+                Padding="12">
+          <StackPanel Spacing="6">
+            <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap"
+                       Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBlock IsVisible="{Binding IsSecurityWarning}"
+                       Text="Événement de sécurité : la clé d'hôte a changé. Vérifiez l'empreinte avant d'approuver."
+                       TextWrapping="Wrap"
+                       Foreground="{StaticResource SeverityCriticalBrush}"
+                       FontWeight="SemiBold" />
+            <TextBlock IsVisible="{Binding HasPresentedFingerprint}"
+                       Text="{Binding PresentedFingerprint, StringFormat=Empreinte présentée : {0}}"
+                       TextWrapping="Wrap"
+                       FontFamily="monospace"
+                       Foreground="{StaticResource TextSecondaryBrush}"
+                       FontSize="{StaticResource FontSizeSmall}" />
+            <TextBlock IsVisible="{Binding HasKnownFingerprint}"
+                       Text="{Binding KnownFingerprint, StringFormat=Empreinte connue : {0}}"
+                       TextWrapping="Wrap"
+                       FontFamily="monospace"
+                       Foreground="{StaticResource TextMutedBrush}"
+                       FontSize="{StaticResource FontSizeSmall}" />
+            <TextBlock IsVisible="{Binding CanApproveHostKey}"
+                       Text="TODO : dialogue d'approbation dédié si le flux Application expose un pending-approval plus riche."
+                       TextWrapping="Wrap"
+                       Foreground="{StaticResource TextMutedBrush}"
+                       FontSize="{StaticResource FontSizeSmall}" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</Window>

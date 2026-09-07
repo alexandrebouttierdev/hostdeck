@@ -5,10 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using HostDeck.Application.Dtos.Monitoring;
 using HostDeck.Application.Dtos.Servers;
+using HostDeck.Application.Monitoring;
+using HostDeck.Application.Monitoring.Events;
 using HostDeck.Application.Ports;
 using HostDeck.Application.Servers;
 using HostDeck.Domain.Monitoring;
 using HostDeck.Domain.Servers;
+using HostDeck.Presentation.Services;
 using HostDeck.Presentation.ViewModels.Infrastructure;
 using Xunit;
 
@@ -19,7 +22,7 @@ public sealed class InfrastructureViewModelTests
     [Fact]
     public void HasSelectionIsFalseUntilARowIsChosen()
     {
-        var vm = CreateViewModel([]);
+        using var vm = CreateViewModel([]);
         Assert.False(vm.HasSelection);
         Assert.Null(vm.SelectedHost);
     }
@@ -28,7 +31,7 @@ public sealed class InfrastructureViewModelTests
     public async Task RefreshMapsServersWithoutInventingSparklineSeries()
     {
         var server = CreateServer("web-01", "10.0.0.1");
-        var vm = CreateViewModel([server]);
+        using var vm = CreateViewModel([server]);
         await vm.RefreshAsync(TestContext.Current.CancellationToken);
 
         Assert.False(vm.IsEmpty);
@@ -43,7 +46,7 @@ public sealed class InfrastructureViewModelTests
     public async Task OpenHostDetailsCommandUsesHandlerWithSelectedServer()
     {
         var server = CreateServer("web-01", "10.0.0.1");
-        var vm = CreateViewModel([server]);
+        using var vm = CreateViewModel([server]);
         await vm.RefreshAsync(TestContext.Current.CancellationToken);
         vm.SelectedHost = vm.Hosts[0];
 
@@ -60,11 +63,62 @@ public sealed class InfrastructureViewModelTests
         Assert.Equal(server.Id.Value, opened!.ServerId);
     }
 
-    private static InfrastructureViewModel CreateViewModel(IReadOnlyList<Server> servers)
+    [Fact]
+    public async Task MetricUpdatedEventAppendsSparklineWithoutFabrication()
+    {
+        var server = CreateServer("web-01", "10.0.0.1");
+        var bus = new ImmediateEventBus();
+        using var vm = CreateViewModel([server], bus);
+        await vm.RefreshAsync(TestContext.Current.CancellationToken);
+
+        Assert.Null(vm.Hosts[0].CpuSeries);
+
+        bus.Publish(new MetricUpdatedEvent(
+            server.Id,
+            new LatestMetricDto
+            {
+                ServerId = server.Id.Value,
+                ObservedAt = DateTimeOffset.UtcNow,
+                CpuPercent = 12,
+                MemoryPercent = 40,
+                DiskPercent = 55,
+                LoadOneMinute = 0.5,
+            },
+            DateTimeOffset.UtcNow));
+
+        Assert.NotNull(vm.Hosts[0].CpuSeries);
+        Assert.Single(vm.Hosts[0].CpuSeries!);
+        Assert.False(vm.Hosts[0].HasCpuSeries);
+
+        bus.Publish(new MetricUpdatedEvent(
+            server.Id,
+            new LatestMetricDto
+            {
+                ServerId = server.Id.Value,
+                ObservedAt = DateTimeOffset.UtcNow,
+                CpuPercent = 20,
+                MemoryPercent = 41,
+                DiskPercent = 56,
+                LoadOneMinute = 0.6,
+            },
+            DateTimeOffset.UtcNow));
+
+        Assert.True(vm.Hosts[0].HasCpuSeries);
+        Assert.Equal(2, vm.Hosts[0].CpuSeries!.Count);
+    }
+
+    private static InfrastructureViewModel CreateViewModel(
+        IReadOnlyList<Server> servers,
+        IMonitoringEventBus? bus = null)
     {
         var repo = new StubServerRepository(servers);
         var metrics = new StubMetricsRepository();
-        return new InfrastructureViewModel(new GetServersUseCase(repo, metrics));
+        return new InfrastructureViewModel(
+            new GetServersUseCase(repo, metrics),
+            new GetMetricHistoryUseCase(metrics),
+            bus ?? new ImmediateEventBus(),
+            new StubDialogService(),
+            new ImmediateDispatcher());
     }
 
     private static Server CreateServer(string name, string address)
@@ -78,6 +132,53 @@ public sealed class InfrastructureViewModelTests
             new SshUsername("hostdeck"),
             CredentialReference.ForServer(id, CredentialKind.PrivateKey),
             MonitoringInterval.Default);
+    }
+
+    private sealed class StubDialogService : IDialogService
+    {
+        public Task<bool> ShowAddHostAsync(CancellationToken cancellationToken = default)
+            => Task.FromResult(false);
+    }
+
+    private sealed class ImmediateDispatcher : IUiDispatcher
+    {
+        public void Post(Action action) => action();
+
+        public Task InvokeAsync(Action action)
+        {
+            action();
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class ImmediateEventBus : IMonitoringEventBus
+    {
+        private readonly List<(Type Type, Delegate Handler)> _handlers = [];
+
+        public void Publish(MonitoringEvent monitoringEvent)
+        {
+            foreach (var (type, handler) in _handlers)
+            {
+                if (type.IsInstanceOfType(monitoringEvent))
+                {
+                    handler.DynamicInvoke(monitoringEvent);
+                }
+            }
+        }
+
+        public IDisposable Subscribe<TEvent>(Action<TEvent> handler)
+            where TEvent : MonitoringEvent
+        {
+            _handlers.Add((typeof(TEvent), handler));
+            return new Noop();
+        }
+
+        private sealed class Noop : IDisposable
+        {
+            public void Dispose()
+            {
+            }
+        }
     }
 
     private sealed class StubServerRepository(IReadOnlyList<Server> servers) : IServerRepository

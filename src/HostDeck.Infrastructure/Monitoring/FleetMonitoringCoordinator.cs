@@ -261,6 +261,16 @@ internal sealed class FleetMonitoringCoordinator : BackgroundService
 
         PublishStatusChange(server.Id, previousStatus, status);
 
+        if (exception is HostKeyVerificationException hostKey && hostKey.IsKeyChange)
+        {
+            _events.Publish(new HostKeyChangedEvent(
+                server.Id,
+                hostKey.Host,
+                hostKey.PresentedFingerprint,
+                hostKey.KnownFingerprint!,
+                observedAt));
+        }
+
         try
         {
             await _incidents

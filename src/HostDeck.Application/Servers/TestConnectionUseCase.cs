@@ -21,15 +21,18 @@ public sealed class TestConnectionUseCase
     private const string ProbeCommand = "uname -s";
 
     private readonly ISshConnectionFactory _ssh;
+    private readonly ICredentialStore _credentials;
     private readonly IValidator<TestConnectionRequestDto> _validator;
     private readonly ILogger<TestConnectionUseCase> _logger;
 
     public TestConnectionUseCase(
         ISshConnectionFactory ssh,
+        ICredentialStore credentials,
         IValidator<TestConnectionRequestDto> validator,
         ILogger<TestConnectionUseCase> logger)
     {
         _ssh = ssh;
+        _credentials = credentials;
         _validator = validator;
         _logger = logger;
     }
@@ -41,6 +44,54 @@ public sealed class TestConnectionUseCase
         ArgumentNullException.ThrowIfNull(request);
         await _validator.ValidateAndThrowAsync(request, cancellationToken).ConfigureAwait(false);
 
+        if (!string.IsNullOrEmpty(request.Secret))
+        {
+            return await ExecuteWithInlineSecretAsync(request, cancellationToken).ConfigureAwait(false);
+        }
+
+        return await ExecuteCoreAsync(request, request.CredentialKey!, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private async Task<TestConnectionResultDto> ExecuteWithInlineSecretAsync(
+        TestConnectionRequestDto request,
+        CancellationToken cancellationToken)
+    {
+        var tempKey = $"hostdeck:connection-test:{Guid.NewGuid():D}";
+        var credential = new CredentialReference(tempKey, request.CredentialKind);
+
+        await _credentials
+            .WriteAsync(credential, request.Secret!.AsMemory(), cancellationToken)
+            .ConfigureAwait(false);
+
+        CredentialReference? passphraseReference = null;
+        if (!string.IsNullOrEmpty(request.Passphrase))
+        {
+            passphraseReference = new CredentialReference($"{credential.Key}:passphrase", credential.Kind);
+            await _credentials
+                .WriteAsync(passphraseReference, request.Passphrase.AsMemory(), cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        try
+        {
+            return await ExecuteCoreAsync(request, tempKey, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            await TryDeleteAsync(credential).ConfigureAwait(false);
+            if (passphraseReference is not null)
+            {
+                await TryDeleteAsync(passphraseReference).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private async Task<TestConnectionResultDto> ExecuteCoreAsync(
+        TestConnectionRequestDto request,
+        string credentialKey,
+        CancellationToken cancellationToken)
+    {
         var stopwatch = Stopwatch.StartNew();
         var serverId = ServerId.New();
 
@@ -50,7 +101,7 @@ public sealed class TestConnectionUseCase
             HostAddress.Parse(request.Address),
             new Port(request.Port),
             new SshUsername(request.Username),
-            new CredentialReference(request.CredentialKey, request.CredentialKind),
+            new CredentialReference(credentialKey, request.CredentialKind),
             MonitoringInterval.Default,
             ServerMapper.ToDomain(request.JumpHost));
 
@@ -200,5 +251,21 @@ public sealed class TestConnectionUseCase
             stopwatch.ElapsedMilliseconds);
 
         return result;
+    }
+
+    private async Task TryDeleteAsync(CredentialReference credential)
+    {
+        try
+        {
+            using var cleanup = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            await _credentials.DeleteAsync(credential, cleanup.Token).ConfigureAwait(false);
+        }
+        catch (CredentialException)
+        {
+            // Nettoyage best-effort : le secret temporaire ne doit pas faire échouer le résultat.
+        }
+        catch (OperationCanceledException)
+        {
+        }
     }
 }

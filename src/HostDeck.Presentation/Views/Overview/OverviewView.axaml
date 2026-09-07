@@ -11,7 +11,7 @@
                 VerticalScrollBarVisibility="Auto">
     <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,Auto,*" RowSpacing="16">
 
-      <Grid ColumnDefinitions="*,Auto">
+      <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
         <StackPanel Spacing="4">
           <TextBlock Text="Bonjour,"
                      FontSize="{StaticResource FontSizeTitle}"
@@ -21,7 +21,16 @@
                      FontSize="{StaticResource FontSizeBody}"
                      Foreground="{StaticResource TextSecondaryBrush}" />
         </StackPanel>
-        <Border Grid.Column="1"
+        <Button Grid.Column="1"
+                Content="+ Ajouter un hôte"
+                Command="{Binding AddHostCommand}"
+                Padding="14,8"
+                VerticalAlignment="Center"
+                Background="{StaticResource AccentBrush}"
+                Foreground="{StaticResource TextPrimaryBrush}"
+                CornerRadius="{StaticResource RadiusSmall}"
+                BorderThickness="0" />
+        <Border Grid.Column="2"
                 Padding="14,10"
                 BorderBrush="{StaticResource StatusOnlineBrush}"
                 BorderThickness="{StaticResource BorderThin}"

@@ -148,3 +148,31 @@ public sealed record CollectionCycleCompletedEvent : MonitoringEvent
 
     public TimeSpan Duration { get; }
 }
+
+/// <summary>
+/// La clé d'hôte présentée diffère de l'empreinte approuvée : événement de sécurité (§51, T3).
+/// </summary>
+public sealed record HostKeyChangedEvent : MonitoringEvent
+{
+    public HostKeyChangedEvent(
+        ServerId serverId,
+        string host,
+        string presentedFingerprint,
+        string knownFingerprint,
+        DateTimeOffset occurredAt)
+        : base(occurredAt)
+    {
+        ServerId = serverId;
+        Host = host;
+        PresentedFingerprint = presentedFingerprint;
+        KnownFingerprint = knownFingerprint;
+    }
+
+    public ServerId ServerId { get; }
+
+    public string Host { get; }
+
+    public string PresentedFingerprint { get; }
+
+    public string KnownFingerprint { get; }
+}

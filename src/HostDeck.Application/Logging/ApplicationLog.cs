@@ -125,4 +125,16 @@ internal static partial class ApplicationLog
         Level = LogLevel.Information,
         Message = "Settings updated")]
     public static partial void SettingsUpdated(ILogger logger);
+
+    [LoggerMessage(
+        EventId = 1500,
+        Level = LogLevel.Information,
+        Message = "Host key approved for {Host}:{Port}")]
+    public static partial void HostKeyApproved(ILogger logger, string host, int port);
+
+    [LoggerMessage(
+        EventId = 1501,
+        Level = LogLevel.Warning,
+        Message = "Host key change detected for server {ServerId} ({Host})")]
+    public static partial void HostKeyChanged(ILogger logger, Guid serverId, string host);
 }

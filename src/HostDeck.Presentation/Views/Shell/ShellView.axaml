@@ -63,10 +63,10 @@
   </UserControl.Styles>
 
   <Grid ColumnDefinitions="Auto,*"
-        RowDefinitions="Auto,*,Auto">
+        RowDefinitions="Auto,Auto,*,Auto">
 
     <Border x:Name="NavigationRail"
-            Grid.RowSpan="3"
+            Grid.RowSpan="4"
             Width="{StaticResource RailWidth}"
             Background="{StaticResource SurfaceRailBrush}"
             BorderBrush="{StaticResource BorderSubtleBrush}"
@@ -202,6 +202,28 @@
 
     <Border Grid.Row="1"
             Grid.Column="1"
+            IsVisible="{Binding HasSecurityAlert}"
+            Background="{StaticResource SeverityCriticalBrush}"
+            Padding="14,8">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Text="{Binding SecurityAlertText}"
+                   TextWrapping="Wrap"
+                   Foreground="{StaticResource TextPrimaryBrush}"
+                   FontWeight="SemiBold"
+                   VerticalAlignment="Center" />
+        <Button Grid.Column="1"
+                Content="Masquer"
+                Command="{Binding DismissSecurityAlertCommand}"
+                Margin="12,0,0,0"
+                Padding="10,4"
+                Background="{StaticResource SurfaceRaisedBrush}"
+                Foreground="{StaticResource TextPrimaryBrush}"
+                BorderThickness="0" />
+      </Grid>
+    </Border>
+
+    <Border Grid.Row="2"
+            Grid.Column="1"
             Background="{StaticResource SurfaceBackgroundBrush}">
       <ContentControl Content="{Binding CurrentPage}"
                       HorizontalContentAlignment="Stretch"
@@ -209,7 +231,7 @@
     </Border>
 
     <Border x:Name="StatusBar"
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="1"
             Height="{StaticResource StatusBarHeight}"
             Background="{StaticResource SurfaceTopbarBrush}"

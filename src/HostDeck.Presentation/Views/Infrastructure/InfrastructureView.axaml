@@ -38,13 +38,13 @@
           <TextBlock Text="hôtes au total" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="{StaticResource FontSizeBody}" />
         </StackPanel>
         <Button Content="+ Ajouter un hôte"
+                Command="{Binding AddHostCommand}"
                 Padding="14,8"
                 Background="{StaticResource AccentBrush}"
                 Foreground="{StaticResource TextPrimaryBrush}"
                 CornerRadius="{StaticResource RadiusSmall}"
                 BorderThickness="0"
-                IsEnabled="False"
-                ToolTip.Tip="L’ajout d’hôte arrivera avec le magasin de credentials." />
+                ToolTip.Tip="Ajouter un serveur Linux à superviser." />
       </StackPanel>
     </Grid>
 
