@@ -23,11 +23,13 @@ internal static class Program
     {
         using var host = HostBuilderFactory.Create(args);
 
-        host.Start();
         try
         {
-            // Prépare SQLite avant d'ouvrir l'UI : les écrans lisent l'inventaire et les réglages.
+            // Migrations avant host.Start : sinon FleetMonitoringCoordinator lit une base
+            // encore non migrée et peut arrêter tout le processus (BackgroundServiceExceptionBehavior).
             host.Services.InitializeHostDeckDatabaseAsync().GetAwaiter().GetResult();
+
+            host.Start();
 
             App.Services = host.Services;
             return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);

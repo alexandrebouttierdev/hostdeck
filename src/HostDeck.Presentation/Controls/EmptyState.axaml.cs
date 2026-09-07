@@ -19,11 +19,19 @@ public partial class EmptyState : UserControl
     public static readonly StyledProperty<Geometry?> IconDataProperty =
         AvaloniaProperty.Register<EmptyState, Geometry?>(nameof(IconData));
 
+    public static readonly StyledProperty<bool> IsCompactProperty =
+        AvaloniaProperty.Register<EmptyState, bool>(nameof(IsCompact));
+
     public EmptyState()
     {
         InitializeComponent();
         IconDataProperty.Changed.AddClassHandler<EmptyState>((control, _) => control.UpdateIconVisibility());
-        AttachedToVisualTree += (_, _) => UpdateIconVisibility();
+        IsCompactProperty.Changed.AddClassHandler<EmptyState>((control, _) => control.ApplyCompactLayout());
+        AttachedToVisualTree += (_, _) =>
+        {
+            UpdateIconVisibility();
+            ApplyCompactLayout();
+        };
     }
 
     public string Title
@@ -44,11 +52,38 @@ public partial class EmptyState : UserControl
         set => SetValue(IconDataProperty, value);
     }
 
+    /// <summary>Réduit icône et titres pour les cartes jauges / panneaux denses.</summary>
+    public bool IsCompact
+    {
+        get => GetValue(IsCompactProperty);
+        set => SetValue(IsCompactProperty, value);
+    }
+
     private void UpdateIconVisibility()
     {
         if (IconPath is not null)
         {
             IconPath.IsVisible = IconData is not null;
+        }
+    }
+
+    private void ApplyCompactLayout()
+    {
+        if (IconPath is not null)
+        {
+            IconPath.Width = IsCompact ? 22d : 34d;
+            IconPath.Height = IsCompact ? 22d : 34d;
+        }
+
+        if (TitleBlock is not null)
+        {
+            TitleBlock.FontSize = IsCompact ? 12d : 16d;
+        }
+
+        if (DescriptionBlock is not null)
+        {
+            DescriptionBlock.MaxWidth = IsCompact ? 220d : 420d;
+            DescriptionBlock.FontSize = IsCompact ? 11d : 12d;
         }
     }
 }

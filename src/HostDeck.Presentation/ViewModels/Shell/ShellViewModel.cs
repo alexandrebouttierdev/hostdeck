@@ -100,9 +100,12 @@ public partial class ShellViewModel : ObservableObject, IDisposable
     public string DatabaseStatusText { get; } = "Base locale prête";
 
     /// <summary>Charge l'écran initial (flotte vide attendue au premier démarrage).</summary>
-    public async Task InitializeAsync(CancellationToken cancellationToken = default)
+    public async Task InitializeAsync(
+        ShellSection? initialSection = null,
+        CancellationToken cancellationToken = default)
     {
-        await NavigateAsync(ShellSection.Overview, cancellationToken).ConfigureAwait(true);
+        await NavigateAsync(initialSection ?? ShellSection.Overview, cancellationToken)
+            .ConfigureAwait(true);
     }
 
     [RelayCommand]

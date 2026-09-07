@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using HostDeck.Desktop.Bootstrap;
+using HostDeck.Presentation.Navigation;
 using HostDeck.Presentation.ViewModels.Shell;
 using HostDeck.Presentation.Views.Shell;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,9 +36,12 @@ public partial class App : AvaloniaApplication
             mainWindow.DataContext = shell;
             desktop.MainWindow = mainWindow;
 
+            var initialSection = StartupSection.TryParse(
+                (ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.Args);
+
             desktop.MainWindow.Opened += async (_, _) =>
             {
-                await shell.InitializeAsync().ConfigureAwait(true);
+                await shell.InitializeAsync(initialSection).ConfigureAwait(true);
             };
         }
 

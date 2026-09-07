@@ -5,7 +5,7 @@
 
   <StackPanel HorizontalAlignment="Center"
               VerticalAlignment="Center"
-              Spacing="{StaticResource Spacing3}"
+              Spacing="{StaticResource Spacing2}"
               Margin="{StaticResource PanelPadding}">
     <Path x:Name="IconPath"
           Data="{Binding IconData, ElementName=Root}"
@@ -17,14 +17,16 @@
           StrokeJoin="Round"
           Stroke="{StaticResource TextMutedBrush}"
           HorizontalAlignment="Center" />
-    <TextBlock Text="{Binding Title, ElementName=Root}"
+    <TextBlock x:Name="TitleBlock"
+               Text="{Binding Title, ElementName=Root}"
                HorizontalAlignment="Center"
                TextAlignment="Center"
                FontSize="{StaticResource FontSizeLarge}"
                FontWeight="SemiBold"
                Foreground="{StaticResource TextPrimaryBrush}"
                TextWrapping="Wrap" />
-    <TextBlock Text="{Binding Description, ElementName=Root}"
+    <TextBlock x:Name="DescriptionBlock"
+               Text="{Binding Description, ElementName=Root}"
                HorizontalAlignment="Center"
                TextAlignment="Center"
                FontSize="{StaticResource FontSizeBody}"

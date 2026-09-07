@@ -9,8 +9,11 @@
 
   <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                 VerticalScrollBarVisibility="Auto">
-    <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,Auto,*" RowSpacing="16">
+    <Grid Margin="{StaticResource ContentPadding}"
+          RowDefinitions="Auto,Auto,Auto,*,*"
+          RowSpacing="14">
 
+      <!-- En-tête : salutation + action + état collecte -->
       <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
         <StackPanel Spacing="4">
           <TextBlock Text="Bonjour,"
@@ -52,15 +55,16 @@
         </Border>
       </Grid>
 
+      <!-- 4 KPI -->
       <UniformGrid Grid.Row="1" Columns="4">
         <Border Margin="0,0,8,0" Padding="{StaticResource PanelPadding}"
                 Background="{StaticResource SurfacePanelBrush}"
                 BorderBrush="{StaticResource BorderSubtleBrush}"
                 BorderThickness="{StaticResource BorderThin}"
                 CornerRadius="{StaticResource RadiusSmall}"
-                MinHeight="96">
+                MinHeight="88">
           <StackPanel Spacing="6">
-            <TextBlock Text="Hôtes surveillés" Classes="secondary" />
+            <TextBlock Text="Hôtes surveillés" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
             <TextBlock Text="{Binding HostCount}" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
             <TextBlock Text="0 opérationnel · 0 avertissement · 0 problème" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
           </StackPanel>
@@ -70,9 +74,9 @@
                 BorderBrush="{StaticResource BorderSubtleBrush}"
                 BorderThickness="{StaticResource BorderThin}"
                 CornerRadius="{StaticResource RadiusSmall}"
-                MinHeight="96">
+                MinHeight="88">
           <StackPanel Spacing="6">
-            <TextBlock Text="Incidents actifs" Classes="secondary" />
+            <TextBlock Text="Incidents actifs" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
             <TextBlock Text="{Binding ActiveIncidentCount}" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
             <TextBlock Text="Aucun incident ouvert" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
           </StackPanel>
@@ -82,9 +86,9 @@
                 BorderBrush="{StaticResource BorderSubtleBrush}"
                 BorderThickness="{StaticResource BorderThin}"
                 CornerRadius="{StaticResource RadiusSmall}"
-                MinHeight="96">
+                MinHeight="88">
           <StackPanel Spacing="6">
-            <TextBlock Text="Alertes ouvertes" Classes="secondary" />
+            <TextBlock Text="Alertes ouvertes" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
             <TextBlock Text="0" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
             <TextBlock Text="Aucune alerte" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
           </StackPanel>
@@ -94,72 +98,81 @@
                 BorderBrush="{StaticResource BorderSubtleBrush}"
                 BorderThickness="{StaticResource BorderThin}"
                 CornerRadius="{StaticResource RadiusSmall}"
-                MinHeight="96">
+                MinHeight="88">
           <StackPanel Spacing="6">
-            <TextBlock Text="Disponibilité globale" Classes="secondary" />
+            <TextBlock Text="Disponibilité globale" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
             <TextBlock Text="—" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
             <TextBlock Text="Indisponible sans flotte" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
           </StackPanel>
         </Border>
       </UniformGrid>
 
-      <Grid Grid.Row="2" ColumnDefinitions="2*,*" RowDefinitions="Auto,Auto,*" RowSpacing="12" ColumnSpacing="12">
-        <UniformGrid Grid.ColumnSpan="2" Columns="4">
-          <Border Margin="0,0,6,0" Height="120" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
-            <controls:EmptyState Title="CPU global" Description="Aucune métrique collectée." IconData="{StaticResource IconLiveData}" />
-          </Border>
-          <Border Margin="3,0" Height="120" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
-            <controls:EmptyState Title="Mémoire globale" Description="Aucune métrique collectée." />
-          </Border>
-          <Border Margin="3,0" Height="120" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
-            <controls:EmptyState Title="Stockage global" Description="Aucune métrique collectée." />
-          </Border>
-          <Border Margin="6,0,0,0" Height="120" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
-            <controls:EmptyState Title="Réseau global" Description="Aucune métrique collectée." />
-          </Border>
-        </UniformGrid>
-
-        <charts:ChartFrame Grid.Row="1"
-                           MinHeight="180"
-                           Title="Utilisation CPU globale"
-                           Series="{Binding CpuSeries}"
-                           EmptyTitle="Aucune série disponible"
-                           EmptyDescription="Les graphiques s’afficheront dès que des métriques seront collectées."
-                           EmptyIconData="{StaticResource IconLiveData}" />
-
-        <charts:ChartFrame Grid.Row="1" Grid.Column="1"
-                           MinHeight="180"
-                           Title="Utilisation mémoire globale"
-                           Series="{Binding MemorySeries}"
-                           EmptyTitle="Aucune série disponible"
-                           EmptyDescription="Les graphiques s’afficheront dès que des métriques seront collectées." />
-
-        <Border Grid.Row="2" MinHeight="160"
+      <!-- 4 jauges globales (layout mockup ; empty states intentionnels) -->
+      <UniformGrid Grid.Row="2" Columns="4">
+        <Border Margin="0,0,6,0" Height="118"
                 Background="{StaticResource SurfacePanelBrush}"
                 BorderBrush="{StaticResource BorderSubtleBrush}"
                 BorderThickness="{StaticResource BorderThin}"
                 CornerRadius="{StaticResource RadiusSmall}">
-          <DockPanel>
-            <TextBlock DockPanel.Dock="Top" Margin="14,12,14,0" Text="Incidents récents"
-                       FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <controls:EmptyState Title="Aucun incident actif"
-                                 Description="Les incidents apparaîtront ici lorsque des règles d’alerte se déclencheront."
-                                 IconData="{StaticResource IconIncidents}" />
-          </DockPanel>
+          <controls:EmptyState IsCompact="True"
+                               Title="CPU global"
+                               Description="Aucune métrique collectée."
+                               IconData="{StaticResource IconLiveData}" />
         </Border>
+        <Border Margin="3,0" Height="118"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <controls:EmptyState IsCompact="True"
+                               Title="Mémoire globale"
+                               Description="Aucune métrique collectée." />
+        </Border>
+        <Border Margin="3,0" Height="118"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <controls:EmptyState IsCompact="True"
+                               Title="Stockage global"
+                               Description="Aucune métrique collectée." />
+        </Border>
+        <Border Margin="6,0,0,0" Height="118"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <controls:EmptyState IsCompact="True"
+                               Title="Réseau global"
+                               Description="Aucune métrique collectée." />
+        </Border>
+      </UniformGrid>
 
-        <Border Grid.Row="2" Grid.Column="1" MinHeight="160"
+      <!-- Graphiques + hôtes sollicités (3 colonnes comme la maquette) -->
+      <Grid Grid.Row="3" ColumnDefinitions="*,*,0.85*" ColumnSpacing="12" MinHeight="200">
+        <charts:ChartFrame Title="Utilisation CPU globale"
+                           Series="{Binding CpuSeries}"
+                           EmptyTitle="Aucune série disponible"
+                           EmptyDescription="Les graphiques s’afficheront dès que des métriques seront collectées."
+                           EmptyIconData="{StaticResource IconLiveData}" />
+        <charts:ChartFrame Grid.Column="1"
+                           Title="Utilisation mémoire globale"
+                           Series="{Binding MemorySeries}"
+                           EmptyTitle="Aucune série disponible"
+                           EmptyDescription="Les graphiques s’afficheront dès que des métriques seront collectées." />
+        <Border Grid.Column="2"
                 Background="{StaticResource SurfacePanelBrush}"
                 BorderBrush="{StaticResource BorderSubtleBrush}"
                 BorderThickness="{StaticResource BorderThin}"
                 CornerRadius="{StaticResource RadiusSmall}">
           <DockPanel>
             <TextBlock DockPanel.Dock="Top" Margin="14,12,14,0" Text="Hôtes les plus sollicités"
-                       FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                       FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
             <Panel>
               <controls:EmptyState IsVisible="{Binding IsEmpty}"
+                                   IsCompact="True"
                                    Title="Aucune flotte configurée"
-                                   Description="Ajoutez votre premier serveur Linux pour alimenter la vue d’ensemble."
+                                   Description="Ajoutez un serveur Linux pour alimenter ce classement."
                                    IconData="{StaticResource IconInfrastructure}" />
               <DataGrid IsVisible="{Binding !IsEmpty}"
                         ItemsSource="{Binding TopHosts}"
@@ -174,9 +187,9 @@
                         Margin="8,4,8,8">
                 <DataGrid.Columns>
                   <DataGridTextColumn Header="Hôte" Binding="{Binding Name}" Width="*" />
-                  <DataGridTextColumn Header="CPU" Binding="{Binding CpuText}" Width="56" />
-                  <DataGridTextColumn Header="Mémoire" Binding="{Binding MemoryText}" Width="70" />
-                  <DataGridTemplateColumn Header="Réseau" Width="70">
+                  <DataGridTextColumn Header="CPU" Binding="{Binding CpuText}" Width="52" />
+                  <DataGridTextColumn Header="Mémoire" Binding="{Binding MemoryText}" Width="64" />
+                  <DataGridTemplateColumn Header="Réseau" Width="64">
                     <DataGridTemplateColumn.CellTemplate>
                       <DataTemplate x:DataType="infra:HostListItemViewModel">
                         <charts:SparklineControl Width="56" Height="18"
@@ -190,6 +203,57 @@
                 </DataGrid.Columns>
               </DataGrid>
             </Panel>
+          </DockPanel>
+        </Border>
+      </Grid>
+
+      <!-- Incidents récents + état des services -->
+      <Grid Grid.Row="4" ColumnDefinitions="1.6*,*" ColumnSpacing="12" MinHeight="170">
+        <Border Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Margin="14,12,14,0" Text="Incidents récents"
+                       FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+            <controls:EmptyState Title="Aucun incident actif"
+                                 Description="Les incidents apparaîtront ici lorsque des règles d’alerte se déclencheront."
+                                 IconData="{StaticResource IconIncidents}" />
+          </DockPanel>
+        </Border>
+
+        <Border Grid.Column="1"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Margin="14,12,14,0" Text="État des services"
+                       FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+            <StackPanel Margin="14,10,14,14" Spacing="8">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Collecte des métriques" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                  <Ellipse Width="7" Height="7" Fill="{StaticResource StatusOnlineBrush}" VerticalAlignment="Center" />
+                  <TextBlock Text="Opérationnel" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                </StackPanel>
+              </Grid>
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Base de données locale" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                  <Ellipse Width="7" Height="7" Fill="{StaticResource StatusOnlineBrush}" VerticalAlignment="Center" />
+                  <TextBlock Text="Opérationnel" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                </StackPanel>
+              </Grid>
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Agents" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+                <TextBlock Grid.Column="1" Text="Hors périmètre V1" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              </Grid>
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Notifications externes" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+                <TextBlock Grid.Column="1" Text="Hors périmètre V1" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              </Grid>
+            </StackPanel>
           </DockPanel>
         </Border>
       </Grid>

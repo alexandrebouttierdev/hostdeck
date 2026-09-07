@@ -5,63 +5,85 @@
              x:Class="HostDeck.Presentation.Views.Alerts.AlertsView"
              x:DataType="vm:AlertsViewModel">
 
-  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,*" RowSpacing="12">
 
-    <StackPanel Spacing="4">
-      <TextBlock Text="Règles d’alerte" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-      <TextBlock Text="Surveillez votre infrastructure et soyez notifié en cas d’anomalie."
-                 Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-    </StackPanel>
+    <Grid ColumnDefinitions="*,Auto">
+      <StackPanel Spacing="4">
+        <TextBlock Text="Règles d’alerte" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+        <TextBlock Text="Surveillez votre infrastructure et soyez notifié en cas d’anomalie."
+                   Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+      </StackPanel>
+      <Button Grid.Column="1"
+              Content="+ Nouvelle règle"
+              IsEnabled="False"
+              Padding="14,8"
+              VerticalAlignment="Center"
+              Background="{StaticResource AccentBrush}"
+              Foreground="{StaticResource TextPrimaryBrush}"
+              CornerRadius="{StaticResource RadiusSmall}"
+              BorderThickness="0"
+              ToolTip.Tip="La création de règles sera disponible avec le moteur d’alertes." />
+    </Grid>
 
-    <Border Grid.Row="1"
-            Background="{StaticResource SurfacePanelBrush}"
-            BorderBrush="{StaticResource BorderSubtleBrush}"
-            BorderThickness="{StaticResource BorderThin}"
-            CornerRadius="{StaticResource RadiusSmall}">
-      <Panel>
-        <controls:EmptyState IsVisible="{Binding IsEmpty}"
-                             Title="Aucune règle d’alerte"
-                             Description="Créez une règle pour surveiller CPU, mémoire, disque ou charge."
-                             IconData="{StaticResource IconAlerts}" />
-        <DataGrid IsVisible="{Binding !IsEmpty}"
-                  ItemsSource="{Binding Rules}"
-                  SelectedItem="{Binding SelectedRule}"
-                  AutoGenerateColumns="False"
-                  CanUserResizeColumns="True"
-                  GridLinesVisibility="Horizontal"
-                  BorderThickness="0"
-                  Background="Transparent"
-                  RowHeight="{StaticResource TableRowHeight}">
-          <DataGrid.Columns>
-            <DataGridCheckBoxColumn Header="Activée" Binding="{Binding IsEnabled}" Width="80" IsReadOnly="True" />
-            <DataGridTextColumn Header="Nom" Binding="{Binding Name}" Width="*" />
-            <DataGridTextColumn Header="Métrique" Binding="{Binding Metric}" Width="120" />
-            <DataGridTextColumn Header="Sévérité" Binding="{Binding Severity}" Width="110" />
-            <DataGridTextColumn Header="Incidents" Binding="{Binding ActiveIncidents}" Width="90" />
-          </DataGrid.Columns>
-        </DataGrid>
-      </Panel>
-    </Border>
+    <!-- Split liste + éditeur (maquette 05) -->
+    <Grid Grid.Row="1" ColumnDefinitions="1.2*,12,*">
+      <Border Background="{StaticResource SurfacePanelBrush}"
+              BorderBrush="{StaticResource BorderSubtleBrush}"
+              BorderThickness="{StaticResource BorderThin}"
+              CornerRadius="{StaticResource RadiusSmall}">
+        <Panel>
+          <controls:EmptyState IsVisible="{Binding IsEmpty}"
+                               Title="Aucune règle d’alerte"
+                               Description="Créez une règle pour surveiller CPU, mémoire, disque ou charge."
+                               IconData="{StaticResource IconAlerts}" />
+          <DataGrid IsVisible="{Binding !IsEmpty}"
+                    ItemsSource="{Binding Rules}"
+                    SelectedItem="{Binding SelectedRule}"
+                    AutoGenerateColumns="False"
+                    CanUserResizeColumns="True"
+                    GridLinesVisibility="Horizontal"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    RowHeight="{StaticResource TableRowHeight}">
+            <DataGrid.Columns>
+              <DataGridCheckBoxColumn Header="Activée" Binding="{Binding IsEnabled}" Width="80" IsReadOnly="True" />
+              <DataGridTextColumn Header="Nom" Binding="{Binding Name}" Width="*" />
+              <DataGridTextColumn Header="Métrique" Binding="{Binding Metric}" Width="120" />
+              <DataGridTextColumn Header="Sévérité" Binding="{Binding Severity}" Width="110" />
+              <DataGridTextColumn Header="Incidents" Binding="{Binding ActiveIncidents}" Width="90" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </Panel>
+      </Border>
 
-    <Border Grid.Row="2" MinHeight="140" IsVisible="{Binding HasSelection}"
-            Background="{StaticResource SurfacePanelBrush}"
-            BorderBrush="{StaticResource BorderSubtleBrush}"
-            BorderThickness="{StaticResource BorderThin}"
-            CornerRadius="{StaticResource RadiusSmall}">
-      <Grid ColumnDefinitions="*,*" Margin="{StaticResource PanelPadding}" ColumnSpacing="12">
-        <StackPanel Spacing="8">
-          <TextBlock Text="{Binding SelectedRule.Name}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeLarge}" />
-          <TextBlock Text="{Binding SelectedRule.Description}" Foreground="{StaticResource TextSecondaryBrush}" TextWrapping="Wrap" />
-          <TextBlock Text="Canaux de notification — hors périmètre V1"
-                     Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-        </StackPanel>
-        <Border Grid.Column="1" Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusSmall}">
-          <controls:EmptyState Title="Aperçu métrique"
-                               Description="Le graphique de seuil s’affichera avec l’historique réel."
-                               IconData="{StaticResource IconLiveData}" />
-        </Border>
-      </Grid>
-    </Border>
-
+      <Border Grid.Column="2"
+              Background="{StaticResource SurfacePanelBrush}"
+              BorderBrush="{StaticResource BorderSubtleBrush}"
+              BorderThickness="{StaticResource BorderThin}"
+              CornerRadius="{StaticResource RadiusSmall}">
+        <DockPanel Margin="{StaticResource PanelPadding}">
+          <TextBlock DockPanel.Dock="Top" Text="Éditeur de règle"
+                     FontWeight="SemiBold" FontSize="{StaticResource FontSizeLarge}"
+                     Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,10" />
+          <Border DockPanel.Dock="Bottom" Margin="0,12,0,0"
+                  Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusSmall}" MinHeight="120">
+            <controls:EmptyState IsCompact="True"
+                                 Title="Aperçu métrique"
+                                 Description="Le graphique de seuil s’affichera avec l’historique réel."
+                                 IconData="{StaticResource IconLiveData}" />
+          </Border>
+          <StackPanel Spacing="10">
+            <TextBlock Text="Sélectionnez une règle pour l’éditer."
+                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+            <TextBlock Text="Canaux de notification — hors périmètre V1"
+                       Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+            <controls:EmptyState IsCompact="True"
+                                 Title="Formulaire en attente"
+                                 Description="Nom, métrique, seuil et portée apparaîtront ici."
+                                 IconData="{StaticResource IconAlerts}" />
+          </StackPanel>
+        </DockPanel>
+      </Border>
+    </Grid>
   </Grid>
 </UserControl>

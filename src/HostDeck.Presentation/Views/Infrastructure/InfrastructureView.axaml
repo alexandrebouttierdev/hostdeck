@@ -6,9 +6,10 @@
              x:Class="HostDeck.Presentation.Views.Infrastructure.InfrastructureView"
              x:DataType="vm:InfrastructureViewModel">
 
-  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,Auto,*" RowSpacing="14">
+  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
 
-    <Grid ColumnDefinitions="*,Auto">
+    <!-- En-tête + stats rapides + action -->
+    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="16">
       <StackPanel Orientation="Horizontal" Spacing="14">
         <Border Width="44" Height="44"
                 Background="{StaticResource SurfaceRaisedBrush}"
@@ -32,38 +33,97 @@
         </StackPanel>
       </StackPanel>
 
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
-        <StackPanel Orientation="Horizontal" Spacing="8">
-          <TextBlock Text="{Binding Hosts.Count}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" />
-          <TextBlock Text="hôtes au total" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="{StaticResource FontSizeBody}" />
-        </StackPanel>
-        <Button Content="+ Ajouter un hôte"
-                Command="{Binding AddHostCommand}"
-                Padding="14,8"
-                Background="{StaticResource AccentBrush}"
-                Foreground="{StaticResource TextPrimaryBrush}"
-                CornerRadius="{StaticResource RadiusSmall}"
-                BorderThickness="0"
-                ToolTip.Tip="Ajouter un serveur Linux à superviser." />
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+        <Border Padding="10,6" Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock Text="{Binding Hosts.Count}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBlock Text="hôtes" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+        <Border Padding="10,6" Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Ellipse Width="7" Height="7" Fill="{StaticResource StatusOnlineBrush}" VerticalAlignment="Center" />
+            <TextBlock Text="0 opér." Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+          </StackPanel>
+        </Border>
+        <Border Padding="10,6" Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Ellipse Width="7" Height="7" Fill="{StaticResource SeverityCriticalBrush}" VerticalAlignment="Center" />
+            <TextBlock Text="0 problème" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+          </StackPanel>
+        </Border>
+        <Border Padding="10,6" Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Ellipse Width="7" Height="7" Fill="{StaticResource StatusWarningBrush}" VerticalAlignment="Center" />
+            <TextBlock Text="0 maint." Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+      <Button Grid.Column="2"
+              Content="+ Ajouter un hôte"
+              Command="{Binding AddHostCommand}"
+              Padding="14,8"
+              VerticalAlignment="Center"
+              Background="{StaticResource AccentBrush}"
+              Foreground="{StaticResource TextPrimaryBrush}"
+              CornerRadius="{StaticResource RadiusSmall}"
+              BorderThickness="0"
+              ToolTip.Tip="Ajouter un serveur Linux à superviser." />
+    </Grid>
+
+    <!-- Onglets / filtres (structure maquette ; flotte vide = compteurs à 0) -->
+    <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <Border Background="{StaticResource SelectionBrush}" CornerRadius="{StaticResource RadiusSmall}" Padding="10,6">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="Tous les hôtes" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+            <Border Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusPill}" Padding="7,1">
+              <TextBlock Text="{Binding Hosts.Count}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+            </Border>
+          </StackPanel>
+        </Border>
+        <Border Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}" Padding="10,6">
+          <TextBlock Text="Linux 0" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+        </Border>
+        <Border Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}" Padding="10,6">
+          <TextBlock Text="Windows 0" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeBody}"
+                     ToolTip.Tip="Hors périmètre V1 — collecte Linux uniquement." />
+        </Border>
+        <Border Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}" Padding="10,6">
+          <TextBlock Text="Avec problèmes 0" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+        </Border>
+      </StackPanel>
+
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+        <Border Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}" Padding="10,6">
+          <TextBlock Text="Tous les tags" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeBody}" />
+        </Border>
+        <Border Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}" Padding="10,6">
+          <TextBlock Text="Tous les états" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeBody}" />
+        </Border>
       </StackPanel>
     </Grid>
 
-    <Border Grid.Row="1" Height="38"
-            Background="{StaticResource SurfacePanelBrush}"
-            BorderBrush="{StaticResource BorderSubtleBrush}"
-            BorderThickness="{StaticResource BorderThin}"
-            CornerRadius="{StaticResource RadiusSmall}">
-      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0" Spacing="10">
-        <Path Data="{StaticResource IconInfrastructure}" Stretch="Uniform" Width="14" Height="14"
-              StrokeThickness="1.6" StrokeLineCap="Round" StrokeJoin="Round"
-              Stroke="{StaticResource AccentHoverBrush}" VerticalAlignment="Center" />
-        <TextBlock Text="Tous les hôtes" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="SemiBold" />
-        <Border Background="{StaticResource SelectionBrush}" CornerRadius="{StaticResource RadiusPill}" Padding="8,2">
-          <TextBlock Text="{Binding Hosts.Count}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
-        </Border>
-      </StackPanel>
-    </Border>
-
+    <!-- Table + panneau détail -->
     <Grid Grid.Row="2" ColumnDefinitions="*,Auto,Auto">
       <Border Background="{StaticResource SurfacePanelBrush}"
               BorderBrush="{StaticResource BorderSubtleBrush}"
@@ -147,7 +207,6 @@
         </Panel>
       </Border>
 
-      <!-- Splitter + panneau détail : absents sans sélection (UI_DESIGN). -->
       <GridSplitter Grid.Column="1"
                     Width="4"
                     ResizeDirection="Columns"
@@ -164,8 +223,7 @@
               Background="{StaticResource SurfacePanelBrush}"
               BorderBrush="{StaticResource BorderSubtleBrush}"
               BorderThickness="{StaticResource BorderThin}"
-              CornerRadius="{StaticResource RadiusSmall}"
-              Margin="0,0,0,0">
+              CornerRadius="{StaticResource RadiusSmall}">
         <DockPanel Margin="{StaticResource PanelPadding}">
           <StackPanel DockPanel.Dock="Top" Spacing="10">
             <TextBlock Text="Détail de l’hôte"
@@ -177,15 +235,15 @@
                        FontWeight="SemiBold"
                        Foreground="{StaticResource TextPrimaryBrush}" />
             <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="12">
-              <TextBlock Text="Adresse" Classes="secondary" />
+              <TextBlock Text="Adresse" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
               <TextBlock Grid.Column="1" Text="{Binding SelectedHost.Address}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Grid.Row="1" Text="État" Classes="secondary" />
+              <TextBlock Grid.Row="1" Text="État" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
               <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedHost.Status}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Grid.Row="2" Text="Groupe" Classes="secondary" />
+              <TextBlock Grid.Row="2" Text="Groupe" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
               <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedHost.Group}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Grid.Row="3" Text="Système" Classes="secondary" />
+              <TextBlock Grid.Row="3" Text="Système" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
               <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedHost.OperatingSystem}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Grid.Row="4" Text="Charge" Classes="secondary" />
+              <TextBlock Grid.Row="4" Text="Charge" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
               <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding SelectedHost.LoadText}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
             </Grid>
             <Button Content="Ouvrir le détail complet"
@@ -205,6 +263,19 @@
                              EmptyIconData="{StaticResource IconLiveData}" />
         </DockPanel>
       </Border>
+    </Grid>
+
+    <!-- Pied de page écran (synthèse flotte) -->
+    <Grid Grid.Row="3" ColumnDefinitions="*,Auto" Margin="2,0">
+      <TextBlock Text="{Binding StatusSummary}"
+                 Foreground="{StaticResource TextSecondaryBrush}"
+                 FontSize="{StaticResource FontSizeBody}"
+                 VerticalAlignment="Center" />
+      <TextBlock Grid.Column="1"
+                 Text="Lignes par page : —"
+                 Foreground="{StaticResource TextMutedBrush}"
+                 FontSize="{StaticResource FontSizeSmall}"
+                 VerticalAlignment="Center" />
     </Grid>
   </Grid>
 </UserControl>

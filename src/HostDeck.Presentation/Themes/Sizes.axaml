@@ -42,8 +42,8 @@
   <sys:Double x:Key="Spacing5">24</sys:Double>
   <sys:Double x:Key="Spacing6">32</sys:Double>
 
-  <Thickness x:Key="ContentPadding">24,20,24,20</Thickness>
-  <Thickness x:Key="PanelPadding">16</Thickness>
+  <Thickness x:Key="ContentPadding">20,14,20,12</Thickness>
+  <Thickness x:Key="PanelPadding">14</Thickness>
   <Thickness x:Key="CellPadding">10,0,10,0</Thickness>
 
   <!-- Bordures : fines, comme dans les maquettes -->

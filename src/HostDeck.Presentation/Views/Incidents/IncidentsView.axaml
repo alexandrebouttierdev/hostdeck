@@ -5,7 +5,7 @@
              x:Class="HostDeck.Presentation.Views.Incidents.IncidentsView"
              x:DataType="vm:IncidentsViewModel">
 
-  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,*" RowSpacing="12">
 
     <Grid ColumnDefinitions="*,Auto">
       <StackPanel Orientation="Horizontal" Spacing="12">
@@ -21,71 +21,82 @@
                      Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
         </StackPanel>
       </StackPanel>
-      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-        <TextBlock Text="Critiques 0" Foreground="{StaticResource SeverityCriticalBrush}" VerticalAlignment="Center" />
-        <TextBlock Text="Majeurs 0" Foreground="{StaticResource SeverityHighBrush}" VerticalAlignment="Center" />
-        <TextBlock Text="Avertissements 0" Foreground="{StaticResource SeverityWarningBrush}" VerticalAlignment="Center" />
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+        <Border Padding="10,6" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+          <TextBlock Text="Critiques 0" Foreground="{StaticResource SeverityCriticalBrush}" FontSize="{StaticResource FontSizeBody}" />
+        </Border>
+        <Border Padding="10,6" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+          <TextBlock Text="Majeurs 0" Foreground="{StaticResource SeverityHighBrush}" FontSize="{StaticResource FontSizeBody}" />
+        </Border>
+        <Border Padding="10,6" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+          <TextBlock Text="Avertissements 0" Foreground="{StaticResource SeverityWarningBrush}" FontSize="{StaticResource FontSizeBody}" />
+        </Border>
       </StackPanel>
     </Grid>
 
-    <Border Grid.Row="1"
-            Background="{StaticResource SurfacePanelBrush}"
-            BorderBrush="{StaticResource BorderSubtleBrush}"
-            BorderThickness="{StaticResource BorderThin}"
-            CornerRadius="{StaticResource RadiusSmall}">
-      <Panel>
-        <controls:EmptyState IsVisible="{Binding IsEmpty}"
-                             Title="Aucun incident actif"
-                             Description="Les incidents apparaîtront ici lorsque des règles d’alerte se déclencheront."
-                             IconData="{StaticResource IconIncidents}" />
-        <DataGrid IsVisible="{Binding !IsEmpty}"
-                  ItemsSource="{Binding Incidents}"
-                  SelectedItem="{Binding SelectedIncident}"
-                  AutoGenerateColumns="False"
-                  CanUserResizeColumns="True"
-                  GridLinesVisibility="Horizontal"
-                  BorderThickness="0"
-                  Background="Transparent"
-                  RowHeight="{StaticResource TableRowHeight}">
-          <DataGrid.Columns>
-            <DataGridTextColumn Header="Sévérité" Binding="{Binding Severity}" Width="100" />
-            <DataGridTextColumn Header="Hôte" Binding="{Binding ServerName}" Width="140" />
-            <DataGridTextColumn Header="Problème" Binding="{Binding Problem}" Width="*" />
-            <DataGridTextColumn Header="État" Binding="{Binding Status}" Width="120" />
-            <DataGridTextColumn Header="Durée" Binding="{Binding Duration}" Width="100" />
-          </DataGrid.Columns>
-        </DataGrid>
-      </Panel>
-    </Border>
+    <!-- Split liste + panneau diagnostic (maquette 04) -->
+    <Grid Grid.Row="1" ColumnDefinitions="1.35*,12,*">
+      <Border Background="{StaticResource SurfacePanelBrush}"
+              BorderBrush="{StaticResource BorderSubtleBrush}"
+              BorderThickness="{StaticResource BorderThin}"
+              CornerRadius="{StaticResource RadiusSmall}">
+        <Panel>
+          <controls:EmptyState IsVisible="{Binding IsEmpty}"
+                               Title="Aucun incident actif"
+                               Description="Les incidents apparaîtront ici lorsque des règles d’alerte se déclencheront."
+                               IconData="{StaticResource IconIncidents}" />
+          <DataGrid IsVisible="{Binding !IsEmpty}"
+                    ItemsSource="{Binding Incidents}"
+                    SelectedItem="{Binding SelectedIncident}"
+                    AutoGenerateColumns="False"
+                    CanUserResizeColumns="True"
+                    GridLinesVisibility="Horizontal"
+                    BorderThickness="0"
+                    Background="Transparent"
+                    RowHeight="{StaticResource TableRowHeight}">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Sévérité" Binding="{Binding Severity}" Width="100" />
+              <DataGridTextColumn Header="Hôte" Binding="{Binding ServerName}" Width="140" />
+              <DataGridTextColumn Header="Problème" Binding="{Binding Problem}" Width="*" />
+              <DataGridTextColumn Header="État" Binding="{Binding Status}" Width="120" />
+              <DataGridTextColumn Header="Durée" Binding="{Binding Duration}" Width="100" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </Panel>
+      </Border>
 
-    <!-- Panneau détail : absent sans sélection (ruling UI_DESIGN) -->
-    <Border Grid.Row="2" MinHeight="160" IsVisible="{Binding HasSelection}"
-            Background="{StaticResource SurfacePanelBrush}"
-            BorderBrush="{StaticResource BorderSubtleBrush}"
-            BorderThickness="{StaticResource BorderThin}"
-            CornerRadius="{StaticResource RadiusSmall}">
-      <Grid ColumnDefinitions="*,*,Auto" Margin="{StaticResource PanelPadding}" ColumnSpacing="12">
-        <DockPanel>
-          <TextBlock DockPanel.Dock="Top" Text="Chronologie" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,8" />
-          <controls:EmptyState Title="Chronologie vide"
-                               Description="Les événements de l’incident s’afficheront ici." />
+      <Border Grid.Column="2"
+              Background="{StaticResource SurfacePanelBrush}"
+              BorderBrush="{StaticResource BorderSubtleBrush}"
+              BorderThickness="{StaticResource BorderThin}"
+              CornerRadius="{StaticResource RadiusSmall}">
+        <DockPanel Margin="{StaticResource PanelPadding}">
+          <TextBlock DockPanel.Dock="Top" Text="Diagnostic"
+                     FontWeight="SemiBold" FontSize="{StaticResource FontSizeLarge}"
+                     Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,10" />
+          <StackPanel DockPanel.Dock="Bottom" Spacing="8" Margin="0,12,0,0">
+            <Button Content="Acquitter" IsEnabled="False" HorizontalAlignment="Stretch" Padding="10,8"
+                    Background="{StaticResource AccentBrush}" Foreground="{StaticResource TextPrimaryBrush}"
+                    BorderThickness="0" CornerRadius="{StaticResource RadiusSmall}" />
+            <Button Content="Résoudre" IsEnabled="False" HorizontalAlignment="Stretch" Padding="10,8"
+                    Background="{StaticResource SurfaceRaisedBrush}" Foreground="{StaticResource TextPrimaryBrush}"
+                    BorderBrush="{StaticResource BorderSubtleBrush}" CornerRadius="{StaticResource RadiusSmall}" />
+          </StackPanel>
+          <Grid RowDefinitions="*,*" RowSpacing="10">
+            <Border Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusSmall}">
+              <controls:EmptyState IsCompact="True"
+                                   Title="Chronologie"
+                                   Description="Sélectionnez un incident pour afficher sa chronologie." />
+            </Border>
+            <Border Grid.Row="1" Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusSmall}">
+              <controls:EmptyState IsCompact="True"
+                                   Title="Contexte métrique"
+                                   Description="Le graphique de contexte sera alimenté par la collecte."
+                                   IconData="{StaticResource IconLiveData}" />
+            </Border>
+          </Grid>
         </DockPanel>
-        <DockPanel Grid.Column="1">
-          <TextBlock DockPanel.Dock="Top" Text="Contexte métrique" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,8" />
-          <controls:EmptyState Title="Aucune série disponible"
-                               Description="Le graphique de contexte sera alimenté par la collecte."
-                               IconData="{StaticResource IconLiveData}" />
-        </DockPanel>
-        <StackPanel Grid.Column="2" Width="180" Spacing="8">
-          <Button Content="Acquitter" IsEnabled="False" HorizontalAlignment="Stretch" Padding="10,8"
-                  Background="{StaticResource AccentBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderThickness="0" CornerRadius="{StaticResource RadiusSmall}" />
-          <Button Content="Résoudre" IsEnabled="False" HorizontalAlignment="Stretch" Padding="10,8"
-                  Background="{StaticResource SurfaceRaisedBrush}" Foreground="{StaticResource TextPrimaryBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" CornerRadius="{StaticResource RadiusSmall}" />
-          <controls:EmptyState Title="Notifications"
-                               Description="Canaux externes hors périmètre V1." />
-        </StackPanel>
-      </Grid>
-    </Border>
-
+      </Border>
+    </Grid>
   </Grid>
 </UserControl>
