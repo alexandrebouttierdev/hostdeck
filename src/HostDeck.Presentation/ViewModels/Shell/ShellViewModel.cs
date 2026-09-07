@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -98,6 +99,23 @@ public partial class ShellViewModel : ObservableObject, IDisposable
     public string StatusSummary => CurrentPage.StatusSummary;
 
     public string DatabaseStatusText { get; } = "Base locale prête";
+
+    /// <summary>Horodatage de dernière collecte ; « — » tant qu’aucune cycle n’a abouti.</summary>
+    public string LastUpdateText { get; private set; } = "—";
+
+    /// <summary>Identité locale affichée dans la barre d’état (pas de faux compte utilisateur).</summary>
+    public string UserLabel { get; } = "Utilisateur : local";
+
+    public string RoleLabel { get; } = "Rôle : —";
+
+    public string EnvironmentLabel { get; } = "Environnement : —";
+
+    public string HostsBadgeText { get; } = "Hôtes : 0";
+
+    public string IncidentsBadgeText { get; } = "Incidents : 0";
+
+    public string AlertsBadgeText { get; } = "Alertes : 0";
+
 
     /// <summary>Charge l'écran initial (flotte vide attendue au premier démarrage).</summary>
     public async Task InitializeAsync(
@@ -200,6 +218,8 @@ public partial class ShellViewModel : ObservableObject, IDisposable
             CollectionStatusText = evt.Failed == 0
                 ? $"Collecte OK · {evt.Succeeded} hôte(s)"
                 : $"Collecte · {evt.Succeeded} OK · {evt.Failed} échec(s)";
+            LastUpdateText = DateTimeOffset.Now.ToString("HH:mm:ss", CultureInfo.InvariantCulture);
+            OnPropertyChanged(nameof(LastUpdateText));
         });
     }
 

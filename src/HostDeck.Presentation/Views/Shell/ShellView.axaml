@@ -199,7 +199,7 @@
           </Grid>
         </Border>
 
-        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="16">
+        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Spacing="14">
           <StackPanel Orientation="Horizontal" Spacing="8">
             <Ellipse Width="8" Height="8" Fill="{StaticResource StatusOnlineBrush}" />
             <TextBlock Text="{Binding CollectionStatusText}" Classes="secondary" VerticalAlignment="Center" />
@@ -208,10 +208,20 @@
             <Path Classes="topbarIcon" Data="{StaticResource IconRefresh}" />
             <TextBlock Text="Actualiser" Classes="secondary" VerticalAlignment="Center" />
           </StackPanel>
-          <TextBlock Text="Dernière mise à jour : —"
-                     Classes="secondary"
-                     VerticalAlignment="Center"
-                     FontSize="{StaticResource FontSizeSmall}" />
+          <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+            <TextBlock Text="Dernière mise à jour :" Classes="secondary" FontSize="{StaticResource FontSizeSmall}" />
+            <TextBlock Text="{Binding LastUpdateText}" Classes="secondary" FontSize="{StaticResource FontSizeSmall}" />
+          </StackPanel>
+          <Border Padding="8,3" Background="{StaticResource SurfaceRaisedBrush}"
+                  BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                  CornerRadius="{StaticResource RadiusSmall}" VerticalAlignment="Center"
+                  ToolTip.Tip="Rôle non configuré en V1.">
+            <TextBlock Text="{Binding RoleLabel}" FontSize="{StaticResource FontSizeMicro}" Foreground="{StaticResource TextMutedBrush}" />
+          </Border>
+          <Path Classes="topbarIcon" Data="{StaticResource IconSettings}" Opacity="0.55"
+                ToolTip.Tip="Raccourci paramètres (rail)." />
+          <Path Classes="topbarIcon" Data="{StaticResource IconHelp}" Opacity="0.55"
+                ToolTip.Tip="Aide — bientôt." />
         </StackPanel>
       </Grid>
     </Border>
@@ -259,9 +269,15 @@
             <Ellipse Width="7" Height="7" Fill="{StaticResource StatusOnlineBrush}" VerticalAlignment="Center" />
             <TextBlock Text="Connecté" Classes="secondary" VerticalAlignment="Center" />
           </StackPanel>
+          <TextBlock Text="{Binding UserLabel}" Classes="secondary" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}" />
+          <TextBlock Text="{Binding RoleLabel}" Classes="secondary" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}" />
+          <TextBlock Text="{Binding EnvironmentLabel}" Classes="secondary" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}" />
           <TextBlock Text="{Binding StatusSummary}" Classes="secondary" VerticalAlignment="Center" />
         </StackPanel>
         <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+          <TextBlock Text="{Binding HostsBadgeText}" Classes="secondary" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}" />
+          <TextBlock Text="{Binding IncidentsBadgeText}" Classes="secondary" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}" />
+          <TextBlock Text="{Binding AlertsBadgeText}" Classes="secondary" VerticalAlignment="Center" FontSize="{StaticResource FontSizeSmall}" />
           <TextBlock Text="{Binding CollectionStatusText}" Classes="secondary" VerticalAlignment="Center" />
           <TextBlock Text="{Binding DatabaseStatusText}" Classes="secondary" VerticalAlignment="Center" />
         </StackPanel>

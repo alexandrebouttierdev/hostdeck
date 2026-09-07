@@ -29,6 +29,12 @@
   <sys:Double x:Key="SparklineWidth">56</sys:Double>
   <sys:Double x:Key="SparklineHeight">18</sys:Double>
 
+  <!-- Jauges arcs Overview / KPI -->
+  <sys:Double x:Key="ArcGaugeSize">78</sys:Double>
+  <sys:Double x:Key="ArcGaugeThickness">8</sys:Double>
+  <sys:Double x:Key="ArcGaugeCardHeight">118</sys:Double>
+  <sys:Double x:Key="AvailabilityGaugeSize">42</sys:Double>
+
   <!-- Icônes -->
   <sys:Double x:Key="RailIconSize">22</sys:Double>
   <sys:Double x:Key="IconSizeSmall">14</sys:Double>

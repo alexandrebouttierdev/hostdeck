@@ -8,6 +8,7 @@ using HostDeck.Application.Dtos.Monitoring;
 using HostDeck.Application.Dtos.Servers;
 using HostDeck.Application.Monitoring;
 using HostDeck.Application.Monitoring.Events;
+using HostDeck.Domain.Servers;
 using HostDeck.Presentation.Charts;
 using HostDeck.Presentation.Controls.Charts;
 using HostDeck.Presentation.Services;
@@ -57,6 +58,28 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
 
     public override string Title => "Détail de l’hôte";
 
+    public string DisplayName => SelectedHost?.Name ?? "Aucun hôte sélectionné";
+
+    public string HostNameOrDash => SelectedHost?.Name ?? "—";
+
+    public string DisplayAddress => SelectedHost?.Address ?? "—";
+
+    public string DisplayOperatingSystem => SelectedHost?.OperatingSystem ?? "—";
+
+    public string DisplayStatus => SelectedHost is null
+        ? "—"
+        : SelectedHost.Status switch
+        {
+            ServerStatus.Unknown => "Inconnu",
+            ServerStatus.Online => "En ligne",
+            ServerStatus.Offline => "Hors ligne",
+            ServerStatus.GatewayUnavailable => "Bastion indisponible",
+            ServerStatus.AuthenticationFailed => "Authentification refusée",
+            ServerStatus.HostKeyRejected => "Clé d'hôte refusée",
+            _ => SelectedHost.Status.ToString(),
+        };
+
+
     public override string Breadcrumb =>
         HasSelection && SelectedHost is not null
             ? $"Infrastructure › {SelectedHost.Name}"
@@ -79,6 +102,11 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
         OnPropertyChanged(nameof(Title));
         OnPropertyChanged(nameof(Breadcrumb));
         OnPropertyChanged(nameof(StatusSummary));
+        OnPropertyChanged(nameof(DisplayName));
+        OnPropertyChanged(nameof(HostNameOrDash));
+        OnPropertyChanged(nameof(DisplayAddress));
+        OnPropertyChanged(nameof(DisplayOperatingSystem));
+        OnPropertyChanged(nameof(DisplayStatus));
     }
 
     /// <summary>Compatibilité shell synchrone : charge l'historique en tâche de fond UI.</summary>
@@ -191,6 +219,11 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
         HasSelection = value is not null;
         OnPropertyChanged(nameof(Breadcrumb));
         OnPropertyChanged(nameof(StatusSummary));
+        OnPropertyChanged(nameof(DisplayName));
+        OnPropertyChanged(nameof(HostNameOrDash));
+        OnPropertyChanged(nameof(DisplayAddress));
+        OnPropertyChanged(nameof(DisplayOperatingSystem));
+        OnPropertyChanged(nameof(DisplayStatus));
     }
 
     public void Dispose()
