@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:HostDeck.Presentation.Controls"
+             xmlns:vm="using:HostDeck.Presentation.ViewModels.HostDetails"
+             x:Class="HostDeck.Presentation.Views.HostDetails.HostDetailsView"
+             x:DataType="vm:HostDetailsViewModel">
+
+  <Grid Margin="{StaticResource ContentPadding}">
+    <controls:EmptyState IsVisible="{Binding !HasSelection}"
+                         Title="Aucun hôte sélectionné"
+                         Description="Sélectionnez un hôte dans Infrastructure pour afficher ses métriques détaillées."
+                         IconData="{StaticResource IconInfrastructure}" />
+
+    <Grid IsVisible="{Binding HasSelection}" RowDefinitions="Auto,*,Auto" RowSpacing="12">
+      <StackPanel Spacing="4">
+        <TextBlock Text="{Binding SelectedHost.Name}"
+                   FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold"
+                   Foreground="{StaticResource TextPrimaryBrush}" />
+        <TextBlock Text="{Binding SelectedHost.Address}"
+                   Foreground="{StaticResource TextSecondaryBrush}"
+                   FontSize="{StaticResource FontSizeBody}" />
+      </StackPanel>
+
+      <UniformGrid Grid.Row="1" Columns="2" Rows="2">
+        <Border Margin="0,0,6,6" Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}" MinHeight="160">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Margin="12" Text="CPU" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <controls:EmptyState Title="Aucune série disponible" Description="En attente de collecte." IconData="{StaticResource IconLiveData}" />
+          </DockPanel>
+        </Border>
+        <Border Margin="6,0,0,6" Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}" MinHeight="160">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Margin="12" Text="Mémoire" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <controls:EmptyState Title="Aucune série disponible" Description="En attente de collecte." />
+          </DockPanel>
+        </Border>
+        <Border Margin="0,6,6,0" Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}" MinHeight="160">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Margin="12" Text="Disque" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <controls:EmptyState Title="Aucune série disponible" Description="En attente de collecte." />
+          </DockPanel>
+        </Border>
+        <Border Margin="6,6,0,0" Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}" MinHeight="160">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Margin="12" Text="Réseau" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <controls:EmptyState Title="Aucune série disponible" Description="En attente de collecte." />
+          </DockPanel>
+        </Border>
+      </UniformGrid>
+
+      <Border Grid.Row="2" MinHeight="100"
+              Background="{StaticResource SurfacePanelBrush}"
+              BorderBrush="{StaticResource BorderSubtleBrush}"
+              BorderThickness="{StaticResource BorderThin}"
+              CornerRadius="{StaticResource RadiusSmall}">
+        <controls:EmptyState Title="Services — hors périmètre V1"
+                             Description="L’inventaire des services par hôte n’est pas collecté dans cette version. Le panneau est conservé pour l’architecture."
+                             IconData="{StaticResource IconDocker}" />
+      </Border>
+    </Grid>
+  </Grid>
+</UserControl>

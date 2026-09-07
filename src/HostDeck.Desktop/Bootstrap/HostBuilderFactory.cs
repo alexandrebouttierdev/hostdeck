@@ -1,3 +1,7 @@
+using HostDeck.Application;
+using HostDeck.Infrastructure;
+using HostDeck.Presentation;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -21,8 +25,9 @@ internal static class HostBuilderFactory
             options.TimestampFormat = "HH:mm:ss ";
         });
 
-        // Les enregistrements des couches Application, Infrastructure et Presentation
-        // sont ajoutés ici au fur et à mesure de leur implémentation.
+        builder.Services.AddHostDeckApplication();
+        builder.Services.AddHostDeckInfrastructure();
+        builder.Services.AddHostDeckPresentation();
 
         return builder.Build();
     }

@@ -1,0 +1,99 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:HostDeck.Presentation.Controls"
+             xmlns:vm="using:HostDeck.Presentation.ViewModels.Infrastructure"
+             x:Class="HostDeck.Presentation.Views.Infrastructure.InfrastructureView"
+             x:DataType="vm:InfrastructureViewModel">
+
+  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,Auto,*" RowSpacing="14">
+
+    <Grid ColumnDefinitions="*,Auto">
+      <StackPanel Orientation="Horizontal" Spacing="14">
+        <Border Width="44" Height="44"
+                Background="{StaticResource SurfaceRaisedBrush}"
+                CornerRadius="{StaticResource RadiusMedium}">
+          <Path Data="{StaticResource IconInfrastructure}"
+                Stretch="Uniform" Width="22" Height="22"
+                StrokeThickness="1.6" StrokeLineCap="Round" StrokeJoin="Round"
+                Stroke="{StaticResource AccentHoverBrush}"
+                HorizontalAlignment="Center" VerticalAlignment="Center" />
+        </Border>
+        <StackPanel Spacing="2">
+          <TextBlock Text="Infrastructure"
+                     FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold"
+                     Foreground="{StaticResource TextPrimaryBrush}" />
+          <TextBlock Text="Tous les hôtes"
+                     FontSize="{StaticResource FontSizeLarge}"
+                     Foreground="{StaticResource TextSecondaryBrush}" />
+          <TextBlock Text="Surveillez et gérez l’ensemble de votre infrastructure en temps réel."
+                     Foreground="{StaticResource TextSecondaryBrush}"
+                     FontSize="{StaticResource FontSizeBody}" />
+        </StackPanel>
+      </StackPanel>
+
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock Text="{Binding Hosts.Count}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" VerticalAlignment="Center" />
+          <TextBlock Text="hôtes au total" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" FontSize="{StaticResource FontSizeBody}" />
+        </StackPanel>
+        <Button Content="+ Ajouter un hôte"
+                Padding="14,8"
+                Background="{StaticResource AccentBrush}"
+                Foreground="{StaticResource TextPrimaryBrush}"
+                CornerRadius="{StaticResource RadiusSmall}"
+                BorderThickness="0"
+                IsEnabled="False"
+                ToolTip.Tip="L’ajout d’hôte arrivera avec le magasin de credentials." />
+      </StackPanel>
+    </Grid>
+
+    <Border Grid.Row="1" Height="38"
+            Background="{StaticResource SurfacePanelBrush}"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="{StaticResource BorderThin}"
+            CornerRadius="{StaticResource RadiusSmall}">
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0" Spacing="10">
+        <Path Data="{StaticResource IconInfrastructure}" Stretch="Uniform" Width="14" Height="14"
+              StrokeThickness="1.6" StrokeLineCap="Round" StrokeJoin="Round"
+              Stroke="{StaticResource AccentHoverBrush}" VerticalAlignment="Center" />
+        <TextBlock Text="Tous les hôtes" Foreground="{StaticResource TextPrimaryBrush}" FontWeight="SemiBold" />
+        <Border Background="{StaticResource SelectionBrush}" CornerRadius="{StaticResource RadiusPill}" Padding="8,2">
+          <TextBlock Text="{Binding Hosts.Count}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+        </Border>
+      </StackPanel>
+    </Border>
+
+    <Border Grid.Row="2"
+            Background="{StaticResource SurfacePanelBrush}"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="{StaticResource BorderThin}"
+            CornerRadius="{StaticResource RadiusSmall}">
+      <Panel>
+        <controls:EmptyState x:Name="FleetEmptyState" IsVisible="{Binding IsEmpty}"
+                             Title="Aucun hôte configuré"
+                             Description="Ajoutez votre premier serveur Linux pour commencer la supervision."
+                             IconData="{StaticResource IconInfrastructure}" />
+
+        <DataGrid IsVisible="{Binding !IsEmpty}"
+                  ItemsSource="{Binding Hosts}"
+                  SelectedItem="{Binding SelectedHost}"
+                  AutoGenerateColumns="False"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  GridLinesVisibility="Horizontal"
+                  BorderThickness="0"
+                  Background="Transparent"
+                  RowHeight="{StaticResource TableRowHeight}"
+                  HeadersVisibility="Column">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Hôte" Binding="{Binding Name}" Width="*" />
+            <DataGridTextColumn Header="Adresse" Binding="{Binding Address}" Width="140" />
+            <DataGridTextColumn Header="État" Binding="{Binding Status}" Width="100" />
+            <DataGridTextColumn Header="Groupe" Binding="{Binding Group}" Width="120" />
+            <DataGridTextColumn Header="Système" Binding="{Binding OperatingSystem}" Width="140" />
+          </DataGrid.Columns>
+        </DataGrid>
+      </Panel>
+    </Border>
+  </Grid>
+</UserControl>

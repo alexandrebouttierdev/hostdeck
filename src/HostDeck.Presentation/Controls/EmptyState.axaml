@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="HostDeck.Presentation.Controls.EmptyState"
+             x:Name="Root">
+
+  <StackPanel HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Spacing="{StaticResource Spacing3}"
+              Margin="{StaticResource PanelPadding}">
+    <Path x:Name="IconPath"
+          Data="{Binding IconData, ElementName=Root}"
+          Stretch="Uniform"
+          Width="34"
+          Height="34"
+          StrokeThickness="1.2"
+          StrokeLineCap="Round"
+          StrokeJoin="Round"
+          Stroke="{StaticResource TextMutedBrush}"
+          HorizontalAlignment="Center" />
+    <TextBlock Text="{Binding Title, ElementName=Root}"
+               HorizontalAlignment="Center"
+               TextAlignment="Center"
+               FontSize="{StaticResource FontSizeLarge}"
+               FontWeight="SemiBold"
+               Foreground="{StaticResource TextPrimaryBrush}"
+               TextWrapping="Wrap" />
+    <TextBlock Text="{Binding Description, ElementName=Root}"
+               HorizontalAlignment="Center"
+               TextAlignment="Center"
+               FontSize="{StaticResource FontSizeBody}"
+               Foreground="{StaticResource TextSecondaryBrush}"
+               TextWrapping="Wrap"
+               MaxWidth="420" />
+  </StackPanel>
+</UserControl>

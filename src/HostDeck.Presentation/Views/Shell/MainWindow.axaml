@@ -1,15 +1,17 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:shell="using:HostDeck.Presentation.Views.Shell"
+        xmlns:vm="using:HostDeck.Presentation.ViewModels.Shell"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         x:Class="HostDeck.Presentation.Views.Shell.MainWindow"
+        x:DataType="vm:ShellViewModel"
         Title="HostDeck"
         MinWidth="1100"
         MinHeight="700"
         Background="{StaticResource SurfaceBackgroundBrush}">
 
-  <shell:ShellView />
+  <shell:ShellView DataContext="{Binding}" />
 
 </Window>

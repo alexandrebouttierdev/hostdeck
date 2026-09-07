@@ -1,0 +1,123 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:HostDeck.Presentation.Controls"
+             xmlns:vm="using:HostDeck.Presentation.ViewModels.Settings"
+             x:Class="HostDeck.Presentation.Views.Settings.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+  <DockPanel Margin="{StaticResource ContentPadding}">
+    <StackPanel DockPanel.Dock="Top" Spacing="4" Margin="0,0,0,14">
+      <TextBlock Text="Paramètres" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+      <TextBlock Text="Configurez votre environnement HostDeck." Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+    </StackPanel>
+
+    <Border DockPanel.Dock="Bottom" Margin="0,14,0,0" Padding="0,10,0,0"
+            BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center"
+                   Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+        <Button Grid.Column="1" Content="Enregistrer les paramètres"
+                Command="{Binding SaveCommand}"
+                Padding="14,8"
+                Background="{StaticResource AccentBrush}"
+                Foreground="{StaticResource TextPrimaryBrush}"
+                BorderThickness="0"
+                CornerRadius="{StaticResource RadiusSmall}" />
+      </Grid>
+    </Border>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+      <UniformGrid Columns="3" Rows="2">
+        <Border Margin="0,0,8,8" Padding="{StaticResource PanelPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <StackPanel Spacing="10">
+            <TextBlock Text="Informations générales" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBlock Text="Nom de l’instance" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+            <TextBox Text="{Binding InstanceName}" />
+            <TextBlock Text="Description" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+            <TextBox Text="{Binding Description}" AcceptsReturn="True" Height="64" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <Border Margin="4,0,4,8" Padding="{StaticResource PanelPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <StackPanel Spacing="10">
+            <TextBlock Text="Configuration de la collecte" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBlock Text="Intervalle (s)" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+            <NumericUpDown Value="{Binding DefaultCollectionIntervalSeconds}" Minimum="1" Maximum="3600" FormatString="0" />
+            <TextBlock Text="Délai d’attente (s)" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+            <NumericUpDown Value="{Binding CollectionTimeoutSeconds}" Minimum="1" Maximum="300" FormatString="0" />
+            <TextBlock Text="Tentatives" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+            <NumericUpDown Value="{Binding CollectionRetryCount}" Minimum="0" Maximum="10" FormatString="0" />
+            <TextBlock Text="Collectes simultanées" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+            <NumericUpDown Value="{Binding MaxConcurrentCollections}" Minimum="1" Maximum="64" FormatString="0" />
+          </StackPanel>
+        </Border>
+
+        <Border Margin="8,0,0,8" Padding="{StaticResource PanelPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="Notifications" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,10" />
+            <StackPanel DockPanel.Dock="Bottom" Spacing="8" Margin="0,10,0,0">
+              <CheckBox Content="Notifications bureau" IsChecked="{Binding DesktopNotificationsEnabled}" />
+            </StackPanel>
+            <controls:EmptyState Title="Canaux externes — hors périmètre V1"
+                                 Description="E-mail, Slack, Teams et webhooks sont prévus par l’architecture mais absents de cette version."
+                                 IconData="{StaticResource IconAlerts}" />
+          </DockPanel>
+        </Border>
+
+        <Border Margin="0,0,8,0" Padding="{StaticResource PanelPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <StackPanel Spacing="10">
+            <TextBlock Text="Préférences d’interface" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <CheckBox Content="Actualisation automatique" IsChecked="{Binding AutoRefreshEnabled}" />
+            <TextBlock Text="Intervalle d’actualisation (s)" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+            <NumericUpDown Value="{Binding AutoRefreshIntervalSeconds}" Minimum="1" Maximum="3600" FormatString="0" />
+          </StackPanel>
+        </Border>
+
+        <Border Margin="4,0,4,0" Padding="{StaticResource PanelPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="Sécurité" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,10" />
+            <controls:EmptyState Title="Utilisateurs et rôles — hors périmètre V1"
+                                 Description="La gestion des comptes n’est pas implémentée. Le panneau est conservé pour la suite."
+                                 IconData="{StaticResource IconSettings}" />
+          </DockPanel>
+        </Border>
+
+        <Border Margin="8,0,0,0" Padding="{StaticResource PanelPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <StackPanel Spacing="10">
+            <TextBlock Text="Stockage et rétention" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBlock Text="Rétention métriques (jours)" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+            <NumericUpDown Value="{Binding MetricRetentionDays}" Minimum="1" Maximum="3650" FormatString="0" />
+            <TextBlock Text="Rétention événements (jours)" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+            <NumericUpDown Value="{Binding EventRetentionDays}" Minimum="1" Maximum="3650" FormatString="0" />
+            <TextBlock Text="Emplacement de stockage" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+            <TextBox Text="{Binding StorageDirectory}" PlaceholderText="Répertoire par défaut" />
+          </StackPanel>
+        </Border>
+      </UniformGrid>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

@@ -1,0 +1,171 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:HostDeck.Presentation.Controls"
+             xmlns:vm="using:HostDeck.Presentation.ViewModels.Overview"
+             x:Class="HostDeck.Presentation.Views.Overview.OverviewView"
+             x:DataType="vm:OverviewViewModel">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Auto">
+    <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,Auto,*" RowSpacing="16">
+
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="4">
+          <TextBlock Text="Bonjour,"
+                     FontSize="{StaticResource FontSizeTitle}"
+                     FontWeight="SemiBold"
+                     Foreground="{StaticResource TextPrimaryBrush}" />
+          <TextBlock Text="Voici l’état de votre infrastructure en temps réel."
+                     FontSize="{StaticResource FontSizeBody}"
+                     Foreground="{StaticResource TextSecondaryBrush}" />
+        </StackPanel>
+        <Border Grid.Column="1"
+                Padding="14,10"
+                BorderBrush="{StaticResource StatusOnlineBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}"
+                Background="{StaticResource SurfacePanelBrush}"
+                VerticalAlignment="Center">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <Ellipse Width="8" Height="8" Fill="{StaticResource StatusOnlineBrush}" VerticalAlignment="Center" />
+            <StackPanel>
+              <TextBlock Text="Collecte prête"
+                         FontWeight="SemiBold"
+                         Foreground="{StaticResource TextPrimaryBrush}"
+                         FontSize="{StaticResource FontSizeBody}" />
+              <TextBlock Text="En attente du premier hôte."
+                         Foreground="{StaticResource TextSecondaryBrush}"
+                         FontSize="{StaticResource FontSizeSmall}" />
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <!-- KPIs -->
+      <UniformGrid Grid.Row="1" Columns="4" >
+        <Border Margin="0,0,8,0" Padding="{StaticResource PanelPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}"
+                MinHeight="96">
+          <StackPanel Spacing="6">
+            <TextBlock Text="Hôtes surveillés" Classes="secondary" />
+            <TextBlock Text="{Binding HostCount}" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBlock Text="0 opérationnel · 0 avertissement · 0 problème" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+          </StackPanel>
+        </Border>
+        <Border Margin="4,0" Padding="{StaticResource PanelPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}"
+                MinHeight="96">
+          <StackPanel Spacing="6">
+            <TextBlock Text="Incidents actifs" Classes="secondary" />
+            <TextBlock Text="{Binding ActiveIncidentCount}" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBlock Text="Aucun incident ouvert" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+          </StackPanel>
+        </Border>
+        <Border Margin="4,0" Padding="{StaticResource PanelPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}"
+                MinHeight="96">
+          <StackPanel Spacing="6">
+            <TextBlock Text="Alertes ouvertes" Classes="secondary" />
+            <TextBlock Text="0" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBlock Text="Aucune alerte" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+          </StackPanel>
+        </Border>
+        <Border Margin="8,0,0,0" Padding="{StaticResource PanelPadding}"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}"
+                MinHeight="96">
+          <StackPanel Spacing="6">
+            <TextBlock Text="Disponibilité globale" Classes="secondary" />
+            <TextBlock Text="—" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBlock Text="Indisponible sans flotte" FontSize="{StaticResource FontSizeSmall}" Foreground="{StaticResource TextMutedBrush}" />
+          </StackPanel>
+        </Border>
+      </UniformGrid>
+
+      <Grid Grid.Row="2" ColumnDefinitions="2*,*" RowDefinitions="Auto,Auto,*" RowSpacing="12" ColumnSpacing="12">
+        <!-- Resource gauges row -->
+        <UniformGrid Grid.ColumnSpan="2" Columns="4">
+          <Border Margin="0,0,6,0" Height="120" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+            <controls:EmptyState Title="CPU global" Description="Aucune métrique collectée." IconData="{StaticResource IconLiveData}" />
+          </Border>
+          <Border Margin="3,0" Height="120" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+            <controls:EmptyState Title="Mémoire globale" Description="Aucune métrique collectée." />
+          </Border>
+          <Border Margin="3,0" Height="120" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+            <controls:EmptyState Title="Stockage global" Description="Aucune métrique collectée." />
+          </Border>
+          <Border Margin="6,0,0,0" Height="120" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+            <controls:EmptyState Title="Réseau global" Description="Aucune métrique collectée." />
+          </Border>
+        </UniformGrid>
+
+        <Border Grid.Row="1" MinHeight="180"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Margin="14,12,14,0" Text="Utilisation CPU globale"
+                       FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <controls:EmptyState Title="Aucune série disponible"
+                                 Description="Les graphiques s’afficheront dès que des métriques seront collectées."
+                                 IconData="{StaticResource IconLiveData}" />
+          </DockPanel>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" MinHeight="180"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Margin="14,12,14,0" Text="Utilisation mémoire globale"
+                       FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <controls:EmptyState Title="Aucune série disponible"
+                                 Description="Les graphiques s’afficheront dès que des métriques seront collectées." />
+          </DockPanel>
+        </Border>
+
+        <Border Grid.Row="2" MinHeight="160"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Margin="14,12,14,0" Text="Incidents récents"
+                       FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <controls:EmptyState Title="Aucun incident actif"
+                                 Description="Les incidents apparaîtront ici lorsque des règles d’alerte se déclencheront."
+                                 IconData="{StaticResource IconIncidents}" />
+          </DockPanel>
+        </Border>
+
+        <Border Grid.Row="2" Grid.Column="1" MinHeight="160"
+                Background="{StaticResource SurfacePanelBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="{StaticResource BorderThin}"
+                CornerRadius="{StaticResource RadiusSmall}">
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Margin="14,12,14,0" Text="Hôtes les plus sollicités"
+                       FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+            <controls:EmptyState IsVisible="{Binding IsEmpty}"
+                                 Title="Aucune flotte configurée"
+                                 Description="Ajoutez votre premier serveur Linux pour alimenter la vue d’ensemble."
+                                 IconData="{StaticResource IconInfrastructure}" />
+          </DockPanel>
+        </Border>
+      </Grid>
+    </Grid>
+  </ScrollViewer>
+</UserControl>

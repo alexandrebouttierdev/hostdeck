@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using HostDeck.Application.Ports;
 using HostDeck.Infrastructure.Persistence;
 using HostDeck.Infrastructure.Persistence.Repositories;
@@ -51,6 +53,18 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddSingleton<IHostKeyStore, HostKeyStore>();
 
         return services;
+    }
+
+    /// <summary>
+    /// Applique les migrations et prépare la base locale. À appeler au démarrage du composition root.
+    /// </summary>
+    public static Task InitializeHostDeckDatabaseAsync(
+        this IServiceProvider services,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        var initializer = services.GetRequiredService<DatabaseInitializer>();
+        return initializer.InitializeAsync(cancellationToken);
     }
 
     /// <summary>

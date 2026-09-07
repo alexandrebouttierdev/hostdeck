@@ -1,6 +1,8 @@
 using System;
 using Avalonia;
 using HostDeck.Desktop.Bootstrap;
+using HostDeck.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace HostDeck.Desktop;
@@ -24,6 +26,10 @@ internal static class Program
         host.Start();
         try
         {
+            // Prépare SQLite avant d'ouvrir l'UI : les écrans lisent l'inventaire et les réglages.
+            host.Services.InitializeHostDeckDatabaseAsync().GetAwaiter().GetResult();
+
+            App.Services = host.Services;
             return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         finally

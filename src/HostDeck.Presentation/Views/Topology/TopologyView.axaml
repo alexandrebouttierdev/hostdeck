@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:HostDeck.Presentation.Controls"
+             xmlns:vm="using:HostDeck.Presentation.ViewModels.Topology"
+             x:Class="HostDeck.Presentation.Views.Topology.TopologyView"
+             x:DataType="vm:TopologyViewModel">
+  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,*" RowSpacing="14">
+    <StackPanel Spacing="4">
+      <TextBlock Text="Topologie" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+      <TextBlock Text="Carte des hôtes, bastions et dépendances." Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+    </StackPanel>
+    <Border Grid.Row="1"
+            Background="{StaticResource SurfacePanelBrush}"
+            BorderBrush="{StaticResource BorderSubtleBrush}"
+            BorderThickness="{StaticResource BorderThin}"
+            CornerRadius="{StaticResource RadiusSmall}">
+      <controls:EmptyState Title="Topologie vide"
+                           Description="La carte apparaîtra dès qu’au moins un hôte sera configuré."
+                           IconData="{StaticResource IconTopology}" />
+    </Border>
+  </Grid>
+</UserControl>

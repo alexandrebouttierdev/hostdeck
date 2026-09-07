@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:HostDeck.Presentation.Controls"
+             xmlns:vm="using:HostDeck.Presentation.ViewModels.Reports"
+             x:Class="HostDeck.Presentation.Views.Reports.ReportsView"
+             x:DataType="vm:ReportsViewModel">
+  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,*" RowSpacing="14">
+    <StackPanel Spacing="4">
+      <TextBlock Text="Rapports" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+      <TextBlock Text="Disponibilité, SLA, tendances et capacité." Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+    </StackPanel>
+    <UniformGrid Grid.Row="1" Columns="2" Rows="2">
+      <Border Margin="0,0,6,6" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+        <controls:EmptyState Title="Disponibilité" Description="Aucun historique de disponibilité pour le moment." IconData="{StaticResource IconReports}" />
+      </Border>
+      <Border Margin="6,0,0,6" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+        <controls:EmptyState Title="SLA" Description="Les indicateurs SLA s’appuieront sur l’historique de collecte." />
+      </Border>
+      <Border Margin="0,6,6,0" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+        <controls:EmptyState Title="Capacité" Description="Aucune projection de capacité sans métriques." />
+      </Border>
+      <Border Margin="6,6,0,0" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+        <controls:EmptyState Title="Rapports non disponibles"
+                             Description="Les rapports arriveront lorsque la collecte aura produit un historique."
+                             IconData="{StaticResource IconReports}" />
+      </Border>
+    </UniformGrid>
+  </Grid>
+</UserControl>

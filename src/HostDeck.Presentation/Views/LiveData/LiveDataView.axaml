@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="using:HostDeck.Presentation.Controls"
+             xmlns:vm="using:HostDeck.Presentation.ViewModels.LiveData"
+             x:Class="HostDeck.Presentation.Views.LiveData.LiveDataView"
+             x:DataType="vm:LiveDataViewModel">
+  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,*" RowSpacing="14">
+    <StackPanel Spacing="4">
+      <TextBlock Text="Données en direct" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+      <TextBlock Text="Métriques temps réel, min / moy / max." Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+    </StackPanel>
+    <Grid Grid.Row="1" ColumnDefinitions="220,*" ColumnSpacing="12">
+      <Border Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+        <controls:EmptyState Title="Aucun hôte"
+                             Description="La liste des sources apparaîtra avec la flotte."
+                             IconData="{StaticResource IconInfrastructure}" />
+      </Border>
+      <Border Grid.Column="1" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
+        <controls:EmptyState Title="Aucune donnée en direct"
+                             Description="Sélectionnez un hôte pour afficher les métriques en temps réel."
+                             IconData="{StaticResource IconLiveData}" />
+      </Border>
+    </Grid>
+  </Grid>
+</UserControl>

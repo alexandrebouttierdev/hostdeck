@@ -1,5 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
+using HostDeck.Presentation.Controls;
+using HostDeck.Presentation.Views.Infrastructure;
 using HostDeck.Presentation.Views.Shell;
 using Xunit;
 
@@ -16,18 +18,29 @@ public sealed class ShellViewTests
     }
 
     [AvaloniaFact]
-    public void ShellContainsTheCompactChromeAndExplicitEmptyState()
+    public void ShellContainsTheCompactChrome()
     {
         var shell = new ShellView();
 
         var rail = Assert.IsType<Border>(shell.FindControl<Border>("NavigationRail"));
         var topbar = Assert.IsType<Border>(shell.FindControl<Border>("Topbar"));
         var statusBar = Assert.IsType<Border>(shell.FindControl<Border>("StatusBar"));
-        var emptyState = Assert.IsType<TextBlock>(shell.FindControl<TextBlock>("EmptyStateMessage"));
 
         Assert.Equal(66d, rail.Width);
         Assert.Equal(49d, topbar.Height);
         Assert.Equal(40d, statusBar.Height);
-        Assert.Equal("Aucun hôte configuré", emptyState.Text);
+    }
+
+    [AvaloniaFact]
+    public void InfrastructureEmptyStateUsesExplicitFrenchCopy()
+    {
+        var view = new InfrastructureView();
+
+        // Les états vides vivent dans les écrans, plus dans le chrome du shell.
+        var empty = Assert.IsType<EmptyState>(view.FindControl<EmptyState>("FleetEmptyState"));
+        Assert.Equal("Aucun hôte configuré", empty.Title);
+        Assert.Equal(
+            "Ajoutez votre premier serveur Linux pour commencer la supervision.",
+            empty.Description);
     }
 }
