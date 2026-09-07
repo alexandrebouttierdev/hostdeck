@@ -96,12 +96,15 @@
           <charts:ChartFrame Margin="0,0,6,6" MinHeight="140"
                              Title="Utilisation CPU"
                              Series="{Binding CpuSeries}"
+                             YAxisMax="100"
+                             Stacked="True"
                              EmptyTitle="Aucune série disponible"
                              EmptyDescription="En attente de collecte."
                              EmptyIconData="{StaticResource IconLiveData}" />
           <charts:ChartFrame Margin="6,0,0,6" MinHeight="140"
                              Title="Utilisation mémoire"
                              Series="{Binding MemorySeries}"
+                             YAxisMax="100"
                              EmptyTitle="Aucune série disponible"
                              EmptyDescription="En attente de collecte." />
           <charts:ChartFrame Margin="0,6,6,6" MinHeight="140"
@@ -112,6 +115,7 @@
           <charts:ChartFrame Margin="6,6,0,6" MinHeight="140"
                              Title="E/S disque"
                              Series="{Binding DiskSeries}"
+                             YAxisMax="100"
                              EmptyTitle="Aucune série disponible"
                              EmptyDescription="En attente de collecte." />
           <Border Margin="0,6,6,0" MinHeight="120"

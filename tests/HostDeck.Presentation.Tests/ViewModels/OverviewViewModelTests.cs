@@ -58,6 +58,8 @@ public sealed class OverviewViewModelTests
         Assert.Contains("42%", vm.CpuPeakText, StringComparison.Ordinal);
         Assert.Contains("KiB/s", vm.NetworkInText, StringComparison.Ordinal);
         Assert.NotNull(vm.CpuSeries);
+        Assert.True(vm.CpuSeries!.Count >= 1);
+        Assert.Contains(vm.CpuSeries, s => s.Name is "user" or "CPU" or "CPU flotte");
         Assert.NotNull(vm.MemorySeries);
         Assert.Single(vm.TopHosts);
         Assert.Equal("vps-ovh", vm.TopHosts[0].Name);
@@ -195,45 +197,53 @@ public sealed class OverviewViewModelTests
         var t0 = request.From;
         var t1 = request.From + ((request.To - request.From) / 2);
         var t2 = request.To;
+        MetricPointDto[] Points(double value) =>
+        [
+            new MetricPointDto(t0, value - 1, value, value + 1),
+            new MetricPointDto(t1, value - 1, value, value + 1),
+            new MetricPointDto(t2, value - 1, value, value + 1),
+        ];
+
+        var series = new List<MetricSeriesDto>();
+        foreach (var kind in request.Series)
+        {
+            if (kind == MetricSeriesKind.MemoryUsed)
+            {
+                series.Add(new MetricSeriesDto { Kind = kind, Points = Points(memory) });
+            }
+            else if (kind == MetricSeriesKind.NetworkReceived)
+            {
+                series.Add(new MetricSeriesDto { Kind = kind, Points = Points(2) });
+            }
+            else if (kind == MetricSeriesKind.CpuUser)
+            {
+                series.Add(new MetricSeriesDto { Kind = kind, Points = Points(cpu * 0.6) });
+            }
+            else if (kind == MetricSeriesKind.CpuSystem)
+            {
+                series.Add(new MetricSeriesDto { Kind = kind, Points = Points(cpu * 0.3) });
+            }
+            else if (kind == MetricSeriesKind.CpuIoWait)
+            {
+                series.Add(new MetricSeriesDto { Kind = kind, Points = Points(cpu * 0.1) });
+            }
+            else if (kind is MetricSeriesKind.CpuNice or MetricSeriesKind.CpuSteal)
+            {
+                // Modes absents volontairement : le stub ne fabrique pas de séries vides inutiles.
+            }
+            else if (kind == MetricSeriesKind.CpuTotal)
+            {
+                series.Add(new MetricSeriesDto { Kind = kind, Points = Points(cpu) });
+            }
+        }
+
         return new MetricHistoryDto
         {
             ServerId = request.ServerId,
             From = request.From,
             To = request.To,
             BucketSize = TimeSpan.FromMinutes(1),
-            Series =
-            [
-                new MetricSeriesDto
-                {
-                    Kind = MetricSeriesKind.CpuTotal,
-                    Points =
-                    [
-                        new MetricPointDto(t0, cpu - 1, cpu, cpu + 1),
-                        new MetricPointDto(t1, cpu - 1, cpu, cpu + 1),
-                        new MetricPointDto(t2, cpu - 1, cpu, cpu + 1),
-                    ],
-                },
-                new MetricSeriesDto
-                {
-                    Kind = MetricSeriesKind.MemoryUsed,
-                    Points =
-                    [
-                        new MetricPointDto(t0, memory - 1, memory, memory + 1),
-                        new MetricPointDto(t1, memory - 1, memory, memory + 1),
-                        new MetricPointDto(t2, memory - 1, memory, memory + 1),
-                    ],
-                },
-                new MetricSeriesDto
-                {
-                    Kind = MetricSeriesKind.NetworkReceived,
-                    Points =
-                    [
-                        new MetricPointDto(t0, 1, 2, 3),
-                        new MetricPointDto(t1, 1, 2, 3),
-                        new MetricPointDto(t2, 1, 2, 3),
-                    ],
-                },
-            ],
+            Series = series,
         };
     }
 

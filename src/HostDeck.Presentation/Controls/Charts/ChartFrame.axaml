@@ -20,7 +20,10 @@
         <charts:TimeSeriesChartControl x:Name="Chart"
                                        Margin="8,0,8,8"
                                        Series="{Binding Series, ElementName=Root}"
+                                       YAxisMax="{Binding YAxisMax, ElementName=Root}"
+                                       Stacked="{Binding Stacked, ElementName=Root}"
                                        GridBrush="{StaticResource BorderSubtleBrush}"
+                                       AxisLabelBrush="{StaticResource TextMutedBrush}"
                                        PlotBackground="{StaticResource SurfaceRaisedBrush}"
                                        IsVisible="{Binding HasSeries, ElementName=Root}" />
 

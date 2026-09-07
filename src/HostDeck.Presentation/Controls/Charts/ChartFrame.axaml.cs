@@ -24,6 +24,12 @@ public partial class ChartFrame : UserControl
     public static readonly StyledProperty<Geometry?> EmptyIconDataProperty =
         AvaloniaProperty.Register<ChartFrame, Geometry?>(nameof(EmptyIconData));
 
+    public static readonly StyledProperty<double?> YAxisMaxProperty =
+        AvaloniaProperty.Register<ChartFrame, double?>(nameof(YAxisMax));
+
+    public static readonly StyledProperty<bool> StackedProperty =
+        AvaloniaProperty.Register<ChartFrame, bool>(nameof(Stacked));
+
     public static readonly DirectProperty<ChartFrame, IReadOnlyList<ChartSeriesData>?> SeriesProperty =
         AvaloniaProperty.RegisterDirect<ChartFrame, IReadOnlyList<ChartSeriesData>?>(
             nameof(Series),
@@ -63,6 +69,19 @@ public partial class ChartFrame : UserControl
     {
         get => GetValue(EmptyIconDataProperty);
         set => SetValue(EmptyIconDataProperty, value);
+    }
+
+    /// <summary>Plafond Y transmis au tracé (ex. 100 pour CPU/mémoire/disque).</summary>
+    public double? YAxisMax
+    {
+        get => GetValue(YAxisMaxProperty);
+        set => SetValue(YAxisMaxProperty, value);
+    }
+
+    public bool Stacked
+    {
+        get => GetValue(StackedProperty);
+        set => SetValue(StackedProperty, value);
     }
 
     public IReadOnlyList<ChartSeriesData>? Series

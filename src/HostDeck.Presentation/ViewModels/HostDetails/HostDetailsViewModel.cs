@@ -127,6 +127,7 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
                 MaxPoints = 600,
                 Series =
                 [
+                    ..MetricSeriesMapper.CpuStackKinds,
                     MetricSeriesKind.CpuTotal,
                     MetricSeriesKind.MemoryUsed,
                     MetricSeriesKind.DiskUsed,
@@ -136,8 +137,9 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
             },
             cancellationToken).ConfigureAwait(true);
 
-        var cpu = MetricSeriesMapper.ToChartSeries(
-            MetricSeriesMapper.Find(history, MetricSeriesKind.CpuTotal), "CPU", MetricSeriesMapper.CpuColor);
+        CpuSeries = MetricSeriesMapper.ToCpuStackSeries(history)
+            ?? Wrap(MetricSeriesMapper.ToChartSeries(
+                MetricSeriesMapper.Find(history, MetricSeriesKind.CpuTotal), "CPU", MetricSeriesMapper.CpuColor));
         var memory = MetricSeriesMapper.ToChartSeries(
             MetricSeriesMapper.Find(history, MetricSeriesKind.MemoryUsed), "Mémoire", MetricSeriesMapper.MemoryColor);
         var disk = MetricSeriesMapper.ToChartSeries(
@@ -148,9 +150,8 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
         var netOut = MetricSeriesMapper.ToChartSeries(
             MetricSeriesMapper.Find(history, MetricSeriesKind.NetworkTransmitted), "Sortant", MetricSeriesMapper.NetworkOutColor);
 
-        CpuSeries = cpu is null ? null : [cpu];
-        MemorySeries = memory is null ? null : [memory];
-        DiskSeries = disk is null ? null : [disk];
+        MemorySeries = Wrap(memory);
+        DiskSeries = Wrap(disk);
         NetworkSeries = BuildMulti(netIn, netOut);
     }
 
@@ -169,7 +170,12 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
                 LastCollectedAt = evt.Metric.ObservedAt,
             };
 
-            CpuSeries = AppendChart(CpuSeries, "CPU", MetricSeriesMapper.CpuColor, (float)evt.Metric.CpuPercent);
+            // Latest ne porte pas les modes CPU : on n'écrase pas un empilement historique.
+            if (CpuSeries is not { Count: > 1 })
+            {
+                CpuSeries = AppendChart(CpuSeries, "CPU", MetricSeriesMapper.CpuColor, (float)evt.Metric.CpuPercent);
+            }
+
             MemorySeries = AppendChart(MemorySeries, "Mémoire", MetricSeriesMapper.MemoryColor, (float)evt.Metric.MemoryPercent);
             DiskSeries = AppendChart(DiskSeries, "Disque", MetricSeriesMapper.DiskColor, (float)evt.Metric.DiskPercent);
             OnPropertyChanged(nameof(StatusSummary));
@@ -180,13 +186,29 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
         IReadOnlyList<ChartSeriesData>? current,
         string name,
         Avalonia.Media.Color color,
-        float value)
+        float value,
+        DateTimeOffset? timestamp = null)
     {
+        if (current is { Count: > 1 })
+        {
+            return current;
+        }
+
         var existing = current is { Count: > 0 } ? current[0].Values : null;
+        var existingTs = current is { Count: > 0 } ? current[0].Timestamps : null;
         var values = MetricSeriesMapper.AppendBounded(existing, value, 600);
         if (values.Count < 2)
         {
             return null;
+        }
+
+        IReadOnlyList<DateTimeOffset>? timestamps = null;
+        if (timestamp is not null || existingTs is not null)
+        {
+            timestamps = MetricSeriesMapper.AppendBoundedTimestamps(
+                existingTs,
+                timestamp ?? DateTimeOffset.UtcNow,
+                600);
         }
 
         return
@@ -196,9 +218,13 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
                 Name = name,
                 Values = values,
                 Color = color,
+                Timestamps = timestamps,
             },
         ];
     }
+
+    private static IReadOnlyList<ChartSeriesData>? Wrap(ChartSeriesData? series)
+        => series is null ? null : [series];
 
     private static ChartSeriesData[]? BuildMulti(params ChartSeriesData?[] series)
     {

@@ -97,8 +97,15 @@
   <Color x:Key="SeriesDiskFillColor">#40FF9A3C</Color>
   <SolidColorBrush x:Key="SeriesCpuUserBrush" Color="{StaticResource SeriesCpuUserColor}" />
   <SolidColorBrush x:Key="SeriesCpuUserFillBrush" Color="{StaticResource SeriesCpuUserFillColor}" />
+  <SolidColorBrush x:Key="SeriesCpuSystemBrush" Color="{StaticResource SeriesCpuSystemColor}" />
+  <SolidColorBrush x:Key="SeriesCpuIoWaitBrush" Color="{StaticResource SeriesCpuIoWaitColor}" />
+  <SolidColorBrush x:Key="SeriesCpuNiceBrush" Color="{StaticResource SeriesCpuNiceColor}" />
+  <SolidColorBrush x:Key="SeriesCpuStealBrush" Color="{StaticResource SeriesCpuStealColor}" />
   <SolidColorBrush x:Key="SeriesMemoryUsedBrush" Color="{StaticResource SeriesMemoryUsedColor}" />
   <SolidColorBrush x:Key="SeriesMemoryUsedFillBrush" Color="{StaticResource SeriesMemoryUsedFillColor}" />
+  <SolidColorBrush x:Key="SeriesMemoryCachedBrush" Color="{StaticResource SeriesMemoryCachedColor}" />
+  <SolidColorBrush x:Key="SeriesMemoryBuffersBrush" Color="{StaticResource SeriesMemoryBuffersColor}" />
+  <SolidColorBrush x:Key="SeriesMemoryFreeBrush" Color="{StaticResource SeriesMemoryFreeColor}" />
   <SolidColorBrush x:Key="SeriesDiskBrush" Color="{StaticResource SeriesDiskColor}" />
   <SolidColorBrush x:Key="SeriesDiskFillBrush" Color="{StaticResource SeriesDiskFillColor}" />
   <SolidColorBrush x:Key="SeriesNetworkInBrush" Color="{StaticResource SeriesNetworkInColor}" />

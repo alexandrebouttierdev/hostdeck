@@ -120,6 +120,7 @@ public partial class LiveDataViewModel : PageViewModelBase, IDisposable
                 MaxPoints = 600,
                 Series =
                 [
+                    ..MetricSeriesMapper.CpuStackKinds,
                     MetricSeriesKind.CpuTotal,
                     MetricSeriesKind.MemoryUsed,
                     MetricSeriesKind.DiskUsed,
@@ -130,8 +131,9 @@ public partial class LiveDataViewModel : PageViewModelBase, IDisposable
             },
             cancellationToken).ConfigureAwait(true);
 
-        CpuSeries = Wrap(MetricSeriesMapper.ToChartSeries(
-            MetricSeriesMapper.Find(history, MetricSeriesKind.CpuTotal), "CPU", MetricSeriesMapper.CpuColor));
+        CpuSeries = MetricSeriesMapper.ToCpuStackSeries(history)
+            ?? Wrap(MetricSeriesMapper.ToChartSeries(
+                MetricSeriesMapper.Find(history, MetricSeriesKind.CpuTotal), "CPU", MetricSeriesMapper.CpuColor));
         MemorySeries = Wrap(MetricSeriesMapper.ToChartSeries(
             MetricSeriesMapper.Find(history, MetricSeriesKind.MemoryUsed), "Mémoire", MetricSeriesMapper.MemoryColor));
         DiskSeries = Wrap(MetricSeriesMapper.ToChartSeries(
@@ -158,7 +160,11 @@ public partial class LiveDataViewModel : PageViewModelBase, IDisposable
                 return;
             }
 
-            CpuSeries = Append(CpuSeries, "CPU", MetricSeriesMapper.CpuColor, (float)evt.Metric.CpuPercent);
+            if (CpuSeries is not { Count: > 1 })
+            {
+                CpuSeries = Append(CpuSeries, "CPU", MetricSeriesMapper.CpuColor, (float)evt.Metric.CpuPercent);
+            }
+
             MemorySeries = Append(MemorySeries, "Mémoire", MetricSeriesMapper.MemoryColor, (float)evt.Metric.MemoryPercent);
             DiskSeries = Append(DiskSeries, "Disque", MetricSeriesMapper.DiskColor, (float)evt.Metric.DiskPercent);
             LoadSeries = Append(LoadSeries, "Load 1m", MetricSeriesMapper.LoadColor, (float)evt.Metric.LoadOneMinute);
@@ -180,19 +186,31 @@ public partial class LiveDataViewModel : PageViewModelBase, IDisposable
         Avalonia.Media.Color color,
         float value)
     {
+        if (current is { Count: > 1 })
+        {
+            return current;
+        }
+
         var existing = current is { Count: > 0 } ? current[0].Values : null;
+        var existingTs = current is { Count: > 0 } ? current[0].Timestamps : null;
         var values = MetricSeriesMapper.AppendBounded(existing, value, 600);
-        return values.Count < 2
-            ? null
-            :
-            [
-                new ChartSeriesData
-                {
-                    Name = name,
-                    Values = values,
-                    Color = color,
-                },
-            ];
+        if (values.Count < 2)
+        {
+            return null;
+        }
+
+        return
+        [
+            new ChartSeriesData
+            {
+                Name = name,
+                Values = values,
+                Color = color,
+                Timestamps = existingTs is null
+                    ? null
+                    : MetricSeriesMapper.AppendBoundedTimestamps(existingTs, DateTimeOffset.UtcNow, 600),
+            },
+        ];
     }
 
     private void ClearSeries()

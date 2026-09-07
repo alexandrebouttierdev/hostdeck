@@ -380,7 +380,19 @@ public partial class OverviewViewModel : PageViewModelBase, IDisposable
 
         var to = DateTimeOffset.UtcNow;
         var from = to.AddHours(-6);
-        var cpuHistories = new List<MetricSeriesDto>();
+        var requestedSeries = new List<MetricSeriesKind>(MetricSeriesMapper.CpuStackKinds)
+        {
+            MetricSeriesKind.CpuTotal,
+            MetricSeriesKind.MemoryUsed,
+        };
+
+        var cpuModeHistories = new Dictionary<MetricSeriesKind, List<MetricSeriesDto>>();
+        foreach (var kind in MetricSeriesMapper.CpuStackKinds)
+        {
+            cpuModeHistories[kind] = [];
+        }
+
+        var cpuTotalHistories = new List<MetricSeriesDto>();
         var memoryHistories = new List<MetricSeriesDto>();
 
         foreach (var server in candidates)
@@ -392,33 +404,65 @@ public partial class OverviewViewModel : PageViewModelBase, IDisposable
                     From = from,
                     To = to,
                     MaxPoints = FleetChartMaxPoints,
-                    Series = [MetricSeriesKind.CpuTotal, MetricSeriesKind.MemoryUsed],
+                    Series = requestedSeries,
                 },
                 cancellationToken).ConfigureAwait(true);
 
-            var cpu = MetricSeriesMapper.Find(history, MetricSeriesKind.CpuTotal);
-            var memory = MetricSeriesMapper.Find(history, MetricSeriesKind.MemoryUsed);
-            if (cpu is { Points.Count: > 0 })
+            foreach (var kind in MetricSeriesMapper.CpuStackKinds)
             {
-                cpuHistories.Add(cpu);
+                var mode = MetricSeriesMapper.Find(history, kind);
+                if (mode is { Points.Count: > 0 })
+                {
+                    cpuModeHistories[kind].Add(mode);
+                }
             }
 
+            var cpuTotal = MetricSeriesMapper.Find(history, MetricSeriesKind.CpuTotal);
+            if (cpuTotal is { Points.Count: > 0 })
+            {
+                cpuTotalHistories.Add(cpuTotal);
+            }
+
+            var memory = MetricSeriesMapper.Find(history, MetricSeriesKind.MemoryUsed);
             if (memory is { Points.Count: > 0 })
             {
                 memoryHistories.Add(memory);
             }
         }
 
-        var cpuChart = MetricSeriesMapper.ToChartSeries(
-            AverageSeries(cpuHistories, MetricSeriesKind.CpuTotal),
-            candidates.Count == 1 ? "CPU" : "CPU flotte",
-            MetricSeriesMapper.CpuColor);
+        // Aires empilées si au moins un mode CPU a de l'historique réel ; sinon CpuTotal mono-série.
+        var stacked = new List<ChartSeriesData>(MetricSeriesMapper.CpuStackKinds.Length);
+        foreach (var kind in MetricSeriesMapper.CpuStackKinds)
+        {
+            var averaged = AverageSeries(cpuModeHistories[kind], kind);
+            var chart = MetricSeriesMapper.ToChartSeries(
+                averaged,
+                MetricSeriesMapper.DisplayNameForKind(kind),
+                MetricSeriesMapper.ColorForKind(kind));
+            if (chart is not null)
+            {
+                stacked.Add(chart);
+            }
+        }
+
+        if (stacked.Count > 0)
+        {
+            CpuSeries = stacked;
+        }
+        else
+        {
+            var cpuChart = MetricSeriesMapper.ToChartSeries(
+                AverageSeries(cpuTotalHistories, MetricSeriesKind.CpuTotal),
+                candidates.Count == 1 ? "CPU" : "CPU flotte",
+                MetricSeriesMapper.CpuColor);
+            CpuSeries = cpuChart is null ? null : [cpuChart];
+        }
+
         var memoryChart = MetricSeriesMapper.ToChartSeries(
             AverageSeries(memoryHistories, MetricSeriesKind.MemoryUsed),
             candidates.Count == 1 ? "Mémoire" : "Mémoire flotte",
             MetricSeriesMapper.MemoryColor);
 
-        CpuSeries = cpuChart is null ? null : [cpuChart];
         MemorySeries = memoryChart is null ? null : [memoryChart];
     }
 

@@ -224,12 +224,15 @@
       <Grid Grid.Row="3" ColumnDefinitions="*,*,0.85*" ColumnSpacing="12" MinHeight="200">
         <charts:ChartFrame Title="Utilisation CPU globale"
                            Series="{Binding CpuSeries}"
+                           YAxisMax="100"
+                             Stacked="True"
                            EmptyTitle="Aucune série disponible"
                            EmptyDescription="Les graphiques s’afficheront dès que des métriques seront collectées."
                            EmptyIconData="{StaticResource IconLiveData}" />
         <charts:ChartFrame Grid.Column="1"
                            Title="Utilisation mémoire globale"
                            Series="{Binding MemorySeries}"
+                           YAxisMax="100"
                            EmptyTitle="Aucune série disponible"
                            EmptyDescription="Les graphiques s’afficheront dès que des métriques seront collectées." />
         <Border Grid.Column="2"
