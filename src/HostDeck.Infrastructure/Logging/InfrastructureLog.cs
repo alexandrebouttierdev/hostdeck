@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 
-namespace HostDeck.Infrastructure.Persistence;
+namespace HostDeck.Infrastructure;
 
 /// <summary>
 /// Messages de journalisation de l'Infrastructure, générés à la compilation.
@@ -48,4 +48,69 @@ internal static partial class InfrastructureLog
         Level = LogLevel.Warning,
         Message = "Host key for {Host}:{Port} was approved, replacing a previously approved fingerprint")]
     public static partial void HostKeyReplaced(ILogger logger, string host, int port);
+
+    [LoggerMessage(
+        EventId = 2100,
+        Level = LogLevel.Information,
+        Message = "SSH connected to {Host}:{Port} in {ElapsedMs} ms (jump={ViaJump})")]
+    public static partial void SshConnected(ILogger logger, string host, int port, long elapsedMs, bool viaJump);
+
+    [LoggerMessage(
+        EventId = 2200,
+        Level = LogLevel.Information,
+        Message = "Credential written for key {CredentialKey}")]
+    public static partial void CredentialWritten(ILogger logger, string credentialKey);
+
+    [LoggerMessage(
+        EventId = 2201,
+        Level = LogLevel.Information,
+        Message = "Credential deleted for key {CredentialKey}")]
+    public static partial void CredentialDeleted(ILogger logger, string credentialKey);
+
+    [LoggerMessage(
+        EventId = 2202,
+        Level = LogLevel.Warning,
+        Message = "OS credential store is unavailable")]
+    public static partial void CredentialStoreUnavailable(ILogger logger, Exception exception);
+
+    [LoggerMessage(
+        EventId = 2300,
+        Level = LogLevel.Information,
+        Message = "Fleet monitoring coordinator started")]
+    public static partial void FleetCoordinatorStarted(ILogger logger);
+
+    [LoggerMessage(
+        EventId = 2301,
+        Level = LogLevel.Information,
+        Message = "Fleet monitoring coordinator stopped")]
+    public static partial void FleetCoordinatorStopped(ILogger logger);
+
+    [LoggerMessage(
+        EventId = 2302,
+        Level = LogLevel.Information,
+        Message = "Fleet cycle completed: {Succeeded} succeeded, {Failed} failed in {ElapsedMs} ms")]
+    public static partial void FleetCycleCompleted(ILogger logger, int succeeded, int failed, long elapsedMs);
+
+    [LoggerMessage(
+        EventId = 2303,
+        Level = LogLevel.Warning,
+        Message = "Collect attempt {Attempt}/{MaxAttempts} failed for server {ServerId}")]
+    public static partial void FleetCollectAttemptFailed(
+        ILogger logger,
+        Exception exception,
+        Guid serverId,
+        int attempt,
+        int maxAttempts);
+
+    [LoggerMessage(
+        EventId = 2304,
+        Level = LogLevel.Error,
+        Message = "Failed to persist status for server {ServerId}")]
+    public static partial void FleetStatusPersistFailed(ILogger logger, Exception exception, Guid serverId);
+
+    [LoggerMessage(
+        EventId = 2305,
+        Level = LogLevel.Error,
+        Message = "Failed to evaluate incidents for server {ServerId}")]
+    public static partial void FleetIncidentEvaluateFailed(ILogger logger, Exception exception, Guid serverId);
 }

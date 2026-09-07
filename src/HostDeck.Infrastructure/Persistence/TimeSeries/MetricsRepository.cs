@@ -11,6 +11,7 @@ using HostDeck.Application.Errors;
 using HostDeck.Application.Ports;
 using HostDeck.Domain.Monitoring;
 using HostDeck.Domain.Servers;
+using HostDeck.Infrastructure;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

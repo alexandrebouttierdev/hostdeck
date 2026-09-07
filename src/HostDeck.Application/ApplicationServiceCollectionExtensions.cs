@@ -1,6 +1,8 @@
 using FluentValidation;
 using HostDeck.Application.Alerts;
 using HostDeck.Application.Incidents;
+using HostDeck.Application.Monitoring;
+using HostDeck.Application.Monitoring.Events;
 using HostDeck.Application.Ports;
 using HostDeck.Application.Servers;
 using HostDeck.Application.Settings;
@@ -23,6 +25,7 @@ public static class ApplicationServiceCollectionExtensions
             ServiceLifetime.Singleton);
 
         services.AddSingleton<IClock>(SystemClock.Instance);
+        services.AddSingleton<IMonitoringEventBus, InMemoryMonitoringEventBus>();
 
         // Les use cases ne portent aucun état entre deux appels ; ils sont créés à la demande
         // et ne retiennent donc jamais un dépôt au-delà de l'opération en cours.
@@ -31,6 +34,7 @@ public static class ApplicationServiceCollectionExtensions
         services.AddTransient<DeleteServerUseCase>();
         services.AddTransient<GetServersUseCase>();
         services.AddTransient<GetServerDetailsUseCase>();
+        services.AddTransient<TestConnectionUseCase>();
 
         services.AddTransient<GetIncidentsUseCase>();
         services.AddTransient<GetIncidentDetailsUseCase>();

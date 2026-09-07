@@ -2,9 +2,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using HostDeck.Application.Ports;
+using HostDeck.Infrastructure.Credentials;
+using HostDeck.Infrastructure.Monitoring;
 using HostDeck.Infrastructure.Persistence;
 using HostDeck.Infrastructure.Persistence.Repositories;
 using HostDeck.Infrastructure.Persistence.TimeSeries;
+using HostDeck.Infrastructure.Ssh;
+using Latchkey;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,13 +25,17 @@ public static class InfrastructureServiceCollectionExtensions
 {
     public static IServiceCollection AddHostDeckInfrastructure(
         this IServiceCollection services,
-        Action<DatabaseOptions>? configureDatabase = null)
+        Action<DatabaseOptions>? configureDatabase = null,
+        Action<SshConnectionOptions>? configureSsh = null)
     {
         ArgumentNullException.ThrowIfNull(services);
 
         var databaseOptions = new DatabaseOptions();
         configureDatabase?.Invoke(databaseOptions);
         services.AddSingleton(databaseOptions);
+
+        services.AddOptions<SshConnectionOptions>()
+            .Configure(options => configureSsh?.Invoke(options));
 
         var connectionString = BuildConnectionString(databaseOptions);
 
@@ -51,6 +59,20 @@ public static class InfrastructureServiceCollectionExtensions
         services.AddSingleton<ISettingsRepository, SettingsRepository>();
         services.AddSingleton<IMetricsRepository, MetricsRepository>();
         services.AddSingleton<IHostKeyStore, HostKeyStore>();
+
+        services.AddSingleton<ILatchkey>(_ => LatchkeyFactory.Create(new LatchkeyOptions
+        {
+            ServiceName = OsCredentialStore.ServiceName,
+            DisplayName = "HostDeck",
+        }));
+        services.AddSingleton<ICredentialStore, OsCredentialStore>();
+
+        services.AddSingleton<SshCredentialLoader>();
+        services.AddSingleton<ISshConnectionFactory, SshConnectionFactory>();
+
+        services.AddSingleton<LinuxMetricCollector>();
+        services.AddSingleton<IncidentEvaluationEngine>();
+        services.AddHostedService<FleetMonitoringCoordinator>();
 
         return services;
     }

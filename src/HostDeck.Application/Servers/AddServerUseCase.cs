@@ -72,6 +72,15 @@ public sealed class AddServerUseCase
             .WriteAsync(credential, request.Secret.AsMemory(), cancellationToken)
             .ConfigureAwait(false);
 
+        CredentialReference? passphraseReference = null;
+        if (!string.IsNullOrEmpty(request.Passphrase))
+        {
+            passphraseReference = new CredentialReference($"{credential.Key}:passphrase", credential.Kind);
+            await _credentials
+                .WriteAsync(passphraseReference, request.Passphrase.AsMemory(), cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         try
         {
             await _servers.AddAsync(server, cancellationToken).ConfigureAwait(false);
@@ -81,6 +90,11 @@ public sealed class AddServerUseCase
             // L'écriture en base a échoué : on retire le secret pour ne pas laisser une
             // entrée de trousseau que plus rien ne référence.
             await TryRemoveOrphanCredentialAsync(credential).ConfigureAwait(false);
+            if (passphraseReference is not null)
+            {
+                await TryRemoveOrphanCredentialAsync(passphraseReference).ConfigureAwait(false);
+            }
+
             throw;
         }
 

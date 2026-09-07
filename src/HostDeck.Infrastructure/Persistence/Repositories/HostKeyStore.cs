@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using HostDeck.Application.Ports;
+using HostDeck.Infrastructure;
 using HostDeck.Infrastructure.Persistence.Records;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
