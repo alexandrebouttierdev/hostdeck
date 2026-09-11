@@ -13,6 +13,7 @@ using HostDeck.Domain.Monitoring;
 using HostDeck.Domain.Servers;
 using HostDeck.Presentation.Services;
 using HostDeck.Presentation.ViewModels.Infrastructure;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace HostDeck.Presentation.Tests.ViewModels;
@@ -115,6 +116,7 @@ public sealed class InfrastructureViewModelTests
         var metrics = new StubMetricsRepository();
         return new InfrastructureViewModel(
             new GetServersUseCase(repo, metrics),
+            new DeleteServerUseCase(repo, new StubCredentialStore(), NullLogger<DeleteServerUseCase>.Instance),
             new GetMetricHistoryUseCase(metrics),
             bus ?? new ImmediateEventBus(),
             new StubDialogService(),
@@ -138,6 +140,29 @@ public sealed class InfrastructureViewModelTests
     {
         public Task<bool> ShowAddHostAsync(CancellationToken cancellationToken = default)
             => Task.FromResult(false);
+    }
+
+    private sealed class StubCredentialStore : ICredentialStore
+    {
+        public Task DeleteAsync(CredentialReference reference, CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
+
+        public Task<bool> ExistsAsync(CredentialReference reference, CancellationToken cancellationToken = default) =>
+            Task.FromResult(false);
+
+        public Task<SecretMaterial> ReadAsync(
+            CredentialReference reference,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
+        public Task WriteAsync(
+            CredentialReference reference,
+            ReadOnlyMemory<char> secret,
+            CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
+
+        public Task<bool> IsAvailableAsync(CancellationToken cancellationToken = default) =>
+            Task.FromResult(true);
     }
 
     private sealed class ImmediateDispatcher : IUiDispatcher

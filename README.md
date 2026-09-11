@@ -8,10 +8,11 @@ technical, Netdata-flavoured interface.
 It is a real desktop application: **C# / .NET 10 + Avalonia**, with no web layer, no embedded
 browser and no mandatory SaaS backend. Everything runs and persists locally.
 
-> **Status: in development.** The foundations, quality gate and CI are in place; the domain,
-> collection pipeline and screens are being implemented phase by phase.
+> **Status: V1 feature-complete on `dev`.** SSH monitoring, incidents/alerts, Docker
+> supervision, local persistence, desktop notifications and the Avalonia shell are wired.
+> Visual polish against the nine mockups and native installers remain iterative.
 
-## Features (target for V1)
+## Features (V1)
 
 - Manage multiple Linux hosts, grouped and tagged
 - Direct SSH and SSH jump host / bastion connections, with strict host key verification
@@ -83,8 +84,9 @@ scripts/                    Build, screenshot and packaging helpers.
 ## Documentation
 
 Technical documentation lives in [`docs/`](docs/). Start with
-[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Contributors should read
-[`AGENTS.md`](AGENTS.md), which states the binding rules for this codebase, and
-[`CONTRIBUTING.md`](CONTRIBUTING.md).
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Also see
+[`docs/DOCKER.md`](docs/DOCKER.md) and [`docs/PACKAGING.md`](docs/PACKAGING.md).
+Contributors should read [`AGENTS.md`](AGENTS.md), which states the binding rules for this
+codebase, and [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 Security model and reporting: [`SECURITY.md`](SECURITY.md).

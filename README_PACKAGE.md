@@ -1,23 +1,22 @@
-# HostDeck — Package Codex / Grok
+# HostDeck — specification package
 
-Ce ZIP contient la spécification complète de création de HostDeck en **Go + Fyne** ainsi que les **9 maquettes finales validées**.
+This repository holds the complete HostDeck V1 specification for **C# / .NET 10 + Avalonia**,
+together with the nine validated mockups.
 
-## Contenu
+## Contents
 
-- `PROMPT_HOSTDECK_GO_FYNE.md` — prompt principal, déjà mis à jour pour référencer explicitement les maquettes.
-- `mockups/` — 9 écrans HostDeck servant de source de vérité visuelle.
-- `MOCKUPS_CONTACT_SHEET.png` — aperçu de l'ensemble des maquettes.
-- `references/netdata_charts_reference.webp` — référence graphique Netdata uniquement pour le style des graphiques.
+- `PROMPT_HOSTDECK.md` — full product and technical specification
+- `AGENTS.md` — binding rules for contributors and agents
+- `mockups/` — nine HostDeck screens (visual source of truth, 1672×941)
+- `MOCKUPS_CONTACT_SHEET.png` — overview of all mockups
+- `references/netdata_charts_reference.webp` — chart visual language only
+- `docs/` — architecture and technical notes
 
-## Utilisation recommandée
+## Recommended workflow
 
-Joindre **le fichier Markdown et le dossier de maquettes / le ZIP complet** à l'agent.
+1. Read `PROMPT_HOSTDECK.md` and `AGENTS.md`
+2. Open every mockup before changing UI
+3. Prefer Context7 (or official docs) for non-trivial APIs
+4. Compare each screen to its mockup via `scripts/screenshot.sh`
 
-Lui demander de :
-1. lire entièrement le prompt ;
-2. ouvrir toutes les maquettes ;
-3. ne commencer l'UI qu'après leur analyse ;
-4. utiliser Context7 pour Fyne et toutes les APIs importantes ;
-5. comparer chaque écran implémenté à sa maquette via captures d'écran.
-
-Les maquettes finales utilisent un **rail vertical compact**, et non une sidebar webapp large.
+The mockups use a **compact vertical rail**, not a wide web-style sidebar.

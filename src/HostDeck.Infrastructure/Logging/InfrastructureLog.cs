@@ -113,4 +113,22 @@ internal static partial class InfrastructureLog
         Level = LogLevel.Error,
         Message = "Failed to evaluate incidents for server {ServerId}")]
     public static partial void FleetIncidentEvaluateFailed(ILogger logger, Exception exception, Guid serverId);
+
+    [LoggerMessage(
+        EventId = 2400,
+        Level = LogLevel.Information,
+        Message = "Desktop notification (fallback): {Title} — {Body}")]
+    public static partial void DesktopNotificationLogged(ILogger logger, string title, string body);
+
+    [LoggerMessage(
+        EventId = 2401,
+        Level = LogLevel.Warning,
+        Message = "Desktop notification unavailable on this system")]
+    public static partial void DesktopNotificationUnavailable(ILogger logger);
+
+    [LoggerMessage(
+        EventId = 2402,
+        Level = LogLevel.Warning,
+        Message = "Desktop notification failed")]
+    public static partial void DesktopNotificationFailed(ILogger logger, Exception exception);
 }

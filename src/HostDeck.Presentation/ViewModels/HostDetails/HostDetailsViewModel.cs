@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HostDeck.Application.Dtos.Monitoring;
 using HostDeck.Application.Dtos.Servers;
+using HostDeck.Application.Incidents;
 using HostDeck.Application.Monitoring;
 using HostDeck.Application.Monitoring.Events;
+using HostDeck.Domain.Incidents;
 using HostDeck.Domain.Servers;
 using HostDeck.Presentation.Charts;
 using HostDeck.Presentation.Controls.Charts;
@@ -22,6 +25,7 @@ namespace HostDeck.Presentation.ViewModels.HostDetails;
 public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
 {
     private readonly GetMetricHistoryUseCase _getHistory;
+    private readonly GetIncidentsUseCase _getIncidents;
     private readonly IMonitoringEventBus _events;
     private readonly IUiDispatcher _ui;
     private readonly List<IDisposable> _subscriptions = [];
@@ -45,12 +49,20 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
     [ObservableProperty]
     private IReadOnlyList<ChartSeriesData>? _networkSeries;
 
+    [ObservableProperty]
+    private IReadOnlyList<ChartSeriesData>? _loadSeries;
+
+    [ObservableProperty]
+    private string _hostIncidentsSummary = "Aucun incident sur cet hôte.";
+
     public HostDetailsViewModel(
         GetMetricHistoryUseCase getHistory,
+        GetIncidentsUseCase getIncidents,
         IMonitoringEventBus events,
         IUiDispatcher ui)
     {
         _getHistory = getHistory;
+        _getIncidents = getIncidents;
         _events = events;
         _ui = ui;
         _subscriptions.Add(_events.Subscribe<MetricUpdatedEvent>(OnMetricUpdated));
@@ -65,6 +77,19 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
     public string DisplayAddress => SelectedHost?.Address ?? "—";
 
     public string DisplayOperatingSystem => SelectedHost?.OperatingSystem ?? "—";
+
+    public string DisplayUptime =>
+        SelectedHost?.Latest is null ? "—" : FormatUptime(SelectedHost.Latest.Uptime);
+
+    public string DisplayTags =>
+        SelectedHost is null || SelectedHost.Tags.Count == 0
+            ? "Aucun tag"
+            : string.Join(", ", SelectedHost.Tags);
+
+    public string DisplayLoad =>
+        SelectedHost?.Latest is null
+            ? "—"
+            : SelectedHost.Latest.LoadOneMinute.ToString("0.00", CultureInfo.CurrentCulture);
 
     public string DisplayStatus => SelectedHost is null
         ? "—"
@@ -93,10 +118,12 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
         SelectedHost = host;
         HasSelection = host is not null;
         ClearSeries();
+        HostIncidentsSummary = "Aucun incident sur cet hôte.";
 
         if (host is not null)
         {
             await LoadHistoryAsync(host.ServerId, cancellationToken).ConfigureAwait(true);
+            await LoadIncidentsAsync(host.ServerId, cancellationToken).ConfigureAwait(true);
         }
 
         OnPropertyChanged(nameof(Title));
@@ -107,6 +134,9 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
         OnPropertyChanged(nameof(DisplayAddress));
         OnPropertyChanged(nameof(DisplayOperatingSystem));
         OnPropertyChanged(nameof(DisplayStatus));
+        OnPropertyChanged(nameof(DisplayUptime));
+        OnPropertyChanged(nameof(DisplayTags));
+        OnPropertyChanged(nameof(DisplayLoad));
     }
 
     /// <summary>Compatibilité shell synchrone : charge l'historique en tâche de fond UI.</summary>
@@ -133,6 +163,9 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
                     MetricSeriesKind.DiskUsed,
                     MetricSeriesKind.NetworkReceived,
                     MetricSeriesKind.NetworkTransmitted,
+                    MetricSeriesKind.LoadOne,
+                    MetricSeriesKind.LoadFive,
+                    MetricSeriesKind.LoadFifteen,
                 ],
             },
             cancellationToken).ConfigureAwait(true);
@@ -153,6 +186,35 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
         MemorySeries = Wrap(memory);
         DiskSeries = Wrap(disk);
         NetworkSeries = BuildMulti(netIn, netOut);
+        LoadSeries = BuildMulti(
+            MetricSeriesMapper.ToChartSeries(
+                MetricSeriesMapper.Find(history, MetricSeriesKind.LoadOne), "Load 1m", MetricSeriesMapper.LoadColor),
+            MetricSeriesMapper.ToChartSeries(
+                MetricSeriesMapper.Find(history, MetricSeriesKind.LoadFive), "Load 5m", MetricSeriesMapper.LoadColor),
+            MetricSeriesMapper.ToChartSeries(
+                MetricSeriesMapper.Find(history, MetricSeriesKind.LoadFifteen), "Load 15m", MetricSeriesMapper.LoadColor));
+    }
+
+    private async Task LoadIncidentsAsync(Guid serverId, CancellationToken cancellationToken)
+    {
+        var incidents = await _getIncidents
+            .ExecuteAsync(
+                new Application.Dtos.Incidents.IncidentFilterDto
+                {
+                    ServerId = serverId,
+                    Statuses =
+                    [
+                        IncidentStatus.Open,
+                        IncidentStatus.Acknowledged,
+                        IncidentStatus.Recovered,
+                    ],
+                },
+                cancellationToken)
+            .ConfigureAwait(true);
+
+        HostIncidentsSummary = incidents.Count == 0
+            ? "Aucun incident sur cet hôte."
+            : $"{incidents.Count} incident{(incidents.Count > 1 ? "s" : string.Empty)} actif{(incidents.Count > 1 ? "s" : string.Empty)}.";
     }
 
     private void OnMetricUpdated(MetricUpdatedEvent evt)
@@ -178,8 +240,28 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
 
             MemorySeries = AppendChart(MemorySeries, "Mémoire", MetricSeriesMapper.MemoryColor, (float)evt.Metric.MemoryPercent);
             DiskSeries = AppendChart(DiskSeries, "Disque", MetricSeriesMapper.DiskColor, (float)evt.Metric.DiskPercent);
+            LoadSeries = AppendChart(LoadSeries, "Load 1m", MetricSeriesMapper.LoadColor, (float)evt.Metric.LoadOneMinute);
             OnPropertyChanged(nameof(StatusSummary));
+            OnPropertyChanged(nameof(DisplayUptime));
+            OnPropertyChanged(nameof(DisplayLoad));
         });
+    }
+
+    private static string FormatUptime(TimeSpan uptime)
+    {
+        if (uptime.TotalDays >= 1)
+        {
+            return string.Create(
+                CultureInfo.CurrentCulture,
+                $"{(int)uptime.TotalDays}j {uptime.Hours}h");
+        }
+
+        if (uptime.TotalHours >= 1)
+        {
+            return string.Create(CultureInfo.CurrentCulture, $"{(int)uptime.TotalHours}h {uptime.Minutes}m");
+        }
+
+        return string.Create(CultureInfo.CurrentCulture, $"{(int)uptime.TotalMinutes}m");
     }
 
     private static IReadOnlyList<ChartSeriesData>? AppendChart(
@@ -238,6 +320,7 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
         MemorySeries = null;
         DiskSeries = null;
         NetworkSeries = null;
+        LoadSeries = null;
     }
 
     partial void OnSelectedHostChanged(ServerSummaryDto? value)
@@ -250,6 +333,9 @@ public partial class HostDetailsViewModel : PageViewModelBase, IDisposable
         OnPropertyChanged(nameof(DisplayAddress));
         OnPropertyChanged(nameof(DisplayOperatingSystem));
         OnPropertyChanged(nameof(DisplayStatus));
+        OnPropertyChanged(nameof(DisplayUptime));
+        OnPropertyChanged(nameof(DisplayTags));
+        OnPropertyChanged(nameof(DisplayLoad));
     }
 
     public void Dispose()

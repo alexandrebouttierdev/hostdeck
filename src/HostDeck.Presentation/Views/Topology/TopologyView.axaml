@@ -9,23 +9,11 @@
     <Grid ColumnDefinitions="*,Auto">
       <StackPanel Spacing="4">
         <TextBlock Text="Topologie de l’infrastructure" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-        <TextBlock Text="Carte des hôtes, bastions et dépendances." Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+        <TextBlock Text="Carte des hôtes et des connexions via bastion." Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
       </StackPanel>
       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
         <Border Background="{StaticResource SelectionBrush}" CornerRadius="{StaticResource RadiusSmall}" Padding="10,6">
-          <TextBlock Text="Carte logique" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-        </Border>
-        <Border Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}"
-                BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}" Padding="10,6">
-          <TextBlock Text="Carte physique" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeBody}" />
-        </Border>
-        <Border Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}"
-                BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}" Padding="10,6">
-          <TextBlock Text="Vue compacte" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeBody}" />
-        </Border>
-        <Border Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}"
-                BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}" Padding="10,6">
-          <TextBlock Text="Tous les environnements" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeBody}" />
+          <TextBlock Text="Vue flotte" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
         </Border>
       </StackPanel>
     </Grid>
@@ -36,21 +24,49 @@
               BorderThickness="{StaticResource BorderThin}"
               CornerRadius="{StaticResource RadiusSmall}">
         <Grid RowDefinitions="*,Auto">
-          <controls:EmptyState Title="Topologie vide"
-                               Description="La carte apparaîtra dès qu’au moins un hôte sera configuré. Les environnements Production / Préproduction / Staging seront regroupés ici."
-                               IconData="{StaticResource IconTopology}" />
+          <Panel>
+            <controls:EmptyState IsVisible="{Binding IsEmpty}"
+                                 Title="Topologie vide"
+                                 Description="La carte apparaîtra dès qu’au moins un hôte sera configuré."
+                                 IconData="{StaticResource IconTopology}" />
+            <DataGrid IsVisible="{Binding !IsEmpty}"
+                      ItemsSource="{Binding Hosts}"
+                      SelectedItem="{Binding SelectedHost}"
+                      AutoGenerateColumns="False"
+                      CanUserResizeColumns="True"
+                      GridLinesVisibility="Horizontal"
+                      BorderThickness="0"
+                      Background="Transparent"
+                      RowHeight="{StaticResource TableRowHeight}"
+                      IsReadOnly="True">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Hôte" Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Header="Adresse" Binding="{Binding Address}" Width="130" />
+                <DataGridTextColumn Header="État" Binding="{Binding Status}" Width="110" />
+                <DataGridTextColumn Header="Connexion" Binding="{Binding ConnectionMode}" Width="110" />
+                <DataGridTextColumn Header="Groupe" Binding="{Binding Group}" Width="100" />
+              </DataGrid.Columns>
+            </DataGrid>
+          </Panel>
           <Border Grid.Row="1" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="0,1,0,0" Padding="12,8">
             <StackPanel Orientation="Horizontal" Spacing="16">
-              <TextBlock Text="Environnements : 0" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Text="Nœuds : 0" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Text="Liens : 0" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Text="Réseau interne : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}">
+                <Run Text="Nœuds : " />
+                <Run Text="{Binding Hosts.Count}" FontWeight="SemiBold" />
+              </TextBlock>
+              <TextBlock Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}">
+                <Run Text="Directs : " />
+                <Run Text="{Binding DirectHostCount}" FontWeight="SemiBold" />
+              </TextBlock>
+              <TextBlock Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}">
+                <Run Text="Via bastion : " />
+                <Run Text="{Binding JumpHostCount}" FontWeight="SemiBold" />
+              </TextBlock>
             </StackPanel>
           </Border>
         </Grid>
       </Border>
 
-      <!-- Panneau détail (structure maquette 07) ; empty intentionnel sans sélection -->
       <Border Background="{StaticResource SurfacePanelBrush}"
               BorderBrush="{StaticResource BorderSubtleBrush}"
               BorderThickness="{StaticResource BorderThin}"
@@ -58,38 +74,30 @@
         <ScrollViewer>
           <StackPanel Margin="{StaticResource PanelPadding}" Spacing="12">
             <StackPanel Spacing="4">
-              <TextBlock Text="Aucun nœud sélectionné" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeLarge}" />
-              <TextBlock Text="Sélectionnez un hôte sur la carte pour afficher le détail." Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+              <TextBlock Text="{Binding SelectedHost.Name, TargetNullValue='Aucun nœud sélectionné'}"
+                         FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeLarge}" />
+              <TextBlock Text="Sélectionnez un hôte sur la carte pour afficher le détail."
+                         IsVisible="{Binding !HasSelection}"
+                         Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
             </StackPanel>
 
-            <TextBlock Text="Informations générales" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="10">
-              <TextBlock Text="Nom" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Grid.Column="1" Text="—" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Grid.Row="1" Text="Rôle" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Grid.Row="1" Grid.Column="1" Text="—" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Grid.Row="2" Text="Environnement" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Grid.Row="2" Grid.Column="1" Text="—" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Grid.Row="3" Text="Adresse IP" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Grid.Row="3" Grid.Column="1" Text="—" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeBody}" />
-              <TextBlock Grid.Row="4" Text="État" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Grid.Row="4" Grid.Column="1" Text="—" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeBody}" />
-            </Grid>
+            <StackPanel IsVisible="{Binding HasSelection}" Spacing="10">
+              <TextBlock Text="Informations générales" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+              <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="6" ColumnSpacing="10">
+                <TextBlock Text="Adresse" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                <TextBlock Grid.Column="1" Text="{Binding SelectedHost.Address}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+                <TextBlock Grid.Row="1" Text="État" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedHost.Status}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+                <TextBlock Grid.Row="2" Text="Connexion" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding SelectedHost.ConnectionMode}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+                <TextBlock Grid.Row="3" Text="Groupe" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding SelectedHost.Group}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+              </Grid>
 
-            <TextBlock Text="Ressources (6 dernières heures)" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <StackPanel Spacing="8">
-              <Grid ColumnDefinitions="80,* ,40"><TextBlock Text="CPU" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" /><Border Grid.Column="1" Height="8" Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusPill}" Margin="0,4" /><TextBlock Grid.Column="2" Text="—" HorizontalAlignment="Right" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" /></Grid>
-              <Grid ColumnDefinitions="80,* ,40"><TextBlock Text="Mémoire" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" /><Border Grid.Column="1" Height="8" Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusPill}" Margin="0,4" /><TextBlock Grid.Column="2" Text="—" HorizontalAlignment="Right" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" /></Grid>
-              <Grid ColumnDefinitions="80,* ,40"><TextBlock Text="Disque" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" /><Border Grid.Column="1" Height="8" Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusPill}" Margin="0,4" /><TextBlock Grid.Column="2" Text="—" HorizontalAlignment="Right" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" /></Grid>
-              <Grid ColumnDefinitions="80,* ,40"><TextBlock Text="Réseau" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" /><Border Grid.Column="1" Height="8" Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusPill}" Margin="0,4" /><TextBlock Grid.Column="2" Text="—" HorizontalAlignment="Right" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" /></Grid>
+              <TextBlock Text="Dépendances" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+              <TextBlock Text="Les liens inter-hôtes hors bastion sont hors périmètre V1."
+                         Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
             </StackPanel>
-
-            <TextBlock Text="Services" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <TextBlock Text="Inventaire hors périmètre V1." Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-
-            <TextBlock Text="Dépendances" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <TextBlock Text="Dépend de : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-            <TextBlock Text="Est utilisé par : —" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
           </StackPanel>
         </ScrollViewer>
       </Border>

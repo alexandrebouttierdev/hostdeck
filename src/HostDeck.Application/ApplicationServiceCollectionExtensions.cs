@@ -1,5 +1,6 @@
 using FluentValidation;
 using HostDeck.Application.Alerts;
+using HostDeck.Application.Docker;
 using HostDeck.Application.Incidents;
 using HostDeck.Application.Monitoring;
 using HostDeck.Application.Monitoring.Events;
@@ -50,6 +51,13 @@ public static class ApplicationServiceCollectionExtensions
 
         services.AddTransient<GetSettingsUseCase>();
         services.AddTransient<UpdateSettingsUseCase>();
+
+        services.AddTransient<ListDockerContainersUseCase>();
+        services.AddTransient<GetDockerHostInfoUseCase>();
+        services.AddTransient<GetContainerStatsUseCase>();
+        services.AddTransient<StartDockerContainerUseCase>();
+        services.AddTransient<StopDockerContainerUseCase>();
+        services.AddTransient<RestartDockerContainerUseCase>();
 
         return services;
     }

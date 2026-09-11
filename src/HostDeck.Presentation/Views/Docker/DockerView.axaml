@@ -4,19 +4,81 @@
              xmlns:vm="using:HostDeck.Presentation.ViewModels.Docker"
              x:Class="HostDeck.Presentation.Views.Docker.DockerView"
              x:DataType="vm:DockerViewModel">
-  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,*" RowSpacing="14">
+  <Grid Margin="{StaticResource ContentPadding}" RowDefinitions="Auto,Auto,*" RowSpacing="14">
     <StackPanel Spacing="4">
-      <TextBlock Text="Docker" FontSize="{StaticResource FontSizeTitle}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-      <TextBlock Text="Conteneurs, images et statistiques." Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+      <TextBlock Text="Docker"
+                 FontSize="{StaticResource FontSizeTitle}"
+                 FontWeight="SemiBold"
+                 Foreground="{StaticResource TextPrimaryBrush}" />
+      <TextBlock Text="Conteneurs, images et statistiques."
+                 Foreground="{StaticResource TextSecondaryBrush}"
+                 FontSize="{StaticResource FontSizeBody}" />
     </StackPanel>
+
     <Border Grid.Row="1"
+            IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+            Padding="12,8"
+            Background="{StaticResource SurfaceRaisedBrush}"
+            BorderBrush="{StaticResource SeverityHighBrush}"
+            BorderThickness="{StaticResource BorderThin}"
+            CornerRadius="{StaticResource RadiusSmall}">
+      <TextBlock Text="{Binding ErrorMessage}"
+                 Foreground="{StaticResource SeverityHighBrush}"
+                 TextWrapping="Wrap" />
+    </Border>
+
+    <Border Grid.Row="2"
             Background="{StaticResource SurfacePanelBrush}"
             BorderBrush="{StaticResource BorderSubtleBrush}"
             BorderThickness="{StaticResource BorderThin}"
             CornerRadius="{StaticResource RadiusSmall}">
-      <controls:EmptyState Title="Aucun conteneur Docker"
-                           Description="La supervision Docker sera disponible une fois un hôte Docker joignable. Aucune donnée n’est inventée."
-                           IconData="{StaticResource IconDocker}" />
+      <Panel>
+        <controls:EmptyState IsVisible="{Binding IsEmpty}"
+                             Title="Aucun conteneur Docker"
+                             Description="Activez Docker sur un hôte et assurez-vous qu'il est joignable. Aucune donnée n'est inventée."
+                             IconData="{StaticResource IconDocker}" />
+        <DataGrid IsVisible="{Binding !IsEmpty}"
+                  ItemsSource="{Binding Containers}"
+                  SelectedItem="{Binding SelectedContainer}"
+                  AutoGenerateColumns="False"
+                  CanUserResizeColumns="True"
+                  GridLinesVisibility="Horizontal"
+                  BorderThickness="0"
+                  Background="Transparent"
+                  RowHeight="{StaticResource TableRowHeight}">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Nom" Binding="{Binding Name}" Width="*" MinWidth="120" />
+            <DataGridTextColumn Header="Image" Binding="{Binding Image}" Width="180" />
+            <DataGridTextColumn Header="État" Binding="{Binding StatusText}" Width="100" />
+            <DataGridTextColumn Header="Santé" Binding="{Binding HealthText}" Width="90" />
+            <DataGridTextColumn Header="CPU" Binding="{Binding CpuText}" Width="70" />
+            <DataGridTextColumn Header="Mémoire" Binding="{Binding MemoryText}" Width="80" />
+            <DataGridTemplateColumn Header="Actions" Width="220">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate x:DataType="vm:DockerContainerItemViewModel">
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Button Content="Démarrer"
+                            Padding="8,4"
+                            IsEnabled="{Binding CanStart}"
+                            Command="{Binding $parent[UserControl].((vm:DockerViewModel)DataContext).StartContainerCommand}"
+                            CommandParameter="{Binding}" />
+                    <Button Content="Arrêter"
+                            Padding="8,4"
+                            IsEnabled="{Binding CanStop}"
+                            Command="{Binding $parent[UserControl].((vm:DockerViewModel)DataContext).StopContainerCommand}"
+                            CommandParameter="{Binding}" />
+                    <Button Content="Redémarrer"
+                            Padding="8,4"
+                            IsEnabled="{Binding CanRestart}"
+                            Command="{Binding $parent[UserControl].((vm:DockerViewModel)DataContext).RestartContainerCommand}"
+                            CommandParameter="{Binding}" />
+                  </StackPanel>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+          </DataGrid.Columns>
+        </DataGrid>
+      </Panel>
     </Border>
   </Grid>
 </UserControl>

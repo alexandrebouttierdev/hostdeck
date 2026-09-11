@@ -254,6 +254,15 @@
                     Foreground="{StaticResource TextPrimaryBrush}"
                     BorderThickness="0"
                     CornerRadius="{StaticResource RadiusSmall}" />
+            <Button Content="Supprimer l’hôte"
+                    Command="{Binding DeleteHostCommand}"
+                    HorizontalAlignment="Stretch"
+                    Padding="12,8"
+                    Margin="0,8,0,0"
+                    Background="{StaticResource SurfaceRaisedBrush}"
+                    Foreground="{StaticResource TextPrimaryBrush}"
+                    BorderBrush="{StaticResource BorderSubtleBrush}"
+                    CornerRadius="{StaticResource RadiusSmall}" />
           </StackPanel>
 
           <charts:ChartFrame Margin="0,14,0,0"

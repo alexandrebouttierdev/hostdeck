@@ -487,9 +487,28 @@
           <DockPanel>
             <TextBlock DockPanel.Dock="Top" Margin="14,12,14,0" Text="Incidents récents"
                        FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
-            <controls:EmptyState Title="Aucun incident actif"
-                                 Description="Les incidents apparaîtront ici lorsque des règles d’alerte se déclencheront."
-                                 IconData="{StaticResource IconIncidents}" />
+            <Panel Margin="0,8,0,0">
+              <controls:EmptyState IsVisible="{Binding !HasRecentIncidents}"
+                                   Title="Aucun incident actif"
+                                   Description="Les incidents apparaîtront ici lorsque des règles d’alerte se déclencheront."
+                                   IconData="{StaticResource IconIncidents}" />
+              <DataGrid IsVisible="{Binding HasRecentIncidents}"
+                        ItemsSource="{Binding RecentIncidents}"
+                        AutoGenerateColumns="False"
+                        CanUserResizeColumns="True"
+                        GridLinesVisibility="Horizontal"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        RowHeight="{StaticResource TableRowHeight}"
+                        IsReadOnly="True">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Sévérité" Binding="{Binding Severity}" Width="90" />
+                  <DataGridTextColumn Header="Hôte" Binding="{Binding ServerName}" Width="120" />
+                  <DataGridTextColumn Header="Problème" Binding="{Binding Problem}" Width="*" />
+                  <DataGridTextColumn Header="État" Binding="{Binding Status}" Width="100" />
+                </DataGrid.Columns>
+              </DataGrid>
+            </Panel>
           </DockPanel>
         </Border>
 

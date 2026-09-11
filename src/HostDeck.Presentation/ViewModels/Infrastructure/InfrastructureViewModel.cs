@@ -24,6 +24,7 @@ namespace HostDeck.Presentation.ViewModels.Infrastructure;
 public partial class InfrastructureViewModel : PageViewModelBase, IDisposable
 {
     private readonly GetServersUseCase _getServers;
+    private readonly DeleteServerUseCase _deleteServer;
     private readonly GetMetricHistoryUseCase _getHistory;
     private readonly IMonitoringEventBus _events;
     private readonly IDialogService _dialogs;
@@ -44,12 +45,14 @@ public partial class InfrastructureViewModel : PageViewModelBase, IDisposable
 
     public InfrastructureViewModel(
         GetServersUseCase getServers,
+        DeleteServerUseCase deleteServer,
         GetMetricHistoryUseCase getHistory,
         IMonitoringEventBus events,
         IDialogService dialogs,
         IUiDispatcher ui)
     {
         _getServers = getServers;
+        _deleteServer = deleteServer;
         _getHistory = getHistory;
         _events = events;
         _dialogs = dialogs;
@@ -110,6 +113,19 @@ public partial class InfrastructureViewModel : PageViewModelBase, IDisposable
         }
     }
 
+    [RelayCommand(CanExecute = nameof(CanDeleteHost))]
+    private async Task DeleteHostAsync(CancellationToken cancellationToken)
+    {
+        if (SelectedHost is null)
+        {
+            return;
+        }
+
+        var serverId = SelectedHost.Server.ServerId;
+        await _deleteServer.ExecuteAsync(serverId, cancellationToken).ConfigureAwait(true);
+        await RefreshAsync(cancellationToken).ConfigureAwait(true);
+    }
+
     [RelayCommand(CanExecute = nameof(CanOpenHostDetails))]
     private Task OpenHostDetailsAsync(CancellationToken cancellationToken)
     {
@@ -124,10 +140,13 @@ public partial class InfrastructureViewModel : PageViewModelBase, IDisposable
     private bool CanOpenHostDetails()
         => SelectedHost is not null && OpenHostDetailsHandler is not null;
 
+    private bool CanDeleteHost() => SelectedHost is not null;
+
     partial void OnSelectedHostChanged(HostListItemViewModel? value)
     {
         OnPropertyChanged(nameof(HasSelection));
         OpenHostDetailsCommand.NotifyCanExecuteChanged();
+        DeleteHostCommand.NotifyCanExecuteChanged();
     }
 
     private void OnMetricUpdated(MetricUpdatedEvent evt)

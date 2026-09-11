@@ -29,11 +29,13 @@ internal sealed class FleetMonitoringCoordinator : BackgroundService
     private readonly ISshConnectionFactory _ssh;
     private readonly IMetricsRepository _metrics;
     private readonly LinuxMetricCollector _collector;
-    private readonly IncidentEvaluationEngine _incidents;
+    private readonly IncidentEvaluationEngine _incidentEngine;
+    private readonly IIncidentRepository _incidentRepository;
     private readonly IMonitoringEventBus _events;
     private readonly IClock _clock;
     private readonly ILogger<FleetMonitoringCoordinator> _logger;
     private readonly ConcurrentDictionary<Guid, ServerCollectionState> _states = new();
+    private DateTimeOffset? _lastPruneAt;
 
     public FleetMonitoringCoordinator(
         IServerRepository servers,
@@ -41,7 +43,8 @@ internal sealed class FleetMonitoringCoordinator : BackgroundService
         ISshConnectionFactory ssh,
         IMetricsRepository metrics,
         LinuxMetricCollector collector,
-        IncidentEvaluationEngine incidents,
+        IncidentEvaluationEngine incidentEngine,
+        IIncidentRepository incidentRepository,
         IMonitoringEventBus events,
         IClock clock,
         ILogger<FleetMonitoringCoordinator> logger)
@@ -51,7 +54,8 @@ internal sealed class FleetMonitoringCoordinator : BackgroundService
         _ssh = ssh;
         _metrics = metrics;
         _collector = collector;
-        _incidents = incidents;
+        _incidentEngine = incidentEngine;
+        _incidentRepository = incidentRepository;
         _events = events;
         _clock = clock;
         _logger = logger;
@@ -135,6 +139,41 @@ internal sealed class FleetMonitoringCoordinator : BackgroundService
             succeeded,
             failed,
             stopwatch.ElapsedMilliseconds);
+
+        if (succeeded > 0)
+        {
+            await TryPruneAsync(settings, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private async Task TryPruneAsync(SettingsSnapshot settings, CancellationToken cancellationToken)
+    {
+        var now = _clock.UtcNow;
+        if (_lastPruneAt is { } lastPrune && now - lastPrune < TimeSpan.FromHours(1))
+        {
+            return;
+        }
+
+        _lastPruneAt = now;
+        var policy = settings.ToRetentionPolicy();
+        var metricCutoff = policy.MetricCutoff(now);
+        var eventCutoff = policy.EventCutoff(now);
+
+        var metricsRemoved = await _metrics
+            .PruneOlderThanAsync(metricCutoff, cancellationToken)
+            .ConfigureAwait(false);
+        if (metricsRemoved > 0)
+        {
+            InfrastructureLog.RowsPruned(_logger, metricsRemoved, metricCutoff);
+        }
+
+        var incidentsRemoved = await _incidentRepository
+            .PruneResolvedOlderThanAsync(eventCutoff, cancellationToken)
+            .ConfigureAwait(false);
+        if (incidentsRemoved > 0)
+        {
+            InfrastructureLog.RowsPruned(_logger, incidentsRemoved, eventCutoff);
+        }
     }
 
     private bool IsDue(Server server, SettingsSnapshot settings)
@@ -234,7 +273,7 @@ internal sealed class FleetMonitoringCoordinator : BackgroundService
         PublishStatusChange(server.Id, previousStatus, ServerStatus.Online);
         _events.Publish(new MetricUpdatedEvent(server.Id, success.Latest, success.Sample.ObservedAt));
 
-        await _incidents
+        await _incidentEngine
             .EvaluateAsync(server, success.Sample, ServerStatus.Online, state, cancellationToken)
             .ConfigureAwait(false);
     }
@@ -274,7 +313,7 @@ internal sealed class FleetMonitoringCoordinator : BackgroundService
 
         try
         {
-            await _incidents
+            await _incidentEngine
                 .EvaluateAsync(server, sample: null, status, state, cancellationToken)
                 .ConfigureAwait(false);
         }
