@@ -23,13 +23,22 @@
       </StackPanel>
       <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
         <Border Padding="10,6" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
-          <TextBlock Text="Critiques 0" Foreground="{StaticResource SeverityCriticalBrush}" FontSize="{StaticResource FontSizeBody}" />
+          <TextBlock Foreground="{StaticResource SeverityCriticalBrush}" FontSize="{StaticResource FontSizeBody}">
+            <Run Text="Critiques " />
+            <Run Text="{Binding CriticalCount}" FontWeight="SemiBold" />
+          </TextBlock>
         </Border>
         <Border Padding="10,6" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
-          <TextBlock Text="Majeurs 0" Foreground="{StaticResource SeverityHighBrush}" FontSize="{StaticResource FontSizeBody}" />
+          <TextBlock Foreground="{StaticResource SeverityHighBrush}" FontSize="{StaticResource FontSizeBody}">
+            <Run Text="Majeurs " />
+            <Run Text="{Binding HighCount}" FontWeight="SemiBold" />
+          </TextBlock>
         </Border>
         <Border Padding="10,6" Background="{StaticResource SurfacePanelBrush}" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="{StaticResource BorderThin}" CornerRadius="{StaticResource RadiusSmall}">
-          <TextBlock Text="Avertissements 0" Foreground="{StaticResource SeverityWarningBrush}" FontSize="{StaticResource FontSizeBody}" />
+          <TextBlock Foreground="{StaticResource SeverityWarningBrush}" FontSize="{StaticResource FontSizeBody}">
+            <Run Text="Avertissements " />
+            <Run Text="{Binding WarningCount}" FontWeight="SemiBold" />
+          </TextBlock>
         </Border>
       </StackPanel>
     </Grid>
@@ -75,24 +84,76 @@
                      FontWeight="SemiBold" FontSize="{StaticResource FontSizeLarge}"
                      Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,10" />
           <StackPanel DockPanel.Dock="Bottom" Spacing="8" Margin="0,12,0,0">
-            <Button Content="Acquitter" IsEnabled="False" HorizontalAlignment="Stretch" Padding="10,8"
+            <Button Content="Acquitter"
+                    Command="{Binding AcknowledgeCommand}"
+                    IsEnabled="{Binding CanAcknowledge}"
+                    HorizontalAlignment="Stretch" Padding="10,8"
                     Background="{StaticResource AccentBrush}" Foreground="{StaticResource TextPrimaryBrush}"
                     BorderThickness="0" CornerRadius="{StaticResource RadiusSmall}" />
-            <Button Content="Résoudre" IsEnabled="False" HorizontalAlignment="Stretch" Padding="10,8"
+            <Button Content="Résoudre"
+                    Command="{Binding ResolveCommand}"
+                    IsEnabled="{Binding CanResolve}"
+                    HorizontalAlignment="Stretch" Padding="10,8"
                     Background="{StaticResource SurfaceRaisedBrush}" Foreground="{StaticResource TextPrimaryBrush}"
                     BorderBrush="{StaticResource BorderSubtleBrush}" CornerRadius="{StaticResource RadiusSmall}" />
           </StackPanel>
           <Grid RowDefinitions="*,*" RowSpacing="10">
             <Border Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusSmall}">
-              <controls:EmptyState IsCompact="True"
-                                   Title="Chronologie"
-                                   Description="Sélectionnez un incident pour afficher sa chronologie." />
+              <Panel>
+                <controls:EmptyState IsVisible="{Binding !HasSelection}"
+                                     IsCompact="True"
+                                     Title="Chronologie"
+                                     Description="Sélectionnez un incident pour afficher sa chronologie." />
+                <ScrollViewer IsVisible="{Binding HasSelection}" Padding="10">
+                  <StackPanel Spacing="8">
+                    <TextBlock Text="Chronologie" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                    <ItemsControl ItemsSource="{Binding Timeline}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:IncidentTimelineItemViewModel">
+                          <Border Padding="0,4" BorderBrush="{StaticResource BorderSubtleBrush}" BorderThickness="0,0,0,1">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                              <TextBlock Text="{Binding TimeText}"
+                                         Foreground="{StaticResource TextMutedBrush}"
+                                         FontSize="{StaticResource FontSizeSmall}" />
+                              <StackPanel Grid.Column="1" Spacing="2">
+                                <TextBlock Text="{Binding Label}"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           FontSize="{StaticResource FontSizeBody}" />
+                                <TextBlock Text="{Binding Detail}"
+                                           IsVisible="{Binding Detail, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontSize="{StaticResource FontSizeSmall}"
+                                           TextWrapping="Wrap" />
+                              </StackPanel>
+                            </Grid>
+                          </Border>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+                </ScrollViewer>
+              </Panel>
             </Border>
             <Border Grid.Row="1" Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusSmall}">
-              <controls:EmptyState IsCompact="True"
-                                   Title="Contexte métrique"
-                                   Description="Le graphique de contexte sera alimenté par la collecte."
-                                   IconData="{StaticResource IconLiveData}" />
+              <Panel Margin="10">
+                <controls:EmptyState IsVisible="{Binding !HasSelection}"
+                                     IsCompact="True"
+                                     Title="Contexte métrique"
+                                     Description="Sélectionnez un incident pour afficher le contexte de la règle."
+                                     IconData="{StaticResource IconLiveData}" />
+                <StackPanel IsVisible="{Binding HasSelection}" Spacing="6">
+                  <TextBlock Text="Contexte de la règle" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
+                  <TextBlock Text="{Binding SelectedRuleName}" Foreground="{StaticResource TextPrimaryBrush}" />
+                  <TextBlock Text="{Binding SelectedRuleDescription}"
+                             IsVisible="{Binding SelectedRuleDescription, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                             Foreground="{StaticResource TextSecondaryBrush}"
+                             FontSize="{StaticResource FontSizeSmall}"
+                             TextWrapping="Wrap" />
+                  <TextBlock Text="Le graphique de contexte sera alimenté par la collecte."
+                             Foreground="{StaticResource TextMutedBrush}"
+                             FontSize="{StaticResource FontSizeSmall}" />
+                </StackPanel>
+              </Panel>
             </Border>
           </Grid>
         </DockPanel>

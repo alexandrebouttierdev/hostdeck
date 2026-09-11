@@ -15,14 +15,14 @@
       </StackPanel>
       <Button Grid.Column="1"
               Content="+ Nouvelle règle"
-              IsEnabled="False"
+              Command="{Binding StartCreateCommand}"
               Padding="14,8"
               VerticalAlignment="Center"
               Background="{StaticResource AccentBrush}"
               Foreground="{StaticResource TextPrimaryBrush}"
               CornerRadius="{StaticResource RadiusSmall}"
               BorderThickness="0"
-              ToolTip.Tip="La création de règles sera disponible avec le moteur d’alertes." />
+              ToolTip.Tip="Créer une nouvelle règle d’alerte." />
     </Grid>
 
     <!-- Split liste + éditeur (maquette 05) -->
@@ -66,22 +66,81 @@
                      FontWeight="SemiBold" FontSize="{StaticResource FontSizeLarge}"
                      Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,10" />
           <Border DockPanel.Dock="Bottom" Margin="0,12,0,0"
-                  Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusSmall}" MinHeight="120">
-            <controls:EmptyState IsCompact="True"
-                                 Title="Aperçu métrique"
-                                 Description="Le graphique de seuil s’affichera avec l’historique réel."
-                                 IconData="{StaticResource IconLiveData}" />
-          </Border>
-          <StackPanel Spacing="10">
-            <TextBlock Text="Sélectionnez une règle pour l’éditer."
-                       Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeBody}" />
+                  Background="{StaticResource SurfaceRaisedBrush}" CornerRadius="{StaticResource RadiusSmall}" MinHeight="80" Padding="10">
             <TextBlock Text="Canaux de notification — hors périmètre V1"
-                       Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
-            <controls:EmptyState IsCompact="True"
+                       Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}"
+                       VerticalAlignment="Center" />
+          </Border>
+
+          <Panel>
+            <controls:EmptyState IsVisible="{Binding !IsEditorVisible}"
+                                 IsCompact="True"
                                  Title="Formulaire en attente"
-                                 Description="Nom, métrique, seuil et portée apparaîtront ici."
+                                 Description="Sélectionnez une règle ou créez-en une nouvelle pour l’éditer."
                                  IconData="{StaticResource IconAlerts}" />
-          </StackPanel>
+
+            <ScrollViewer IsVisible="{Binding IsEditorVisible}">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Nom" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                <TextBox Text="{Binding EditorName}" PlaceholderText="Nom de la règle" />
+
+                <TextBlock Text="Description" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                <TextBox Text="{Binding EditorDescription}" AcceptsReturn="True" Height="56" TextWrapping="Wrap" />
+
+                <TextBlock Text="Métrique" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                <ComboBox ItemsSource="{Binding MetricOptions}"
+                          SelectedItem="{Binding EditorMetric}"
+                          IsEnabled="{Binding !IsMetricReadOnly}" />
+
+                <TextBlock Text="Sévérité" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                <ComboBox ItemsSource="{Binding SeverityOptions}" SelectedItem="{Binding EditorSeverity}" />
+
+                <TextBlock Text="Comparaison" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                <ComboBox ItemsSource="{Binding ComparisonOptions}" SelectedItem="{Binding EditorComparison}" />
+
+                <TextBlock Text="Seuil" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                <NumericUpDown Value="{Binding EditorThresholdValue}" Minimum="0" Maximum="10000" FormatString="0.##" />
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                  <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Text="Durée (min)" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                    <NumericUpDown Value="{Binding EditorDurationMinutes}" Minimum="1" Maximum="1440" />
+                  </StackPanel>
+                  <StackPanel Grid.Column="1" Spacing="4">
+                    <TextBlock Text="Cooldown (min)" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
+                    <NumericUpDown Value="{Binding EditorCooldownMinutes}" Minimum="1" Maximum="1440" />
+                  </StackPanel>
+                </Grid>
+
+                <CheckBox Content="Règle activée" IsChecked="{Binding EditorIsEnabled}" />
+
+                <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+                  <Button Content="Enregistrer"
+                          Command="{Binding SaveCommand}"
+                          Padding="12,8"
+                          Background="{StaticResource AccentBrush}"
+                          Foreground="{StaticResource TextPrimaryBrush}"
+                          BorderThickness="0"
+                          CornerRadius="{StaticResource RadiusSmall}" />
+                  <Button Content="Supprimer"
+                          Command="{Binding DeleteCommand}"
+                          IsEnabled="{Binding CanDelete}"
+                          Padding="12,8"
+                          Background="{StaticResource SurfaceRaisedBrush}"
+                          Foreground="{StaticResource TextPrimaryBrush}"
+                          BorderBrush="{StaticResource BorderSubtleBrush}"
+                          CornerRadius="{StaticResource RadiusSmall}" />
+                  <Button Content="Annuler"
+                          Command="{Binding CancelEditCommand}"
+                          Padding="12,8"
+                          Background="{StaticResource SurfaceRaisedBrush}"
+                          Foreground="{StaticResource TextPrimaryBrush}"
+                          BorderBrush="{StaticResource BorderSubtleBrush}"
+                          CornerRadius="{StaticResource RadiusSmall}" />
+                </StackPanel>
+              </StackPanel>
+            </ScrollViewer>
+          </Panel>
         </DockPanel>
       </Border>
     </Grid>

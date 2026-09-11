@@ -21,17 +21,23 @@ internal sealed class IncidentEvaluationEngine
 {
     private readonly IAlertRuleRepository _rules;
     private readonly IIncidentRepository _incidents;
+    private readonly ISettingsRepository _settings;
+    private readonly IDesktopNotificationService _notifications;
     private readonly IMonitoringEventBus _events;
     private readonly IClock _clock;
 
     public IncidentEvaluationEngine(
         IAlertRuleRepository rules,
         IIncidentRepository incidents,
+        ISettingsRepository settings,
+        IDesktopNotificationService notifications,
         IMonitoringEventBus events,
         IClock clock)
     {
         _rules = rules;
         _incidents = incidents;
+        _settings = settings;
+        _notifications = notifications;
         _events = events;
         _clock = clock;
     }
@@ -120,6 +126,8 @@ internal sealed class IncidentEvaluationEngine
                 incident.Severity,
                 IncidentChangeKind.Opened,
                 now));
+
+            await TryNotifyOpenedAsync(server, incident, rule, cancellationToken).ConfigureAwait(false);
             return;
         }
 
@@ -132,6 +140,35 @@ internal sealed class IncidentEvaluationEngine
             existing.Severity,
             IncidentChangeKind.Updated,
             now));
+    }
+
+    private async Task TryNotifyOpenedAsync(
+        Server server,
+        Incident incident,
+        AlertRule rule,
+        CancellationToken cancellationToken)
+    {
+        var settings = await _settings.GetAsync(cancellationToken).ConfigureAwait(false);
+        if (!settings.DesktopNotificationsEnabled)
+        {
+            return;
+        }
+
+        if (incident.Severity < settings.MinimumNotificationSeverity)
+        {
+            return;
+        }
+
+        await _notifications.NotifyIncidentAsync(
+            new IncidentNotification
+            {
+                IncidentId = incident.Id.Value,
+                Severity = incident.Severity,
+                ServerName = server.Name.Value,
+                Title = $"Incident {incident.Severity} — {server.Name.Value}",
+                Body = rule.Name,
+            },
+            cancellationToken).ConfigureAwait(false);
     }
 
     private async Task HandleRecoveryAsync(

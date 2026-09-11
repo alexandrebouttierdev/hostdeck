@@ -283,3 +283,12 @@ internal sealed class FakeIncidentRepository : IIncidentRepository
     public Task<int> PruneResolvedOlderThanAsync(DateTimeOffset cutoff, CancellationToken cancellationToken = default) =>
         Task.FromResult(0);
 }
+
+internal sealed class NoOpDesktopNotificationService : IDesktopNotificationService
+{
+    public Task NotifyIncidentAsync(IncidentNotification notification, CancellationToken cancellationToken = default) =>
+        Task.CompletedTask;
+
+    public Task<bool> IsAvailableAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult(true);
+}

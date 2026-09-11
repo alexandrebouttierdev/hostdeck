@@ -118,16 +118,12 @@
                              YAxisMax="100"
                              EmptyTitle="Aucune série disponible"
                              EmptyDescription="En attente de collecte." />
-          <Border Margin="0,6,6,0" MinHeight="120"
-                  Background="{StaticResource SurfacePanelBrush}"
-                  BorderBrush="{StaticResource BorderSubtleBrush}"
-                  BorderThickness="{StaticResource BorderThin}"
-                  CornerRadius="{StaticResource RadiusSmall}">
-            <controls:EmptyState IsCompact="True"
-                                 Title="Load average"
-                                 Description="Séries 1m / 5m / 15m dès la collecte."
-                                 IconData="{StaticResource IconLiveData}" />
-          </Border>
+          <charts:ChartFrame Margin="0,6,6,0" MinHeight="120"
+                             Title="Load average"
+                             Series="{Binding LoadSeries}"
+                             EmptyTitle="Aucune série disponible"
+                             EmptyDescription="Séries 1m / 5m / 15m dès la collecte."
+                             EmptyIconData="{StaticResource IconLiveData}" />
           <Border Margin="6,6,0,0" MinHeight="120"
                   Background="{StaticResource SurfacePanelBrush}"
                   BorderBrush="{StaticResource BorderSubtleBrush}"
@@ -159,11 +155,11 @@
               <TextBlock Grid.Row="3" Text="Système" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
               <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding DisplayOperatingSystem}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
               <TextBlock Grid.Row="4" Text="Uptime" Foreground="{StaticResource TextSecondaryBrush}" FontSize="{StaticResource FontSizeSmall}" />
-              <TextBlock Grid.Row="4" Grid.Column="1" Text="—" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeBody}" />
+              <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding DisplayUptime}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="{StaticResource FontSizeBody}" />
             </Grid>
 
             <TextBlock Text="Tags" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <TextBlock Text="Aucun tag" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+            <TextBlock Text="{Binding DisplayTags}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
 
             <TextBlock Text="État des services" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
             <controls:EmptyState IsCompact="True"
@@ -172,7 +168,7 @@
                                  IconData="{StaticResource IconDocker}" />
 
             <TextBlock Text="Incidents récents" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" />
-            <TextBlock Text="Aucun incident sur cet hôte." Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
+            <TextBlock Text="{Binding HostIncidentsSummary}" Foreground="{StaticResource TextMutedBrush}" FontSize="{StaticResource FontSizeSmall}" />
           </StackPanel>
         </ScrollViewer>
       </Border>

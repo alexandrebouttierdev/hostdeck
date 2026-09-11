@@ -7,11 +7,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using HostDeck.Application.Dtos.Incidents;
 using HostDeck.Application.Dtos.Monitoring;
 using HostDeck.Application.Dtos.Servers;
+using HostDeck.Application.Incidents;
 using HostDeck.Application.Monitoring;
 using HostDeck.Application.Monitoring.Events;
 using HostDeck.Application.Servers;
+using HostDeck.Domain.Incidents;
 using HostDeck.Domain.Servers;
 using HostDeck.Presentation.Charts;
 using HostDeck.Presentation.Controls.Charts;
@@ -36,6 +39,7 @@ public partial class OverviewViewModel : PageViewModelBase, IDisposable
     private const int FleetChartMaxPoints = 600;
 
     private readonly GetServersUseCase _getServers;
+    private readonly GetIncidentsUseCase _getIncidents;
     private readonly GetMetricHistoryUseCase _getHistory;
     private readonly IMonitoringEventBus _events;
     private readonly IDialogService _dialogs;
@@ -61,6 +65,9 @@ public partial class OverviewViewModel : PageViewModelBase, IDisposable
 
     [ObservableProperty]
     private int _activeIncidentCount;
+
+    [ObservableProperty]
+    private bool _hasRecentIncidents;
 
     [ObservableProperty]
     private double? _cpuGaugeValue;
@@ -160,14 +167,18 @@ public partial class OverviewViewModel : PageViewModelBase, IDisposable
 
     public ObservableCollection<HostListItemViewModel> TopHosts { get; } = [];
 
+    public ObservableCollection<IncidentDto> RecentIncidents { get; } = [];
+
     public OverviewViewModel(
         GetServersUseCase getServers,
+        GetIncidentsUseCase getIncidents,
         GetMetricHistoryUseCase getHistory,
         IMonitoringEventBus events,
         IDialogService dialogs,
         IUiDispatcher ui)
     {
         _getServers = getServers;
+        _getIncidents = getIncidents;
         _getHistory = getHistory;
         _events = events;
         _dialogs = dialogs;
@@ -202,8 +213,32 @@ public partial class OverviewViewModel : PageViewModelBase, IDisposable
 
         ApplyAggregates(servers);
         await LoadFleetChartsAsync(servers, cancellationToken).ConfigureAwait(true);
+        await LoadIncidentsAsync(cancellationToken).ConfigureAwait(true);
 
         OnPropertyChanged(nameof(StatusSummary));
+    }
+
+    private async Task LoadIncidentsAsync(CancellationToken cancellationToken)
+    {
+        var incidents = await _getIncidents.ExecuteAsync(
+            new IncidentFilterDto
+            {
+                Statuses = [IncidentStatus.Open, IncidentStatus.Acknowledged],
+            },
+            cancellationToken).ConfigureAwait(true);
+
+        ActiveIncidentCount = incidents.Count;
+        IncidentsSubtitle = ActiveIncidentCount == 0
+            ? "Aucun incident ouvert"
+            : $"{ActiveIncidentCount} incident{(ActiveIncidentCount > 1 ? "s" : string.Empty)} ouvert{(ActiveIncidentCount > 1 ? "s" : string.Empty)}";
+
+        RecentIncidents.Clear();
+        foreach (var incident in incidents.Take(5))
+        {
+            RecentIncidents.Add(incident);
+        }
+
+        HasRecentIncidents = RecentIncidents.Count > 0;
     }
 
     [RelayCommand]

@@ -55,7 +55,7 @@ public sealed class TimeSeriesChartControl : Control
     private Size _cachedSize;
     private Rect _plotRect;
     private bool _showLegend;
-    private Typeface _typeface = new(FontFamily.Default);
+    private readonly Typeface _typeface = new(FontFamily.Default);
 
     static TimeSeriesChartControl()
     {

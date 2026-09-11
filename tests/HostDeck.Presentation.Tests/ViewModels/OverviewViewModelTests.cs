@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using HostDeck.Application.Dtos.Incidents;
 using HostDeck.Application.Dtos.Monitoring;
+using HostDeck.Application.Incidents;
 using HostDeck.Application.Monitoring;
 using HostDeck.Application.Monitoring.Events;
 using HostDeck.Application.Ports;
 using HostDeck.Application.Servers;
+using HostDeck.Domain.Alerts;
+using HostDeck.Domain.Incidents;
 using HostDeck.Domain.Monitoring;
 using HostDeck.Domain.Servers;
 using HostDeck.Presentation.Services;
@@ -167,6 +171,7 @@ public sealed class OverviewViewModelTests
     {
         return new OverviewViewModel(
             new GetServersUseCase(new StubServerRepository(servers), metrics),
+            new GetIncidentsUseCase(new StubIncidentRepository()),
             new GetMetricHistoryUseCase(metrics),
             bus ?? new ImmediateEventBus(),
             new StubDialogService(),
@@ -370,5 +375,47 @@ public sealed class OverviewViewModelTests
 
         public Task<int> PruneOlderThanAsync(DateTimeOffset cutoff, CancellationToken cancellationToken = default)
             => Task.FromResult(0);
+    }
+
+    private sealed class StubIncidentRepository : IIncidentRepository
+    {
+        public Task<IReadOnlyList<Incident>> GetActiveAsync(CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<Incident>>([]);
+
+        public Task<IReadOnlyList<IncidentDto>> QueryAsync(
+            IncidentFilterDto filter,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<IncidentDto>>([]);
+
+        public Task<Incident?> FindAsync(IncidentId id, CancellationToken cancellationToken = default) =>
+            Task.FromResult<Incident?>(null);
+
+        public Task<Incident?> FindActiveAsync(
+            ServerId serverId,
+            AlertRuleId ruleId,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<Incident?>(null);
+
+        public Task AddAsync(Incident incident, CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
+
+        public Task UpdateAsync(Incident incident, CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
+
+        public Task AppendEventAsync(
+            IncidentId incidentId,
+            IncidentEventDto incidentEvent,
+            CancellationToken cancellationToken = default) =>
+            Task.CompletedTask;
+
+        public Task<IReadOnlyList<IncidentEventDto>> GetTimelineAsync(
+            IncidentId incidentId,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<IncidentEventDto>>([]);
+
+        public Task<int> PruneResolvedOlderThanAsync(
+            DateTimeOffset cutoff,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(0);
     }
 }

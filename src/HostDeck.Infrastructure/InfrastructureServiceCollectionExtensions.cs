@@ -3,7 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using HostDeck.Application.Ports;
 using HostDeck.Infrastructure.Credentials;
+using HostDeck.Infrastructure.Docker;
 using HostDeck.Infrastructure.Monitoring;
+using HostDeck.Infrastructure.Notifications;
 using HostDeck.Infrastructure.Persistence;
 using HostDeck.Infrastructure.Persistence.Repositories;
 using HostDeck.Infrastructure.Persistence.TimeSeries;
@@ -69,9 +71,11 @@ public static class InfrastructureServiceCollectionExtensions
 
         services.AddSingleton<SshCredentialLoader>();
         services.AddSingleton<ISshConnectionFactory, SshConnectionFactory>();
+        services.AddSingleton<IContainerRuntime, SshContainerRuntime>();
 
         services.AddSingleton<LinuxMetricCollector>();
         services.AddSingleton<IncidentEvaluationEngine>();
+        services.AddSingleton<IDesktopNotificationService, DesktopNotificationService>();
         services.AddHostedService<FleetMonitoringCoordinator>();
 
         return services;

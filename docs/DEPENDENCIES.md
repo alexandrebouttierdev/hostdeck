@@ -37,7 +37,7 @@ the model cannot be built in an invalid state even if a validator is bypassed.
 |---|---|---|---|
 | `SSH.NET` | 2026.0.0 | MIT | SSH transport, command execution and port forwarding for jump hosts. Ships a native `net10.0` target. Host key verification is wired through `HostKeyReceived` and is never disabled. Jump hosts use a local forwarded port through the bastion session. |
 | `Latchkey` | 0.1.0 | MIT | Cross-platform OS credential store (Windows Credential Manager, macOS Keychain, Linux Secret Service / libsecret). Pure managed P/Invoke, native `net10.0` target, no silent plaintext fallback — matches §14 / T1. |
-| `Docker.DotNet` | 3.125.15 | MIT | Docker Engine API client, maintained under the `dotnet` organisation. `netstandard2.0`, so no native dependency. Kept behind the `IContainerRuntime` port so it can be swapped, and so Podman support stays possible later. |
+| `Docker.DotNet` | 3.125.15 | MIT | Reserved for a future Engine API client over a controlled tunnel. V1 remote Docker uses fixed `docker` CLI commands over SSH (`SshContainerRuntime`) because SSH.NET cannot forward a remote unix socket without an extra helper. Kept behind `IContainerRuntime` so Podman or a DotNet client can replace the adapter later. See `docs/DOCKER.md`. |
 | `Microsoft.EntityFrameworkCore.Sqlite` | 10.0.11 | MIT | Schema, versioned migrations and CRUD over the relational part of the model. |
 | `Microsoft.EntityFrameworkCore.Design` | 10.0.11 | MIT | Migration tooling. `PrivateAssets=all`, so it is not shipped. |
 | `Microsoft.Data.Sqlite` | 10.0.11 | MIT | The underlying ADO.NET provider, used directly for raw parameterised SQL on the time-series hot path. |

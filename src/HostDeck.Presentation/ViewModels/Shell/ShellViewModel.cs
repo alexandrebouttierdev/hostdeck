@@ -203,11 +203,17 @@ public partial class ShellViewModel : ObservableObject, IDisposable
             case ShellSection.Alerts:
                 await _alerts.RefreshAsync(cancellationToken).ConfigureAwait(true);
                 break;
+            case ShellSection.Topology:
+                await _topology.RefreshAsync(cancellationToken).ConfigureAwait(true);
+                break;
             case ShellSection.Settings:
                 await _settings.RefreshAsync(cancellationToken).ConfigureAwait(true);
                 break;
             case ShellSection.LiveData:
                 await _liveData.RefreshAsync(cancellationToken).ConfigureAwait(true);
+                break;
+            case ShellSection.Docker:
+                await _docker.RefreshAsync(cancellationToken).ConfigureAwait(true);
                 break;
         }
     }
@@ -289,6 +295,7 @@ public partial class ShellViewModel : ObservableObject, IDisposable
         (_infrastructure as IDisposable)?.Dispose();
         (_hostDetails as IDisposable)?.Dispose();
         (_liveData as IDisposable)?.Dispose();
+        (_incidents as IDisposable)?.Dispose();
         GC.SuppressFinalize(this);
     }
 }

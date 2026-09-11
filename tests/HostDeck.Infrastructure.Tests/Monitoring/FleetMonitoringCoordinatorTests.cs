@@ -188,7 +188,8 @@ public sealed class FleetMonitoringCoordinatorTests
         IClock clock)
     {
         var collector = new LinuxMetricCollector(clock);
-        var engine = new IncidentEvaluationEngine(alerts, incidents, events, clock);
+        var notifications = new NoOpDesktopNotificationService();
+        var engine = new IncidentEvaluationEngine(alerts, incidents, settings, notifications, events, clock);
         return new FleetMonitoringCoordinator(
             servers,
             settings,
@@ -196,6 +197,7 @@ public sealed class FleetMonitoringCoordinatorTests
             metrics,
             collector,
             engine,
+            incidents,
             events,
             clock,
             NullLogger<FleetMonitoringCoordinator>.Instance);
