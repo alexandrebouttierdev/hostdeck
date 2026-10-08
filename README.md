@@ -1,92 +1,152 @@
+<div align="center">
+
 # HostDeck
 
-HostDeck is an open-source desktop application for supervising fleets of VPS, Linux servers and
-Docker workloads. It connects over SSH — directly or through a jump host — collects system
-metrics, keeps a local history, raises and tracks incidents, and renders it all in a dense,
-technical, Netdata-flavoured interface.
+### Supervision d'infrastructure desktop
 
-It is a real desktop application: **C# / .NET 10 + Avalonia**, with no web layer, no embedded
-browser and no mandatory SaaS backend. Everything runs and persists locally.
+**Supervision moderne de serveurs Linux, VPS et environnements Docker.**
 
-> **Status: V1 feature-complete on `dev`.** SSH monitoring, incidents/alerts, Docker
-> supervision, local persistence, desktop notifications and the Avalonia shell are wired.
-> Visual polish against the nine mockups and native installers remain iterative.
+<br>
 
-## Features (V1)
+[![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![C#](https://img.shields.io/badge/C%23-12-239120?style=for-the-badge&logo=csharp&logoColor=white)](https://learn.microsoft.com/dotnet/csharp/)
+[![Avalonia](https://img.shields.io/badge/Avalonia-UI-8B5CF6?style=for-the-badge)](https://avaloniaui.net/)
+[![Docker](https://img.shields.io/badge/Docker-Supervision-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![SSH](https://img.shields.io/badge/SSH-Supervision%20sécurisée-222222?style=for-the-badge&logo=linux&logoColor=white)](https://www.openssh.com/)
 
-- Manage multiple Linux hosts, grouped and tagged
-- Direct SSH and SSH jump host / bastion connections, with strict host key verification
-- System metric collection: CPU, memory, swap, disks, load average, network, uptime
-- Docker supervision: containers, stats, logs, start/stop/restart
-- Local history with retention, pruning and downsampling
-- Custom-rendered time series charts and in-table sparklines
-- Incident engine with severities, acknowledgement, resolution and alert rules
-- Desktop notifications
-- Credentials stored in the OS keychain, never in the database
+<br>
 
-## Requirements
+[![Plateformes](https://img.shields.io/badge/Plateformes-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey?style=flat-square)](#)
+[![Statut](https://img.shields.io/badge/Statut-Actif-success?style=flat-square)](#)
+[![Open Source](https://img.shields.io/badge/Open%20Source-Oui-blue?style=flat-square)](#)
 
-- [.NET SDK 10.0](https://dotnet.microsoft.com/download) or newer
-- Linux, macOS or Windows
+<br><br>
 
-On Linux, taking validation screenshots additionally needs `xvfb` and `ImageMagick`.
+<img src="mockups/dashboard.png" alt="Tableau de bord HostDeck" width="900">
 
-## Build and run
+</div>
 
-```bash
-dotnet restore
-dotnet build -c Release
-dotnet run --project src/HostDeck.Desktop
-```
+---
 
-## Tests
+## Présentation
 
-```bash
-dotnet test -c Release
-```
+**HostDeck** est une application desktop multiplateforme permettant de superviser et administrer une infrastructure Linux depuis une interface unique.
 
-The full quality gate, which CI enforces on Linux, Windows and macOS:
+Connectez vos serveurs via **SSH**, surveillez leurs ressources système, consultez vos environnements Docker, analysez l'historique des métriques et gérez les incidents directement depuis une application native.
 
-```bash
-dotnet restore
-dotnet format --verify-no-changes
-dotnet build -c Release --no-restore
-dotnet test -c Release --no-build
-```
+HostDeck adopte une approche **local-first** : les données de supervision sont conservées localement et aucun service SaaS ou compte cloud n'est obligatoire.
 
-## Visual validation
+---
 
-The nine reference mockups in `mockups/` are the visual source of truth and are exactly
-1672x941. `scripts/screenshot.sh` renders the application inside a private Xvfb display of the
-same size, so a capture and its mockup can be compared directly:
+## Pensé pour l'infrastructure
 
-```bash
-scripts/screenshot.sh screenshots/02_infrastructure.png
-```
+| Fonctionnalité | Description |
+|---|---|
+| **Linux & VPS** | Supervision de plusieurs serveurs Linux depuis une interface unique |
+| **SSH** | Connexions directes et prise en charge des bastions / jump hosts |
+| **Docker** | Conteneurs, statistiques, journaux et gestion du cycle de vie |
+| **Supervision** | CPU, mémoire, swap, disques, réseau, charge système et disponibilité |
+| **Alertes** | Règles, incidents, niveaux de gravité, acquittement et résolution |
+| **Données locales** | Historique SQLite sans dépendance à un service cloud |
+| **Sécurité** | Identifiants protégés par le trousseau sécurisé du système |
+| **Multiplateforme** | Windows, macOS et Linux |
 
-Captures are written to `screenshots/`, which is git-ignored.
+---
 
-## Project layout
+## Fonctionnalités
+
+### Supervision des serveurs
+
+- Gestion de plusieurs serveurs Linux
+- Organisation par groupes et étiquettes
+- Connexions SSH directes
+- Connexions via jump host / bastion
+- Vérification stricte des clés d'hôte SSH
+- Surveillance de la disponibilité des serveurs
+
+### Métriques système
+
+- Utilisation du processeur
+- Mémoire vive
+- Mémoire swap
+- Utilisation des disques
+- Charge système
+- Activité réseau
+- Temps de fonctionnement
+
+### Supervision Docker
+
+- Liste et état des conteneurs
+- Statistiques de consommation
+- Consultation des journaux
+- Démarrage des conteneurs
+- Arrêt des conteneurs
+- Redémarrage des conteneurs
+
+### Historique et visualisation
+
+- Historique local des métriques
+- Conservation configurable des données
+- Nettoyage automatique des anciennes données
+- Réduction des données historiques
+- Graphiques temporels
+- Mini-graphiques de tendance
+
+### Alertes et incidents
+
+- Création de règles d'alerte
+- Plusieurs niveaux de gravité
+- Gestion des incidents
+- Acquittement des incidents
+- Résolution des incidents
+- Notifications desktop
+
+---
+
+## Technologies
+
+| Technologie | Utilisation |
+|---|---|
+| **C#** | Logique applicative et métier |
+| **.NET 10** | Plateforme et environnement d'exécution |
+| **Avalonia UI** | Interface desktop multiplateforme |
+| **SSH** | Connexion et supervision des serveurs Linux |
+| **Docker** | Supervision des conteneurs |
+| **Entity Framework Core** | Accès aux données |
+| **SQLite** | Stockage local |
+| **Trousseau système** | Stockage sécurisé des identifiants |
+| **GitHub Actions** | Intégration continue et contrôles qualité |
+
+---
+
+## Architecture
+
+HostDeck utilise une architecture en couches permettant de séparer clairement le domaine métier, les cas d'utilisation, l'infrastructure et l'interface graphique.
 
 ```text
-src/
-  HostDeck.Domain/          Entities, value objects and invariants. No dependencies.
-  HostDeck.Application/     Use cases, DTOs, ports, validation.
-  HostDeck.Infrastructure/  SSH, Docker, EF Core/SQLite, credentials, notifications.
-  HostDeck.Presentation/    Avalonia views, view models, controls, charts, theme.
-  HostDeck.Desktop/         Composition root and application entry point.
-tests/                      One test project per layer, plus integration tests.
-docs/                       Architecture and technical documentation.
-mockups/                    Visual source of truth (nine screens).
-scripts/                    Build, screenshot and packaging helpers.
-```
-
-## Documentation
-
-Technical documentation lives in [`docs/`](docs/). Start with
-[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Also see
-[`docs/DOCKER.md`](docs/DOCKER.md) and [`docs/PACKAGING.md`](docs/PACKAGING.md).
-Contributors should read [`AGENTS.md`](AGENTS.md), which states the binding rules for this
-codebase, and [`CONTRIBUTING.md`](CONTRIBUTING.md).
-
-Security model and reporting: [`SECURITY.md`](SECURITY.md).
+┌──────────────────────────────────────────────┐
+│              HostDeck.Desktop                │
+│        Composition et point d'entrée         │
+└──────────────────────┬───────────────────────┘
+                       │
+┌──────────────────────▼───────────────────────┐
+│            HostDeck.Presentation             │
+│        Avalonia / Vues / ViewModels          │
+└──────────────────────┬───────────────────────┘
+                       │
+┌──────────────────────▼───────────────────────┐
+│            HostDeck.Application              │
+│      Cas d'utilisation / DTO / Ports         │
+└──────────────────────┬───────────────────────┘
+                       │
+┌──────────────────────▼───────────────────────┐
+│              HostDeck.Domain                 │
+│       Entités / Objets valeur / Règles       │
+└──────────────────────────────────────────────┘
+                       ▲
+                       │
+┌──────────────────────┴───────────────────────┐
+│           HostDeck.Infrastructure            │
+│ SSH / Docker / EF Core / SQLite / Trousseau │
+│                 Notifications                │
+└──────────────────────────────────────────────┘
